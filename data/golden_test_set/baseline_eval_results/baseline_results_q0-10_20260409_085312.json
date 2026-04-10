@@ -1,0 +1,122 @@
+[
+  {
+    "question": "How many vacation days do full-time employees get per year?",
+    "answer": "I don't have enough information in our HR policies to answer that question.",
+    "contexts": [
+      "requires more vacation than is allotted, Human Resources must determine whether or not it is allowable to provide the\nemployee more vacation without pay. For each continuous year of employment, an additional eight hours of vacation\ntime will accrue.\nRegular part-time employees will be eligible for (insert amount here) of paid vacation per employment year.\nIf your employment is terminated, either voluntarily or involuntarily, you will be paid for unused vacation leave.",
+      "believes that vacation time is vital in keeping employee morale high.\nRegular full- and part-time employees begin accruing vacation leave on the date that employment begins, however, no\npaid vacation days will be granted until the third month of employment is completed. Each employee will accrue leave\nhours on a monthly basis, and will be required to take five consecutive business days of vacation each calendar year in",
+      "Beginning on the first of the month following 30 days of continuous employment with the company, all full-time\nemployees are eligible to accrue sick time. This sick time accrues at the rate of one half-day per calendar month through\nDec. 31. Beginning Jan. 1 of the first full year of full-time employment, you are allowed sick time to a maximum of six\ndays per calendar year. These days are accrued pro-rata based on the actual percentage of the calendar year you work."
+    ],
+    "ground_truth": "The Vacation Policy requires five consecutive business days of vacation each calendar year (after the third month of employment) and states that regular full-time employees receive a set amount of paid vacation per employment year, but the handbook leaves that amount as a template placeholder rather than a fixed number. PTO is handled separately: employees accrue PTO after 3 months of employment and employee PTO is capped at 40 hours.",
+    "category": "factual",
+    "difficulty": "easy"
+  },
+  {
+    "question": "How many sick leave days are allowed per year?",
+    "answer": "According to Section: Time Away From Work in our Sick Time Policy, a full-time employee is allowed sick time to a maximum of six days per calendar year, starting from the first full year of full-time employment.",
+    "contexts": [
+      "Beginning on the first of the month following 30 days of continuous employment with the company, all full-time\nemployees are eligible to accrue sick time. This sick time accrues at the rate of one half-day per calendar month through\nDec. 31. Beginning Jan. 1 of the first full year of full-time employment, you are allowed sick time to a maximum of six\ndays per calendar year. These days are accrued pro-rata based on the actual percentage of the calendar year you work.",
+      "who are too injured or ill to work, not as additional personal or vacation time. Employees should be prepared to furnish a\ndoctor’s note or similar evidence of inability to work if the supervisor requests one. Abuse of sick leave is grounds for\ndiscipline, up to and including termination.\nExtended Leave\nEmployees who require three or more days off due their own health issue or a health issue of a family member may be",
+      "Sick time may not be carried over from year to year. If you are away from work for less than half of a day, the option of a\nhalf sick day may be used, or the missed amount of time may be made up during that workweek if the work schedule\npermits and your supervisor approves.\nSick time is a benefit provided to you in the event you need to take time off because of your health or the health of a"
+    ],
+    "ground_truth": "Beginning Jan. 1 of the first full year of full-time employment, full-time employees may use sick time up to a maximum of six days per calendar year (accrued pro-rata). Before that, sick time accrues at one half-day per calendar month through Dec. 31 starting the first of the month following 30 days of continuous employment.",
+    "category": "factual",
+    "difficulty": "easy"
+  },
+  {
+    "question": "What is the probationary period for new employees?",
+    "answer": "I don't have enough information in our HR policies to answer that question.",
+    "contexts": [
+      "Employees with leaves of less than 31 days must report back to work by the beginning of the first regularly scheduled\nwork period after the end of the last calendar day of service, plus the time required to return home safely and have an\neight hour rest period.\nEmployees with leaves between 31 and 180 days must apply for re-employment no later than 14 days after completion\nof uniformed service. Employees with leaves longer than180 days must apply for re-employment no later than 90 days",
+      "complies with all federal and state leave laws. However, when these laws do not apply or an employee does not meet\nthe eligibility requirements, the company will consider an employee’s request for a personal leave. This leave may\nprovide up to [maximum leave period] in a 12-month period. Each leave request will be considered on an individual\nbasis.\nAn eligible employee who has completed at least 12 months of service and who is in good standing (is not under a",
+      "hours, or where employee performance has been or could become unsatisfactory."
+    ],
+    "ground_truth": "The first 90 days of employment are an orientation period: the employee receives training and orientation as directed, the supervisor monitors performance, and the employee may be terminated during this time if performance is unsatisfactory. A confidential performance evaluation is given at the end of the orientation period.",
+    "category": "factual",
+    "difficulty": "easy"
+  },
+  {
+    "question": "At what rate is overtime paid?",
+    "answer": "According to our Overtime Pay Policy, Section: General Practices (Source 1), all hourly, non-exempt employees must be compensated one-and-a-half times their regular wage rate for all hours worked in excess of 40 hours each week.",
+    "contexts": [
+      "must compensate all hourly, non-exempt employees one-and-a-half times their regular wage rate for all hours worked\nin excess of 40 hours each week.\nThe company’s workweek begins on 5:00 PM on Friday and ends on 9:00 AM on Monday.\nAt times, employees will be asked to work overtime to complete necessary work tasks. The employee’s supervisor will\nnotify the employee as early as possible regarding scheduling needs.",
+      "for the purpose of computing overtime pay. Regular wages are paid until jury pay is received. Jury pay is then deducted\nfrom your regular wages.\nThis benefit cannot be applied to any court appearance other than jury duty unless such appearance is related to your\nemployment.",
+      "Employees who want to work more than 40 hours during a workweek must receive written authorization from their\nsupervisor before working overtime.\n(EMPLOYER NOTE: State wage and hour laws differ—check with your legal advisor.)"
+    ],
+    "ground_truth": "Hourly, non-exempt employees must be compensated one-and-a-half times their regular wage rate for all hours worked in excess of 40 hours each week.",
+    "category": "factual",
+    "difficulty": "easy"
+  },
+  {
+    "question": "When does health insurance coverage begin for new employees?",
+    "answer": "According to [Source 1 | Policy: Employer-offered Insurance Policy | Section: Employee Benefits], health insurance coverage begins on the first of the month following the date of hire.",
+    "contexts": [
+      "provides group health, dental and vision insurance plans to all active employees who are normally scheduled to work 30\nor more hours per week. Details concerning available plans, level of coverage and premium costs are in the benefit\ninformation provided during new hire orientation or available from Human Resources.\nInsurance coverage begins on the first of the month following the date of hire. All necessary enrollment forms must be",
+      "seniority that are available to employees on comparable nonmilitary leaves of absence.\nIf an employee’s health plan coverage would terminate because of an absence due to military service, he or she may\nelect to continue the health plan coverage for up to 24 months after the absence begins or for the period of service (plus\nthe time allowed to apply for reemployment), whichever period is shorter. The employee may be required to pay up to",
+      "completed by the employee before this date. Current part-time employees who become full-time employees will be\nnotified by Human Resources when they are eligible to enroll.\nYou have the option of waiving all pre-tax benefits. Should you choose to waive these benefits, you will not have another\nopportunity to elect them until the next Open Enrollment Period, and any after-tax coverage permitted by VanaciPrime will be"
+    ],
+    "ground_truth": "Insurance coverage (group health, dental and vision) begins on the first of the month following the date of hire; enrollment forms must be completed before that date.",
+    "category": "factual",
+    "difficulty": "easy"
+  },
+  {
+    "question": "What is VanaciPrime's policy on at-will employment?",
+    "answer": "According to Source 1 | Policy: Welcome and Purpose | Section: Introduction, employment with VanaciPrime is on an “at-will” basis, which means that either an employee or VanaciPrime may terminate the employment relationship at any time, for any reason, with or without cause.\n\nAdditionally, Source 3 | Policy: Welcome and Purpose | Section: Introduction states that only a written agreement, signed by the President of VanaciPrime can change the at-will nature of the employment of any individual.",
+    "contexts": [
+      "employment decisions including hiring, promotion, development opportunities, pay or benefits. We offer fair treatment\nof employees based on merit and comply with all applicable federal, state and local labor laws.\nEmployment with VanaciPrime is on an “at-will” basis, which means that either an employee or VanaciPrime may terminate the employment\nrelationship at any time, for any reason, with or without cause. This handbook is not a contract of employment nor is it",
+      "and to help answer many of the questions that may arise in connection with employment at .\nI understand that this handbook and any other provisions contained in it do not constitute a guarantee of employment\nor an employment contract, express or implied. I understand that VanaciPrime is an “at will” employer and as such, employment with\nis not for a fixed term or definite period and may be terminated at the will of either party, with or without cause, and",
+      "intended to create contractual obligations for the company of any kind or alter the at-will employment relationships\nbetween VanaciPrime and our employees. Only a written agreement, signed by the President of VanaciPrime can change the at-will nature of the\nemployment of any individual.\nThe policies and procedures outlined will be applied at the discretion of VanaciPrime management. As such, may deviate from the"
+    ],
+    "ground_truth": "VanaciPrime is an at-will employer: employment is not for a fixed term and may be terminated at the will of either party, with or without cause and without prior notice, and the handbook does not constitute an employment contract.",
+    "category": "factual",
+    "difficulty": "easy"
+  },
+  {
+    "question": "What are the standard working hours at VanaciPrime?",
+    "answer": "According to our Online Social Networking Policy | Section: General Practices, the standard working hours at VanaciPrime are from 9:00 AM to 9:00 AM, Monday through Friday.",
+    "contexts": [
+      "The standard workweek at VanaciPrime consists of 40 hours and starts on Monday at 9:00 AM and ends on Friday at 5:00 PM. Employees will be paid on a semi-monthly basis. Regular paydays occur on the 15th and last day of each month. If paydays fall on non-workdays or holidays, employees will be paid on the last workday prior to the\nregularly scheduled payday.\nIf an employee is absent on the date of paycheck distribution, his or her check will be held until he or she returns.",
+      "Unless you are informed otherwise, always assume that VanaciPrime is open for business during normal hours. Use common sense\nand your best judgment, however, when traveling to work in severe weather.\nSome types of severe weather include blizzards, hurricanes and tornadoes.\nIf the company is not going to open for the day, either you will be emailed, or the information will appear on the\ncompany’s website. If this happens, you will be compensated for your entire work day.",
+      "given by a manager or supervisor. This can be done either through a specific company account on a given social\nnetworking site or through a personal account set up for the purposes of recruiting or marketing for .\nThe term Working Hours includes any time employees are being paid to conduct company business. Standard working\nhours are from 9:00 AM to 9:00 AM, Monday through Friday. This timeframe may vary based on job type and\nresponsibilities.\nProcedures\nProhibited Use"
+    ],
+    "ground_truth": "The standard workweek is 40 hours, starting Monday at 9:00 AM and ending Friday at 5:00 PM. (Some other sections repeat template errors such as “9:00 AM to 9:00 AM.”)",
+    "category": "factual",
+    "difficulty": "easy"
+  },
+  {
+    "question": "How often are employees paid?",
+    "answer": "According to our Pay Periods and Check Distribution Policy, Section: General Practices (Source 3), employees will be paid on a semi-monthly basis. Regular paydays occur on the 15th and last day of each month.",
+    "contexts": [
+      "must compensate all hourly, non-exempt employees one-and-a-half times their regular wage rate for all hours worked\nin excess of 40 hours each week.\nThe company’s workweek begins on 5:00 PM on Friday and ends on 9:00 AM on Monday.\nAt times, employees will be asked to work overtime to complete necessary work tasks. The employee’s supervisor will\nnotify the employee as early as possible regarding scheduling needs.",
+      "o\nTen-hour day, four-day workweek—employees work four ten-hour days each week and have three days off\no\nNine-hour day, one day off every other week—employee works nine-hour shifts in order to get one extra day\noff every other week (usually not available to non-exempt employees)\nManagement will make all decisions about alternative working schedules, including the decision of whether an individual\nor an entire department will be adhering to a specific schedule",
+      "The standard workweek at VanaciPrime consists of 40 hours and starts on Monday at 9:00 AM and ends on Friday at 5:00 PM. Employees will be paid on a semi-monthly basis. Regular paydays occur on the 15th and last day of each month. If paydays fall on non-workdays or holidays, employees will be paid on the last workday prior to the\nregularly scheduled payday.\nIf an employee is absent on the date of paycheck distribution, his or her check will be held until he or she returns."
+    ],
+    "ground_truth": "Employees are paid on a semi-monthly basis; regular paydays are on the 15th and last day of each month.",
+    "category": "factual",
+    "difficulty": "easy"
+  },
+  {
+    "question": "Does VanaciPrime conduct drug testing?",
+    "answer": "Yes, VanaciPrime conducts drug testing. \n\n[Source 4 | Policy: Drug and Alcohol Testing Policy | Section: Workplace Conduct]\nAny individual who conducts business for VanaciPrime or applies for a position with the company is covered by our drug-free workplace policy that includes drug testing.\n\n[Source 5 | Policy: Drug and Alcohol Testing Policy | Section: Workplace Conduct]\nLaboratory Testing\nAll drug and/or alcohol testing will be conducted in a laboratory certified by Department of Health and Human Services (HHS), according to the following procedures...",
+    "contexts": [
+      "reason for why the test came back positive, then the positive test result will be reported to VanaciPrime as negative.\nUse of Prescription Medications\nNothing in this policy prohibits the appropriate use of prescription medication as legally prescribed by a licensed\nphysician. If an employee is taking prescription medication with potential side effects that may infringe on the safety of",
+      "this form, a retest will be requested. An employee who refuses to sign after it is requested of him or her will be\nconsidered as having refused testing and will be subject to disciplinary action.\nLaboratory Testing\nAll drug and/or alcohol testing will be conducted in a laboratory certified by Department of Health and Human Services\n(HHS), according to the following procedures: (1) specimens will be screened for amphetamines, benzoylecgonine",
+      "(cocaine), opiates, phencyclidine (PCP) and tetrahydrocannabinol (THC or marijuana); and (2) test results will be\nconfirmed by gas chromatography/mass spectrometry (GC/MS). reserves the right to test for other substances as well."
+    ],
+    "ground_truth": "Yes. Testing includes pre-employment testing, periodic group testing, annual random testing, reasonable suspicion testing, post-accident testing, and follow-up testing. Employees are subject to drug and alcohol testing at any time, with or without notice, under the Drug and Alcohol Testing Policy.",
+    "category": "factual",
+    "difficulty": "easy"
+  },
+  {
+    "question": "How many personal days do employees receive?",
+    "answer": "I don't have enough information in our HR policies to answer that question.",
+    "contexts": [
+      "o\nTen-hour day, four-day workweek—employees work four ten-hour days each week and have three days off\no\nNine-hour day, one day off every other week—employee works nine-hour shifts in order to get one extra day\noff every other week (usually not available to non-exempt employees)\nManagement will make all decisions about alternative working schedules, including the decision of whether an individual\nor an entire department will be adhering to a specific schedule",
+      "believes that vacation time is vital in keeping employee morale high.\nRegular full- and part-time employees begin accruing vacation leave on the date that employment begins, however, no\npaid vacation days will be granted until the third month of employment is completed. Each employee will accrue leave\nhours on a monthly basis, and will be required to take five consecutive business days of vacation each calendar year in",
+      "without specific supervisor authorization for these employees.\nIn addition, each individual’s employment status is defined as one of the following:\nFull-time - Employees who work at least 5 hours per week are considered full-time. Such full-time\nemployees are eligible for benefits after applicable requirements for length of service have been met.\nmay supplement its regular work force with temporary or part-time employees to help compensate for workload,"
+    ],
+    "ground_truth": "The handbook does not define a separate annual bank of “personal days.” Paid Time Off (PTO) can be used for personal business and similar needs; PTO accrues after 3 months of employment and is capped at 40 hours. Funeral leave for an immediate family member’s death is up to three paid days and does not count against PTO, vacation, or sick leave.",
+    "category": "factual",
+    "difficulty": "easy"
+  }
+]

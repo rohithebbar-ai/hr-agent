@@ -1,0 +1,122 @@
+[
+  {
+    "question": "If I fail a drug test, what happens to my employment?",
+    "answer": "According to our Drug and Alcohol Testing Policy, Section: Workplace Conduct, if you test positive, you will be immediately removed from duty.",
+    "contexts": [
+      "medical professional in a substance abuse treatment facility and have successfully passed a drug and/or alcohol\ntest. Employees who return to work will be subject to follow-up tests, all of which will be unannounced.\nAny employee who tests positive will be immediately removed from duty.",
+      "All drug-testing information will be maintained in separate confidential records.\n\nPre-employment Testing: Every job applicant will be required to take and pass a drug and/or alcohol test before\nhe or she may officially be hired by . Each applicant will be notified that a drug and/or alcohol test is required as\npart of the interview process and that any and all job offers are contingent upon successfully passing a drug\nand/or alcohol test.\n",
+      "violation of this policy. Refusal to take a drug and/or alcohol test will also be considered a positive test result, which\nsubjects the employee to disciplinary action(s). Job applicants who refuse to submit to drug and/or alcohol testing will be\nnot considered for employment.\nCollection of Specimens and Testing\nsubscribes to the collection and testing procedures outlined by SAMHSA. This protocol protects the privacy and"
+    ],
+    "ground_truth": "Employees who test positive or refuse testing are subject to disciplinary action up to and including termination and may be removed from duty until rehabilitation and negative retest requirements are met. The EAP may be available, but participation does not excuse policy violations.",
+    "category": "multi_hop",
+    "difficulty": "hard"
+  },
+  {
+    "question": "Can I bring a personal weapon to work if I have a concealed carry permit?",
+    "answer": "I don't have enough information in our HR policies to answer that question.",
+    "contexts": [
+      "Unless prohibited by state law, prohibits the possession of firearms or any other lethal weapon on Company property, in\na vehicle being used on Company business, in any company-owned or leased parking facility or at a work-related\nfunction. This applies to all employees, visitors and customers on Company property, even those who are licensed to\ncarry weapons. The only exception to this is an employee who is required to possess weapons in order to fulfill his or her\njob duties.",
+      "job duties.\nSome examples of prohibited weapons include:\no\nFirearms (pistols, revolvers, shotguns, rifles and bb guns)\no\nKnives (switchblades, gravity knives or any knife with a blade longer than three inches)\no\nMetal knuckles\no\nBows and arrows\no\nTasers\nWe prohibit weapons to ensure the safety and security of all employees and persons visiting the Company. Any\nemployee found in violation of this policy will be subject to disciplinary action, up to and including immediate",
+      "for Company business when any physical or mental impairment causes the employee to be unable to drive\nsafely. Additionally, employees shall not operate any Company vehicle at any time, or operate any personal\nvehicle for Company business, while using or consuming alcohol, illegal drugs or prescription medications that"
+    ],
+    "ground_truth": "No. Firearms and other lethal weapons are prohibited on company property, in vehicles used for company business, in company parking facilities, and at work-related functions, including for employees licensed to carry weapons, except when weapons are required for specific job duties.",
+    "category": "multi_hop",
+    "difficulty": "medium"
+  },
+  {
+    "question": "What insurance coverage do I need to use my personal car for business travel?",
+    "answer": "According to our Business Expense Reimbursement Policy, Section: General Practices, any damages, repair costs or maintenance costs incurred by an employee in the use of their privately owned vehicle in conjunction with company business is the sole responsibility of the employee.\n\nHowever, to be eligible to use a personal automobile for business-related travel, it must be covered by a current insurance policy with limits not less than $100,000 for bodily injury and $50,000 for property damage. \n\n[Source 1 | Policy: Business Expense Reimbursement Policy | Section: General Practices]",
+    "contexts": [
+      "The use of a personal automobile for business-related travel is only authorized if the automobile is covered by a current\ninsurance policy with limits not less than $100,000 for bodily injury and $50,000 for property damage. Any\ndamages, repair costs or maintenance costs incurred by an employee in the use of their privately owned vehicle in\nconjunction with company business is the sole responsibility of the employee.\nCar Rentals",
+      "Employees who drive for company business must have a current, valid driver’s license and required insurance.",
+      "Company vehicles.\n7.\nEmployees who use their personal vehicles for approved business purposes will receive a mileage allowance\nequal to the Internal Revenue Service optional mileage allowance for such usage. This allowance is to\ncompensate for the cost of gasoline, oil, depreciation and insurance. Employees who operate personal vehicles\nfor Company business should obtain auto liability coverage for bodily injury and property damage with a special"
+    ],
+    "ground_truth": "Your automobile must be covered by a current insurance policy with limits not less than $100,000 for bodily injury and $50,000 for property damage. You remain responsible for damages, repair, and maintenance costs.",
+    "category": "multi_hop",
+    "difficulty": "medium"
+  },
+  {
+    "question": "Under what conditions can an employee be terminated immediately without warning?",
+    "answer": "According to the Disciplinary Action Policy, Section: Workplace Conduct, an employee can be terminated immediately without warning in the following situations:\n\n- Discourtesy to a customer, vendor or the general public resulting in a complaint or loss of good will (Source 1)\n- Refusal or failure to follow directions from management; insubordination (Source 1)\n- Breach of confidentiality relating to employer, employee, customer or vendor information (Source 1)\n- During the orientation period, if the employee's job performance is found to be unsatisfactory by their supervisor at any time during the first 90 days of employment (Source 3)\n- If the employee tests positive for a prohibited substance during a drug and alcohol test (Source 5)\n- If the employee brings a weapon into the workplace (Source 4)\n\nAdditionally, according to the Disciplinary Action Policy, Section: Workplace Conduct, reserves the right to take any disciplinary action, including termination, at any time, and prior warning is not a requirement for termination (Source 2).",
+    "contexts": [
+      "In addition to those situations discussed elsewhere in this handbook, listed below are some examples where immediate\ntermination could result. This list is general in nature and is not intended to be all inclusive:\no\nDiscourtesy to a customer, vendor or the general public resulting in a complaint or loss of good will\no\nRefusal or failure to follow directions from management; insubordination\no\nBreach of confidentiality relating to employer, employee, customer or vendor information\no",
+      "Disciplinary actions may entail verbal, written and final warnings, suspensions and termination. Not all of these actions\nmay be followed in all instances. reserves the right to exercise discretion in discipline. Prior warning is not a requirement\nfor termination. All disciplinary actions will be documented; documentation will be placed in personnel files.\nreserves the right to take any disciplinary action the company considers appropriate, including termination, at any time.",
+      "her job responsibilities, and to determine if he or she is satisfied with the position. If the employee’s job performance is\nfound to be unsatisfactory by his or her supervisor at any time during the first 90 days of employment, the employment\nwill be terminated.\nAll new employees will receive a confidential performance evaluation from their supervisor at the end of the orientation\nperiod."
+    ],
+    "ground_truth": "Prior warning is not always required for termination. Examples where immediate termination may result include insubordination, dishonesty, breach of confidentiality, destruction of property, fighting, serious policy violations, serious conduct or performance issues, or failing a drug or alcohol test.",
+    "category": "conditional",
+    "difficulty": "medium"
+  },
+  {
+    "question": "When is an employee eligible for FMLA leave?",
+    "answer": "According to our Federal Family and Medical Leave Policy (Source 3 | Section: Time Away From Work), an employee must meet the following eligibility requirements:\n\n1. Have been employed by the Company for at least 12 months.\n2. Have worked at least 1,250 hours in the 12 months immediately preceding the beginning of the leave.\n3. Work in an office or work site where 50 or more employees are employed within 75 miles of that office or work site.\n\nIf an employee meets these requirements, they are eligible for FMLA leave.",
+    "contexts": [
+      "[EMPLOYER: If the employer is covered and the employee is eligible for FMLA, those rights should be considered before\nthis policy.]\nWithin the First Year of Employment\nAn employee experiencing a serious medical condition within his or her first year of employment may request a leave of\nabsence. A leave of up to [number of weeks] weeks within the first 12 months of service may be provided when the\nemployee needs to be out of work for at least five consecutive workdays.",
+      "complies with all federal and state family and leave laws. However, when these laws do not apply or an employee does\nnot meet the eligibility requirements, the company will consider an employee’s request for non-FMLA medical leave.\nThis leave may provide up to [maximum leave period] in a 12-month period, unless otherwise required by law. Each\nleave request will be considered on an individual basis.",
+      "Eligibility\nTo be eligible for leave, you must have been employed by the Company for at least 12 months. In the 12 months\nimmediately preceding the beginning of the leave, you must also have worked at least 1,250 hours to qualify for federal\nFMLA. In addition, you must work in an office or work site where 50 or more employees are employed within 75 miles of\nthat office or work site.\nAmount of Leave Available"
+    ],
+    "ground_truth": "After at least 12 months of employment, at least 1,250 hours worked in the 12 months before leave begins, and work at a site with 50 or more employees within 75 miles (federal FMLA eligibility).",
+    "category": "conditional",
+    "difficulty": "medium"
+  },
+  {
+    "question": "Under what circumstances is overtime mandatory?",
+    "answer": "I don't have enough information in our HR policies to answer that question.",
+    "contexts": [
+      "must compensate all hourly, non-exempt employees one-and-a-half times their regular wage rate for all hours worked\nin excess of 40 hours each week.\nThe company’s workweek begins on 5:00 PM on Friday and ends on 9:00 AM on Monday.\nAt times, employees will be asked to work overtime to complete necessary work tasks. The employee’s supervisor will\nnotify the employee as early as possible regarding scheduling needs.",
+      "Employees are classified as either exempt or non-exempt for pay administration purposes, as determined by the federal\nFair Labor Standards Act (FLSA).\nThe definitions of the worker classification categories can be summarized as follows:\nExempt—Employees who meet any of the FLSA’s exemption standards, including managerial, supervisory, professional,\nsales or administrative employees.\nNon-exempt—Employees whose positions do not meet the FLSA exemption standards. Overtime work is prohibited",
+      "Employees who want to work more than 40 hours during a workweek must receive written authorization from their\nsupervisor before working overtime.\n(EMPLOYER NOTE: State wage and hour laws differ—check with your legal advisor.)"
+    ],
+    "ground_truth": "The handbook states employees may be asked to work overtime to complete necessary tasks and supervisors should give notice as early as possible. Working more than 40 hours in a workweek requires written supervisor authorization for non-exempt employees; mandatory overtime with discipline for refusal is not spelled out the way the old summary suggested.",
+    "category": "conditional",
+    "difficulty": "medium"
+  },
+  {
+    "question": "What happens if an employee doesn't return from leave by the expected date?",
+    "answer": "If an employee doesn't return from leave by the expected date, according to the Non-FMLA Leave Policy | Section: Time Away From Work (Source 3), employment ends effective the last day of the approved leave. Exceptions will be made if continued leave is granted as an accommodation under the Americans with Disabilities Act (ADA). Other exemptions may also be granted at management’s discretion. Each situation will be reviewed on an individual basis.\n\nAdditionally, according to the Personal Leave Policy | Section: Time Away From Work (Source 1), the employee will receive written notice from Human Resources as soon as the determination has been made and no later than the employee’s scheduled return date.",
+    "contexts": [
+      "or her return. In the event this cannot be done, the employee will receive written notice from Human Resources as soon\nas the determination has been made and no later than the employee’s scheduled return date.\nReturning to Work\nEmployees are expected to be able to return to work by the end of their approved leave. If an employee on leave plans\nto return to work sooner than scheduled, the employee must notify his or her supervisor within two business days in\nadvance of reporting to work.",
+      "the employee to return to work with restrictions, the supervisor will consult with Human Resources to determine if the\nrestrictions can be met.\nIf an employee is released to return to work sooner than the expected return date that was provided when he or she\nrequested the leave, the employee must notify his or her supervisor within two business days of receiving the release.\nAll return to work documentation will be kept with Human Resources.\nUnable to Return to Work",
+      "Unable to Return to Work\nIf the employee is not medically released to return to work at the end of his or her leave, employment ends effective the\nlast day of the approved leave. Exceptions will be made if continued leave is granted as an accommodation under the\nAmericans with Disabilities Act (ADA). Other exemptions may also be granted at management’s discretion. Each situation\nwill be reviewed on an individual basis.\nFailure to Return to Work"
+    ],
+    "ground_truth": "Under personal leave, failing to return as scheduled may be treated as voluntary termination or require reimbursing premiums, depending on circumstances. Generally, if you fail to report to work for three consecutive days without informing management of the planned absence, the company will assume you voluntarily resigned.",
+    "category": "conditional",
+    "difficulty": "medium"
+  },
+  {
+    "question": "When can an employee access their personnel file?",
+    "answer": "According to our Personnel Records Policy, Section: General Practices, employees are entitled to inspect and obtain copies of their personnel files. To obtain access to your records, contact Human Resources. (Source 1: Personnel Records Policy, Section: General Practices)",
+    "contexts": [
+      "regulations.\nEmployees are entitled to inspect and obtain copies (copying fee may be charged) of their personnel files. To obtain\naccess to your records, contact Human Resources.",
+      "o\nMarital status\no\nDependent status\no\nTax status\nPersonnel records are confidential and are not available to anyone outside of the company, unless you have personally\nauthorized their release. A release may not be necessary when reporting certain information as required by law or when\nan authorized governmental agency inspects files. Access to employee medical files is governed by HIPAA compliance\nregulations.",
+      "the employee to return to work with restrictions, the supervisor will consult with Human Resources to determine if the\nrestrictions can be met.\nIf an employee is released to return to work sooner than the expected return date that was provided when he or she\nrequested the leave, the employee must notify his or her supervisor within two business days of receiving the release.\nAll return to work documentation will be kept with Human Resources.\nUnable to Return to Work"
+    ],
+    "ground_truth": "Employees are entitled to inspect and obtain copies of their personnel files (a copying fee may be charged). Contact Human Resources to arrange access.",
+    "category": "conditional",
+    "difficulty": "easy"
+  },
+  {
+    "question": "What happens if payday falls on a holiday?",
+    "answer": "I don't have enough information in our HR policies to answer that question.",
+    "contexts": [
+      "List of Paid Company Holidays\no\nNew Year’s Day\no\nGood Friday\no\nMemorial Day\no\nIndependence Day\no\nLabor Day\no\nThanksgiving\no\nDay after Thanksgiving\no\nChristmas Eve\no\nChristmas Day\nNOTE: Employers should review applicable local and state laws regarding paid sick leave. If an employer wants their PTO\npolicy to comply with a paid sick leave law, the policy must generally meet the minimum requirements for accrual and\nusage, as provided under the applicable paid sick leave law.",
+      "Changes must be received two weeks prior to the payday for which the change is to occur.",
+      "If the company has not been closed due to severe weather, and you arrive at work after your scheduled start time, the\ntime missed will be charged as either (1) personal/sick time, (2) vacation time, or (3) unpaid time, in that order. You\nshould always use your discretion in getting to work. attempts to accommodate individual situations by allowing the use\nof personal/sick time and vacation time in these situations."
+    ],
+    "ground_truth": "If paydays fall on non-workdays or holidays, employees are paid on the last workday before the regularly scheduled payday.",
+    "category": "conditional",
+    "difficulty": "medium"
+  },
+  {
+    "question": "Do non-smokers get a discount on health insurance?",
+    "answer": "Yes, non-smokers are eligible for a 5 percent discount on the overall cost of their health insurance premium annually. \n\n[Source 2 | Policy: Smoke-free Incentive Policy | Section: General Practices]",
+    "contexts": [
+      "portion of the premium. Employees will have an opportunity to qualify for the non-smoking discount at least once per\nyear.\nThe company is committed to helping employees achieve their best health. If an employee thinks that he or she might\nbe unable to meet the non-smoking standard, the employee might qualify for an opportunity to earn the same discount\nby different means. An employee should contact Human Resources and Human Resources will work with the employee",
+      "Because VanaciPrime values the health of its employees, it is important to encourage and reward healthy habits. All employees have\nthe opportunity to benefit from this.\nEmployees who are non-smokers are eligible for a 5 percent discount on the overall cost of their health\ninsurance premium annually. The company will pay this percentage of the costs, in addition to the regular employer-paid",
+      "complies with the Consolidated Omnibus Budget Reconciliation Act (COBRA). This federal law gives covered employees\n(and their dependents) who have lost health benefits the right to continue group health plans for limited periods of time\nunder certain circumstances (called “qualifying events”). All administrative rules and processes as well as changes in plan\nbenefits and premiums apply to those on continuation coverage."
+    ],
+    "ground_truth": "Yes. Non-smokers are eligible for a 5 percent discount on the overall cost of their health insurance premium annually, with at least one opportunity per year to qualify.",
+    "category": "conditional",
+    "difficulty": "medium"
+  }
+]

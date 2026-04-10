@@ -1,0 +1,15 @@
+{
+  "timestamp": "20260409_101515",
+  "type": "policy_aware_mmr",
+  "num_questions": 10,
+  "retrieval": "mmr_k5",
+  "chunking": "policy_aware_threshold_1000",
+  "scores": {
+    "context_recall": 0.6166666666666667,
+    "faithfulness": 0.6542857142857142
+  },
+  "baseline_scores": {
+    "context_recall": 0.55,
+    "faithfulness": 0.63
+  }
+}

@@ -1,0 +1,110 @@
+[
+  {
+    "question": "Is VanaciPrime an equal opportunity employer?",
+    "answer": "I don't have enough information in our HR policies to answer that question.",
+    "contexts": [
+      "employment decisions including hiring, promotion, development opportunities, pay or benefits. We offer fair treatment\nof employees based on merit and comply with all applicable federal, state and local labor laws.\nEmployment with VanaciPrime is on an “at-will” basis, which means that either an employee or VanaciPrime may terminate the employment\nrelationship at any time, for any reason, with or without cause. This handbook is not a contract of employment nor is it",
+      "is committed to maintaining a good relationship with its employees and the marketplace. The way the public views VanaciPrime is\nvital to maintaining business, gaining new business, retaining first-class employees, recruiting new employees and\nmarketing our products and services.\nWhile VanaciPrime has no intention of controlling employee actions outside of work, employees should practice caution and use",
+      "The VanaciPrime Employee Handbook establishes policies, procedures, benefits and working conditions that will be followed by all\nemployees as a condition of their employment with VanaciPrime.\nstrives to provide an employee-friendly environment in which goal-oriented individuals thrive. Our company\ncommitment to serving customers and providing quality products and services is unwavering. These policies, procedures"
+    ],
+    "ground_truth": "Yes. VanaciPrime provides equal employment opportunities without regard to race, color, religion, sex, national origin, age, disability or genetics, and complies with applicable nondiscrimination laws. Workplace harassment based on protected characteristics is expressly prohibited.",
+    "category": "factual",
+    "difficulty": "easy"
+  },
+  {
+    "question": "What is VanaciPrime's stance on workplace violence?",
+    "answer": "VanaciPrime does not tolerate violence or threats of violence of any form in the workplace, at work-related functions, or outside of work if it affects the workplace. This policy applies to company employees, clients, customers, guests, vendors, and persons doing business with VanaciPrime. (Source 1: Violence in the Workplace Policy, Section: Workplace Conduct)\n\nAdditionally, engaging in any conduct, verbal or physical, that intimidates, endangers, or creates the perception of intimidation or intent to harm persons or property is a violation of this policy. Examples include physical assaults or threats of physical assault, made in person or by other means. (Source 2: Violence in the Workplace Policy, Section: Workplace Conduct)",
+    "contexts": [
+      "It is VanaciPrime policy to provide a workplace that is safe and free from all threatening and intimidating conduct. Therefore, the\ncompany will not tolerate violence or threats of violence of any form in the workplace, at work-related functions or\noutside of work if it affects the workplace. This policy applies to company employees, clients, customers, guests, vendors\nand persons doing business with VanaciPrime.",
+      "and persons doing business with VanaciPrime.\nIt is a violation of this policy to engage in any conduct, verbal or physical, that intimidates, endangers or creates the\nperception of intimidation or intent to harm persons or property. Examples include but are not limited to the following:\no\nPhysical assaults or threats of physical assault, whether made in person or by other means (e.g., in writing or by\nphone, fax or email)\no",
+      "is committed to maintaining a good relationship with its employees and the marketplace. The way the public views VanaciPrime is\nvital to maintaining business, gaining new business, retaining first-class employees, recruiting new employees and\nmarketing our products and services.\nWhile VanaciPrime has no intention of controlling employee actions outside of work, employees should practice caution and use"
+    ],
+    "ground_truth": "VanaciPrime will not tolerate violence or threats of violence in the workplace, at work-related functions, or outside of work if it affects the workplace. Reports are investigated promptly and thoroughly, and violations may result in disciplinary action up to and including immediate termination.",
+    "category": "factual",
+    "difficulty": "easy"
+  },
+  {
+    "question": "What is the preferred car rental agency for business travel?",
+    "answer": "The preferred car rental agency for business travel is Enterprise Rent-A-Car, as stated in our Business Expense Reimbursement Policy, Section: General Practices, Source 1.",
+    "contexts": [
+      "Car Rentals\nhas a preferred relationship with a car rental agency Enterprise Rent-A-Car offering discounted rates and direct billing.\nEmployees should use this agency whenever possible in making reservations for both local and out-of-town rentals.\nsuggests the use of mid-size vehicles unless a larger vehicle is necessary and justifiable for business purposes. Collision\nand liability insurance coverage should not be purchased when renting a car for domestic business purposes. The car",
+      "conducting company business. Auto allowances are paid on a monthly basis. Direct mileage is reimbursed at the current\nIRS standard rate, and is paid upon submission of a signed and supervisor approved “Monthly Mileage Report” form.\nBecause it is more cost effective than direct mileage reimbursement, prefers that employees rent an automobile if\nround-trip mileage on a business trip will be more than 200 miles. See section on “Car Rentals” below.",
+      "The use of a personal automobile for business-related travel is only authorized if the automobile is covered by a current\ninsurance policy with limits not less than $100,000 for bodily injury and $50,000 for property damage. Any\ndamages, repair costs or maintenance costs incurred by an employee in the use of their privately owned vehicle in\nconjunction with company business is the sole responsibility of the employee.\nCar Rentals"
+    ],
+    "ground_truth": "VanaciPrime has a preferred relationship with Enterprise Rent-A-Car offering discounted rates and direct billing.",
+    "category": "factual",
+    "difficulty": "medium"
+  },
+  {
+    "question": "What is the standard workweek in hours?",
+    "answer": "According to the [Source 4 | Policy: Pay Periods and Check Distribution Policy | Section: General Practices], the standard workweek at VanaciPrime consists of 40 hours.",
+    "contexts": [
+      "o\nTen-hour day, four-day workweek—employees work four ten-hour days each week and have three days off\no\nNine-hour day, one day off every other week—employee works nine-hour shifts in order to get one extra day\noff every other week (usually not available to non-exempt employees)\nManagement will make all decisions about alternative working schedules, including the decision of whether an individual\nor an entire department will be adhering to a specific schedule",
+      "given by a manager or supervisor. This can be done either through a specific company account on a given social\nnetworking site or through a personal account set up for the purposes of recruiting or marketing for .\nThe term Working Hours includes any time employees are being paid to conduct company business. Standard working\nhours are from 9:00 AM to 9:00 AM, Monday through Friday. This timeframe may vary based on job type and\nresponsibilities.\nProcedures\nProhibited Use",
+      "must compensate all hourly, non-exempt employees one-and-a-half times their regular wage rate for all hours worked\nin excess of 40 hours each week.\nThe company’s workweek begins on 5:00 PM on Friday and ends on 9:00 AM on Monday.\nAt times, employees will be asked to work overtime to complete necessary work tasks. The employee’s supervisor will\nnotify the employee as early as possible regarding scheduling needs."
+    ],
+    "ground_truth": "The standard workweek at VanaciPrime consists of 40 hours (Monday 9:00 AM through Friday 5:00 PM).",
+    "category": "factual",
+    "difficulty": "easy"
+  },
+  {
+    "question": "What are the steps to file a harassment complaint?",
+    "answer": "According to our Harassment Policy and Complaint Policy, the steps to file a harassment complaint are as follows:\n\n1. If you feel that you are being harassed, you should take the following steps (Source 2 | Policy: Harassment Policy | Section: Workplace Conduct):\n    Tell the harasser that his or her actions are not welcome and that they must stop, if you feel comfortable enough to do so.\n    Report the incident immediately to your manager or Human Resources representative.\n    Report any additional incidents or retaliation that may occur to your manager or Human Resources representative.\n\n2. If the issue involves your supervisor, you may discuss it with another member of management or Human Resources (Source 3 | Policy: Complaint Policy | Section: Workplace Conduct).\n\n3. To formally file a complaint, you should submit a written complaint to Human Resources, which should include:\n    An explanation of the incident and the date the incident occurred\n    Suggestions for ways to resolve the problem\n    A copy of the immediate supervisor’s written response or a summary of his or her verbal response and the date when the employee met with the supervisor. If the supervisor provided no response, this should be stated (Source 5 | Policy: Complaint Policy | Section: Workplace Conduct).",
+    "contexts": [
+      "representative.\nAll reports will be investigated immediately and thoroughly. Complaints and actions taken to resolve complaints will be\nhandled as confidentially as possible. Appropriate actions will be taken to stop and remedy such conduct, including\ninterim measures during a period of investigation.\nRetaliating or discriminating against an employee who reports a suspected incident of harassment or who cooperates in",
+      "Appropriate performance reviews, counseling or discipline by your manager do not constitute harassment.\nIf you feel that you are being harassed, you should take the following steps:\n\nTell the harasser that his or her actions are not welcome and that they must stop, if you feel comfortable\nenough to do so.\n\nReport the incident immediately to your manager or Human Resources representative.\n\nReport any additional incidents or retaliation that may occur to your manager or Human Resources",
+      "All complaints should be made in good faith.\nStep 1: The employee should discuss the situation with his or her immediate supervisor. If the issue involves the\nemployee’s supervisor, the employee may discuss it with another member of management or Human Resources. The\nsupervisor or other member of management should respond to the employee within five working days of meeting with\nthe employee about this issue."
+    ],
+    "ground_truth": "If you feel harassed: (1) Tell the harasser the conduct is unwelcome and must stop, if you feel comfortable doing so; (2) Report the incident immediately to your manager or Human Resources; (3) Report any further incidents or retaliation to your manager or Human Resources. All reports are investigated immediately and thoroughly, with interim measures when needed. Retaliation for reporting or cooperating in an investigation is prohibited.",
+    "category": "procedural",
+    "difficulty": "medium"
+  },
+  {
+    "question": "How do I submit a resignation?",
+    "answer": "According to our Employment Termination Policy (Section: Employment Policies), you are required to notify your manager of your anticipated departure date at least two weeks in advance. This should be done in the form of a written statement. \n\n[Source 1 | Policy: Employment Termination Policy | Section: Employment Policies]",
+    "contexts": [
+      "If you wish to resign, we ask that you notify your manager of your anticipated departure date at least two weeks in\nadvance. Of course, as much notice as possible is appreciated by VanaciPrime and your co-workers. This notice should be in the form\nof a written statement.\nIf you fail to report to work for three consecutive days without informing management of the planned absence, we will\nassume that you have voluntarily resigned.",
+      "make the decision to terminate you without first taking these disciplinary steps.\nNo supervisor or other representative of VanaciPrime (except the President, in writing) has the authority to enter into any agreement\nof employment for any specified period of time, or to make any agreement contrary to the above.\nThe procedures, practices, policies and benefits described here may be modified or discontinued from time to time. We\nwill make every attempt to inform you of any changes as they occur.",
+      "Neither this handbook nor any other VanaciPrime document confers any contractual right, either expressed or implied, to remain in\n's employ. Nor does it guarantee any fixed terms and conditions of your employment. Your employment is not set for\nany specific time and may be terminated at will, with or without cause and without prior notice by , or you may resign\nfor any reason, at any time. While there may be a disciplinary process in place, in certain situations, the Company may"
+    ],
+    "ground_truth": "Notify your manager of your anticipated departure date at least two weeks in advance in writing. A meeting with your manager will occur before your last day. Return parking passes, office keys, company equipment, building passes, and other company property and confidential information at that time.",
+    "category": "procedural",
+    "difficulty": "medium"
+  },
+  {
+    "question": "What is the process for reporting a workplace injury?",
+    "answer": "According to our Injury & Illness Reporting Policy (Section: General Practices), all work-related injuries and illnesses must be reported immediately to Human Resources, even if you are not sure whether they are truly work-related.\n\nAdditionally, our Safety Policy (Section: General Practices) and Workers' Compensation Policy (Section: Appendix) also outline the process for reporting a workplace injury. \n\nThe general steps for reporting a workplace injury are:\n\n- Report the injury to your supervisor or to Human Resources immediately.\n- Fill out an Accident Report, regardless of the severity of the injury.\n- Obtain any necessary medical treatment.\n\nIt's essential to report injuries and illnesses immediately to ensure that we can investigate and incorporate corrective action to prevent more injuries.\n\n(Refer to Source 1: Injury & Illness Reporting Policy, Section: General Practices and Source 2: Safety Policy, Section: General Practices and Source 3: Workers’ Compensation Policy, Section: Appendix)",
+    "contexts": [
+      "All work-related injuries and illnesses must be reported immediately to Human Resources, even if you are not sure\nwhether they are truly work-related. Small, seemingly insignificant injuries left untreated can result in serious conditions.\nHuman Resources will complete an Accident Report based on the information you provide. Report injuries and illnesses\nimmediately so that we can investigate and incorporate corrective action to prevent more injuries.",
+      "o\nObtain any necessary medical treatment\no\nFill out an Accident Report, regardless of the severity of the injury\no\nIf you must seek additional medical treatment, obtain your supervisor’s consent before leaving the premises\nEmployees who fail to comply with this procedure may be subject to disciplinary action.",
+      "will provide workers’ compensation, a type of accident and injury insurance that compensates an employee for lost\nwages, medical expenses and permanent impairment that results from an injury arising out of or in the course of work.\nEmployees must report any work-related injury or disease immediately (or as soon as practicable) to their supervisor and\nHuman Resources so that the necessary paperwork can be completed in a timely manner. Please note that under state"
+    ],
+    "ground_truth": "Report all work-related injuries and illnesses immediately to Human Resources (even if you are unsure they are work-related). HR will complete an Accident Report from your information. For workers’ compensation, also report immediately to your supervisor and HR so paperwork can be completed.",
+    "category": "procedural",
+    "difficulty": "medium"
+  },
+  {
+    "question": "How do I request FMLA leave?",
+    "answer": "I don't have enough information in our HR policies to answer that question.",
+    "contexts": [
+      "Requesting Non-FMLA Medical Leave",
+      "complete a medical certification form, which must be signed by the service member’s health care provider. The\ncertification form will request additional information, such as information regarding the relationship between you and\nthe covered service member, to substantiate your need for FMLA leave.\nSubstituting Paid Leave for Unpaid Leave\nFederal FMLA leave is unpaid. The Company requires you to substitute vacation days according to the schedule below.",
+      "Employer Responsibilities\nCovered employers must inform employees requesting leave whether they are eligible under FMLA. If they are, the notice must specify any\nadditional information required as well as the employees’ rights and responsibilities. If they are not eligible, the employer must provide a reason for\nthe ineligibility.\nCovered employers must inform employees if leave will be designated as FMLA-protected and the amount of leave counted against the employee’s"
+    ],
+    "ground_truth": "You must generally complete an application for leave. Foreseeable non-emergency leave should be requested from Human Resources at least 30 days in advance (or as soon as practical). In emergencies, give verbal notice as soon as possible and complete the application when practical. Medical certification is required when leave is for a serious health condition. Eligible employees may take up to 12 weeks of FMLA leave in a rolling 12-month period if they meet eligibility requirements (e.g., 12 months of employment, 1,250 hours worked, and applicable location headcount rules).",
+    "category": "procedural",
+    "difficulty": "medium"
+  },
+  {
+    "question": "What should I do if I suspect a coworker is under the influence at work?",
+    "answer": "I don't have enough information in our HR policies to answer that question.",
+    "contexts": [
+      "coworker is engaging in conduct contrary to this policy, the employee must report this information immediately to his or\nher supervisor or the Company’s legal counsel immediately as well. Management personnel who receive a report will\npromptly discuss the issue with legal counsel for further investigation.\nAntitrust Laws\nAntitrust laws are relevant to many business decisions, and those who engage in illegal actions against such laws are",
+      "supervisor and Human Resources.\no\nIf you observe anyone exhibiting threatening behavior or making threatening statements, warn others in the\narea and immediately notify Human Resources—stay away from the person exhibiting the threatening\nbehavior.\no\nDepending upon the level of concern, 911 may be called immediately.\no\nNever attempt to confront any person exhibiting threatening behavior.\no",
+      "\nHampering an individual’s ability to do his or her work; assigning menial tasks not aligned with normal job\nduties; taking credit for another’s work or ideas.\n\nSpreading rumors or gossiping about another.\nBullying can have devastating results to the individual and the workplace. If you are subjected to bullying, or witness or\nsuspect bullying is taking place, report it to your supervisor and/or to Human Resources immediately. All suspected"
+    ],
+    "ground_truth": "Reasonable suspicion may require a drug and/or alcohol test. Report concerns through appropriate channels (e.g., supervisor or Human Resources) so the company can follow the Drug and Alcohol Testing Policy; do not attempt to diagnose or confront unsafe behavior alone.",
+    "category": "procedural",
+    "difficulty": "medium"
+  }
+]

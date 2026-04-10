@@ -1,0 +1,11 @@
+{
+  "timestamp": "20260409_095713",
+  "type": "baseline_naive_rag",
+  "num_questions": 10,
+  "retrieval": "similarity_k5",
+  "chunking": "blind_500_50",
+  "scores": {
+    "context_recall": 0.7880952380952382,
+    "faithfulness": 0.6433333333333333
+  }
+}

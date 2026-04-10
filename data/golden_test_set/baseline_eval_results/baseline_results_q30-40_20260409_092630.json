@@ -1,0 +1,122 @@
+[
+  {
+    "question": "How does FMLA leave differ from personal leave?",
+    "answer": "Based on our HR policies, FMLA leave differs from personal leave in the following ways:\n\n- FMLA leave is granted for specific reasons such as the birth or adoption of a child, caring for a spouse, child, or parent with a serious health condition, or for the employee's own serious health condition (Source 4, Section: Time Away From Work).\n- FMLA leave provides up to 12 weeks of leave within a rolling 12-month period (Source 4, Section: Time Away From Work).\n- FMLA leave is unpaid, but employees can substitute vacation days to cover the leave period (Source 5, Section: Time Away From Work).\n- Personal leave, on the other hand, is not granted for employment outside of VanaciPrime, pursuing an independent business venture, or as additional leave after FMLA (or Non-FMLA) Medical Leave (Source 1, Section: Time Away From Work).\n\nIt's worth noting that our Personal Leave Policy does not allow for intermittent leave, whereas FMLA leave does not have this restriction (Source 1, Section: Time Away From Work).",
+    "contexts": [
+      "Leave approval or denial is done at the discretion of the employee’s supervisor and Human Resources. Personal leave is\nnot granted for engaging in employment outside of , pursuing an independent business venture or as additional leave\nafter FMLA (or Non-FMLA) Medical Leave. This leave policy does not allow for intermittent leave.\n[EMPLOYER: It is advised that FMLA leave rights be considered and offered first when the employee is FMLA-covered\nand eligible.]\nPay Status",
+      "Requesting Non-FMLA Medical Leave",
+      "complies with all federal and state family and leave laws. However, when these laws do not apply or an employee does\nnot meet the eligibility requirements, the company will consider an employee’s request for non-FMLA medical leave.\nThis leave may provide up to [maximum leave period] in a 12-month period, unless otherwise required by law. Each\nleave request will be considered on an individual basis."
+    ],
+    "ground_truth": "Federal FMLA provides up to 12 weeks of unpaid, job-protected leave per rolling 12 months for eligible employees (12 months of service, 1,250 hours, and other eligibility rules) with required notices and certification. Company personal leave is discretionary, may be limited to a stated maximum in the template, generally requires 12 months of service and good standing, and does not guarantee job restoration.",
+    "category": "comparison",
+    "difficulty": "hard"
+  },
+  {
+    "question": "What is the difference between a drug-free workplace policy and a drug testing policy?",
+    "answer": "I don't have enough information in our HR policies to answer that question.",
+    "contexts": [
+      "workplace policy. Our policy includes, but is not limited to, full-time employees, part-time employees, volunteers,\ncontractors, interns and applicants. Our drug-free workplace policy is intended to apply whenever anyone is\nrepresenting or conducting business for . Therefore, this policy applies during all working hours, whenever an individual\nis conducting business or representing the company, and while an individual is on call, on company property and at\ncompany-sponsored events.",
+      "is committed to protecting the safety and well-being of all employees in our workplace. We recognize that alcohol abuse\nand drug abuse pose a significant threat to our goals. We have established a drug-free workplace policy that balances\nour respect for individuals with the need to maintain an alcohol- and drug-free environment.\nAny individual who conducts business for VanaciPrime or applies for a position with the company is covered by our drug-free",
+      "We recognize alcohol and drug abuse to be potential health, safety and security problems. It is expected that all\nemployees will assist in maintaining a work environment free from the effects of alcohol, drugs or other intoxicating\nsubstances. Compliance with this Drug-free Workplace Policy is a condition of employment.\nEmployees are prohibited from the following when reporting for work, while on the job, on Company or customer"
+    ],
+    "ground_truth": "The Drug-free Workplace Policy prohibits unlawful use, possession, and being under the influence of alcohol or illegal drugs on the job or company premises. The Drug and Alcohol Testing Policy describes when testing occurs (pre-employment, periodic, random, reasonable suspicion, post-accident, follow-up) and how positive tests and refusals are handled.",
+    "category": "comparison",
+    "difficulty": "medium"
+  },
+  {
+    "question": "How do bereavement leave and personal days differ?",
+    "answer": "I don't have enough information in our HR policies to answer that question.",
+    "contexts": [
+      "has taken into consideration the personal needs that arise from the death of an immediate family member. In the event\nof such a loss, an employee will be allowed up to three days of leave with full pay until and including the day of the\nfuneral. Funeral leave will not count against accrued paid time off (PTO), vacation or sick leave. Funeral leave pay will not\nbe granted to employees attending a funeral during periods when they are not at work for other reasons, such as",
+      "vacation, holidays and illness.\nImmediate family includes: a father, mother, spouse, child, sister, brother, mother-in-law, father-in-law, brother-in-law,\nsister-in-law, grandparent or any relative who lives with the employee.\nEmployees should notify their supervisor of the need to use funeral leave. Within a reasonable period of time, the\nemployee may be required to provide verification of need, such as an obituary.",
+      "Types of Non-PTO Leave\nSituations that require time off such as jury duty, bereavement and workers’ compensation will not be charged against\nyour accrued PTO. Note: See separate policies on those topics to address these situations.\nPTO Tracking\nhas an automated PTO tracking system to keep a record of your accrued PTO balance. The amount of PTO time accrued,\nused and available will be itemized on your paycheck stub each month for your records.\nList of Paid Company Holidays\no\nNew Year’s Day\no"
+    ],
+    "ground_truth": "Funeral leave provides up to three paid days for the death of an immediate family member (as defined in the policy) and does not count against PTO, vacation, or sick leave. There is no separate handbook “personal days” bucket; general personal needs are typically addressed through PTO (capped at 40 accrued hours).",
+    "category": "comparison",
+    "difficulty": "medium"
+  },
+  {
+    "question": "What is the difference between harassment and sexual harassment policies?",
+    "answer": "Based on the provided context, I don't have enough information in our HR policies to answer that question.",
+    "contexts": [
+      "employment\n\nTheir purpose or effect of interferes with an individual’s work performance or creates an intimidating, hostile or\noffensive work environment\nSexual harassment includes many forms of offensive behavior, including the harassment of a person of the same gender\nas the harasser. The harasser can be the victim’s supervisor, an agent of the employer, a supervisor in another area, a co-",
+      "performance. Harassment can occur in a variety of circumstances, including, but not limited to, the following:\n\nThe harasser can be the victim's supervisor, a supervisor in another area, an agent of the employer, a co-\nworker or a non-employee.\n\nThe victim does not have to be the person harassed, but can be anyone who is affected by the offensive\nconduct.\n\nUnlawful harassment may occur without economic injury to, or discharge of, the victim.",
+      "worker or a non-employee. The victim does not have to be the person harassed but could be anyone affected by the\noffensive conduct. Examples of sexual harassment include, but are not limited to, the following:\n\nUnwelcome sexual flirtation, advances or propositions\n\nVerbal comments related to an individual’s gender or sexual orientation\n\nExplicit or degrading verbal comments about another individual or his or her appearance\n"
+    ],
+    "ground_truth": "The Harassment Policy covers harassment based on protected characteristics (race, color, religion, sex, national origin, age, disability, genetic information, etc.) and sets steps for reporting and investigation. The Standards of Conduct / sexual harassment provisions address unwelcome sexual advances, requests for sexual favors, and sexual conduct, with emphasis on reporting to Human Resources.",
+    "category": "comparison",
+    "difficulty": "medium"
+  },
+  {
+    "question": "How does the disciplinary action process differ from immediate termination?",
+    "answer": "According to the Disciplinary Action Policy (Source 1 | Section: Workplace Conduct), disciplinary actions may entail verbal, written and final warnings, suspensions, and termination. However, prior warning is not a requirement for termination.\n\nIn contrast, immediate termination is a disciplinary action that may result from certain situations, such as those listed in the Disciplinary Action Policy (Source 3 | Section: Workplace Conduct) and the Sexual Harassment Policy (Source 4 | Section: Workplace Conduct). These situations include, but are not limited to, discourtesy to a customer, refusal to follow directions, breach of confidentiality, and unsatisfactory performance or conduct.\n\nTherefore, the key difference between the disciplinary action process and immediate termination is that disciplinary actions typically involve a step-by-step process with warnings and suspensions, whereas immediate termination is a more severe and immediate consequence for certain serious infractions.",
+    "contexts": [
+      "Disciplinary actions may entail verbal, written and final warnings, suspensions and termination. Not all of these actions\nmay be followed in all instances. reserves the right to exercise discretion in discipline. Prior warning is not a requirement\nfor termination. All disciplinary actions will be documented; documentation will be placed in personnel files.\nreserves the right to take any disciplinary action the company considers appropriate, including termination, at any time.",
+      "termination. If you have questions or concerns regarding this policy, please contact Human Resources.",
+      "In addition to those situations discussed elsewhere in this handbook, listed below are some examples where immediate\ntermination could result. This list is general in nature and is not intended to be all inclusive:\no\nDiscourtesy to a customer, vendor or the general public resulting in a complaint or loss of good will\no\nRefusal or failure to follow directions from management; insubordination\no\nBreach of confidentiality relating to employer, employee, customer or vendor information\no"
+    ],
+    "ground_truth": "Discipline may include verbal, written, and final warnings, suspensions, and termination, but prior warning is not always required. Immediate termination may apply for listed examples including insubordination, dishonesty, fighting, policy violations, serious performance or conduct issues, or failing a drug or alcohol test.",
+    "category": "comparison",
+    "difficulty": "hard"
+  },
+  {
+    "question": "If I exhaust all my PTO and sick leave, what options do I have for additional time off?",
+    "answer": "I don't have enough information in our HR policies to answer that question.",
+    "contexts": [
+      "believes that employees should have opportunities to enjoy time away from work to help balance their lives. For this\nreason, we provide a Paid Time Off (PTO) program to all full-time (if applicable: and part-time) employees.\nPTO provides employees the freedom to decide how to use their personal time off. believes this program offers more\ngenerous time off with pay than traditional vacation, sick and personal time packages. Employees can use their PTO days",
+      "needs at the time. understands there may be occasions, such as sudden illness, when you may not be able to give\nsufficient advance notice. In those situations, however, be sure to inform your supervisor as soon as possible.\nPTO also includes time off for unexpected emergencies or illness. Do not use PTO to cover time missed from work due to\ntardiness, except in the case of severe weather.\nTypes of Non-PTO Leave",
+      "Sick time may not be carried over from year to year. If you are away from work for less than half of a day, the option of a\nhalf sick day may be used, or the missed amount of time may be made up during that workweek if the work schedule\npermits and your supervisor approves.\nSick time is a benefit provided to you in the event you need to take time off because of your health or the health of a"
+    ],
+    "ground_truth": "You may request FMLA leave if eligible (up to 12 weeks unpaid for qualifying reasons). You might also request non-FMLA medical leave or personal leave depending on circumstances; personal leave requires exhausting accrued paid time first and does not guarantee job restoration.",
+    "category": "multi_hop",
+    "difficulty": "hard"
+  },
+  {
+    "question": "Can a new hire in their probationary period use vacation days?",
+    "answer": "I don't have enough information in our HR policies to answer that question.",
+    "contexts": [
+      "requires more vacation than is allotted, Human Resources must determine whether or not it is allowable to provide the\nemployee more vacation without pay. For each continuous year of employment, an additional eight hours of vacation\ntime will accrue.\nRegular part-time employees will be eligible for (insert amount here) of paid vacation per employment year.\nIf your employment is terminated, either voluntarily or involuntarily, you will be paid for unused vacation leave.",
+      "believes that vacation time is vital in keeping employee morale high.\nRegular full- and part-time employees begin accruing vacation leave on the date that employment begins, however, no\npaid vacation days will be granted until the third month of employment is completed. Each employee will accrue leave\nhours on a monthly basis, and will be required to take five consecutive business days of vacation each calendar year in",
+      "order to meet internal control and security requirements. Vacation may be taken in half-day increments of time.\nVacation not used by the end of the calendar year will be forfeited.\nAll employees are required to submit a written request for vacation leave at least one month prior to the date they wish\ntheir vacation to begin. This form should be submitted to the employee’s supervisor, who will forward it to Human"
+    ],
+    "ground_truth": "PTO accrual begins after 3 months of employment, and no paid vacation days are granted until the third month of employment is completed under the Vacation Policy. During the first 90-day orientation period, performance is monitored and termination is possible for unsatisfactory performance, so scheduling extended paid time off early on is unlikely and may not align with accrual rules.",
+    "category": "multi_hop",
+    "difficulty": "hard"
+  },
+  {
+    "question": "If I get injured at work during my probationary period, am I covered?",
+    "answer": "I don't have enough information in our HR policies to answer that question.",
+    "contexts": [
+      "laws, employees who fail to report work-related injuries in a timely manner may see a reduction or denial of their\nworkers’ compensation benefits.\nIf an employee is able to return to work after an injury or illness for which he or she was receiving workers’\ncompensation, the employee must provide documentation from his or her medical provider that either outlines any\nwork-related restrictions or verifies that the employee is able to complete all job-related tasks. In the event that an",
+      "o\nObtain any necessary medical treatment\no\nFill out an Accident Report, regardless of the severity of the injury\no\nIf you must seek additional medical treatment, obtain your supervisor’s consent before leaving the premises\nEmployees who fail to comply with this procedure may be subject to disciplinary action.",
+      "will provide workers’ compensation, a type of accident and injury insurance that compensates an employee for lost\nwages, medical expenses and permanent impairment that results from an injury arising out of or in the course of work.\nEmployees must report any work-related injury or disease immediately (or as soon as practicable) to their supervisor and\nHuman Resources so that the necessary paperwork can be completed in a timely manner. Please note that under state"
+    ],
+    "ground_truth": "Yes. Report work-related injuries immediately to Human Resources (and to your supervisor for workers’ compensation). Coverage and reporting obligations apply regardless of being in the 90-day orientation period.",
+    "category": "multi_hop",
+    "difficulty": "hard"
+  },
+  {
+    "question": "Can I use my PTO concurrently with FMLA leave?",
+    "answer": "I don't have enough information in our HR policies to answer that question.",
+    "contexts": [
+      "Requesting Non-FMLA Medical Leave",
+      "Leave approval or denial is done at the discretion of the employee’s supervisor and Human Resources. Personal leave is\nnot granted for engaging in employment outside of , pursuing an independent business venture or as additional leave\nafter FMLA (or Non-FMLA) Medical Leave. This leave policy does not allow for intermittent leave.\n[EMPLOYER: It is advised that FMLA leave rights be considered and offered first when the employee is FMLA-covered\nand eligible.]\nPay Status",
+      "approves a non-continuous leave for the birth of a child or the placement of a child for adoption or foster care.\nBenefit Continuation during Leave\nThe Company will maintain your group health plan coverage and certain other employment benefits (such as group life\ninsurance, AD&D insurance and health and dependent flexible spending accounts) during your FMLA leave on the same\nterms as if you had continued to work, if these benefits were provided to you before the leave was taken. You will be"
+    ],
+    "ground_truth": "Yes. Federal FMLA leave is unpaid, but the company requires substitution of vacation/PTO according to the FMLA policy’s substitution schedule; substituted paid leave runs concurrently with FMLA and does not extend the leave entitlement.",
+    "category": "multi_hop",
+    "difficulty": "hard"
+  },
+  {
+    "question": "If I am terminated, do I get paid for unused vacation days?",
+    "answer": "According to Section 1 of our Employment Termination Policy (Source 1), \"In the case of termination, any vacation or personal/sick time used in excess of accrued time will be deducted from your final paycheck.\" However, it also states that \"If your employment is terminated, either voluntarily or involuntarily, you will be paid for unused vacation leave.\" (Source 2)\n\nSo, to answer your question, yes, you will be paid for unused vacation days if you are terminated.",
+    "contexts": [
+      "assume that you have voluntarily resigned.\nIn the case of termination due to resignation, retirement or a permanent reduction in the work force, your accrued\nvacation pay will be paid on a pro-rata basis. Unused personal time is not paid upon termination. In the case of\ntermination, any vacation or personal/sick time used in excess of accrued time will be deducted from your final paycheck",
+      "requires more vacation than is allotted, Human Resources must determine whether or not it is allowable to provide the\nemployee more vacation without pay. For each continuous year of employment, an additional eight hours of vacation\ntime will accrue.\nRegular part-time employees will be eligible for (insert amount here) of paid vacation per employment year.\nIf your employment is terminated, either voluntarily or involuntarily, you will be paid for unused vacation leave.",
+      "given your prior written permission. (NOTE: Employers should review applicable state laws to evaluate their options for\nadministering vacation/personal time upon termination. Employers should confirm that this policy’s language is consistent\nwith their legal obligations and intentions regarding leave payouts.)\nFurthermore, any outstanding financial obligations owed to VanaciPrime will also be deducted from your final check, given your prior"
+    ],
+    "ground_truth": "For termination due to resignation, retirement, or permanent reduction in force, accrued vacation pay is paid on a pro-rata basis. Unused personal time is not paid upon termination. Sick time is not paid out at separation.",
+    "category": "multi_hop",
+    "difficulty": "hard"
+  }
+]

@@ -1,0 +1,1797 @@
+[
+  {
+    "policy_id": "policy_002",
+    "section": "Introduction",
+    "policy_name": "Welcome and Purpose",
+    "category": "General",
+    "keywords": [
+      "benefits",
+      "purpose",
+      "welcome"
+    ],
+    "page_start": 5,
+    "page_end": 5
+  },
+  {
+    "policy_id": "policy_003",
+    "section": "Introduction",
+    "policy_name": "At-will Employment Statement",
+    "category": "General",
+    "keywords": [
+      "at-will",
+      "benefits",
+      "employment",
+      "insurance",
+      "statement"
+    ],
+    "page_start": 6,
+    "page_end": 6
+  },
+  {
+    "policy_id": "policy_004",
+    "section": "Employment Policies",
+    "policy_name": "Mission Statement",
+    "category": "Employment",
+    "keywords": [
+      "mission",
+      "statement"
+    ],
+    "page_start": 7,
+    "page_end": 7
+  },
+  {
+    "policy_id": "policy_005",
+    "section": "Employment Policies",
+    "policy_name": "Americans with Disabilities Policy",
+    "category": "Employment",
+    "keywords": [
+      "americans",
+      "compensation",
+      "disabilities",
+      "disability",
+      "drug",
+      "safety"
+    ],
+    "page_start": 9,
+    "page_end": 9
+  },
+  {
+    "policy_id": "policy_006",
+    "section": "Employment Policies",
+    "policy_name": "Employment Termination Policy",
+    "category": "Employment",
+    "keywords": [
+      "benefits",
+      "employment",
+      "leave",
+      "resignation",
+      "salary",
+      "sick",
+      "termination",
+      "vacation"
+    ],
+    "page_start": 10,
+    "page_end": 10
+  },
+  {
+    "policy_id": "policy_007",
+    "section": "Employment Policies",
+    "policy_name": "Equal Employment Opportunity",
+    "category": "Employment",
+    "keywords": [
+      "benefits",
+      "compensation",
+      "disability",
+      "discrimination",
+      "employment",
+      "equal",
+      "harassment",
+      "leave",
+      "opportunity",
+      "termination"
+    ],
+    "page_start": 11,
+    "page_end": 11
+  },
+  {
+    "policy_id": "policy_008",
+    "section": "Employment Policies",
+    "policy_name": "Internal Transfer/Promotion Policy",
+    "category": "Employment",
+    "keywords": [
+      "internal",
+      "transfer/promotion"
+    ],
+    "page_start": 12,
+    "page_end": 12
+  },
+  {
+    "policy_id": "policy_009",
+    "section": "Workplace Conduct",
+    "policy_name": "I-9 Immigration Reform Policy",
+    "category": "Employment",
+    "keywords": [
+      "immigration",
+      "reform"
+    ],
+    "page_start": 13,
+    "page_end": 13
+  },
+  {
+    "policy_id": "policy_010",
+    "section": "Workplace Conduct",
+    "policy_name": "Code of Ethics Policy",
+    "category": "Workplace Safety",
+    "keywords": [
+      "code",
+      "compensation",
+      "ethics"
+    ],
+    "page_start": 15,
+    "page_end": 15
+  },
+  {
+    "policy_id": "policy_011",
+    "section": "Workplace Conduct",
+    "policy_name": "Code of Ethics Policy",
+    "category": "Workplace Safety",
+    "keywords": [
+      "code",
+      "ethics"
+    ],
+    "page_start": 16,
+    "page_end": 16
+  },
+  {
+    "policy_id": "policy_012",
+    "section": "Workplace Conduct",
+    "policy_name": "Code of Ethics Policy",
+    "category": "Workplace Safety",
+    "keywords": [
+      "code",
+      "ethics",
+      "termination"
+    ],
+    "page_start": 17,
+    "page_end": 17
+  },
+  {
+    "policy_id": "policy_013",
+    "section": "Workplace Conduct",
+    "policy_name": "Complaint Policy",
+    "category": "Workplace Safety",
+    "keywords": [
+      "complaint"
+    ],
+    "page_start": 18,
+    "page_end": 18
+  },
+  {
+    "policy_id": "policy_014",
+    "section": "Workplace Conduct",
+    "policy_name": "Complaint Policy",
+    "category": "Workplace Safety",
+    "keywords": [
+      "complaint"
+    ],
+    "page_start": 19,
+    "page_end": 19
+  },
+  {
+    "policy_id": "policy_015",
+    "section": "Workplace Conduct",
+    "policy_name": "Disciplinary Action Policy",
+    "category": "Workplace Safety",
+    "keywords": [
+      "action",
+      "alcohol",
+      "benefits",
+      "disciplinary",
+      "drug",
+      "termination"
+    ],
+    "page_start": 20,
+    "page_end": 20
+  },
+  {
+    "policy_id": "policy_016",
+    "section": "Workplace Conduct",
+    "policy_name": "Drug-free Workplace Policy",
+    "category": "Workplace Safety",
+    "keywords": [
+      "alcohol",
+      "drug",
+      "drug-free",
+      "safety",
+      "termination",
+      "testing",
+      "workplace"
+    ],
+    "page_start": 21,
+    "page_end": 21
+  },
+  {
+    "policy_id": "policy_017",
+    "section": "Workplace Conduct",
+    "policy_name": "Drug and Alcohol Testing Policy",
+    "category": "Workplace Safety",
+    "keywords": [
+      "alcohol",
+      "drug",
+      "safety",
+      "termination",
+      "testing"
+    ],
+    "page_start": 22,
+    "page_end": 22
+  },
+  {
+    "policy_id": "policy_018",
+    "section": "Workplace Conduct",
+    "policy_name": "Drug and Alcohol Testing Policy",
+    "category": "Workplace Safety",
+    "keywords": [
+      "alcohol",
+      "drug",
+      "jury",
+      "pto",
+      "safety",
+      "testing"
+    ],
+    "page_start": 23,
+    "page_end": 23
+  },
+  {
+    "policy_id": "policy_019",
+    "section": "Workplace Conduct",
+    "policy_name": "Drug and Alcohol Testing Policy",
+    "category": "Workplace Safety",
+    "keywords": [
+      "alcohol",
+      "drug",
+      "testing"
+    ],
+    "page_start": 24,
+    "page_end": 24
+  },
+  {
+    "policy_id": "policy_020",
+    "section": "Workplace Conduct",
+    "policy_name": "Drug and Alcohol Testing Policy",
+    "category": "Workplace Safety",
+    "keywords": [
+      "alcohol",
+      "drug",
+      "safety",
+      "termination",
+      "testing"
+    ],
+    "page_start": 25,
+    "page_end": 25
+  },
+  {
+    "policy_id": "policy_021",
+    "section": "Workplace Conduct",
+    "policy_name": "Drug and Alcohol Testing Policy",
+    "category": "Workplace Safety",
+    "keywords": [
+      "alcohol",
+      "drug",
+      "leave",
+      "sick",
+      "testing",
+      "vacation"
+    ],
+    "page_start": 26,
+    "page_end": 26
+  },
+  {
+    "policy_id": "policy_022",
+    "section": "Workplace Conduct",
+    "policy_name": "Harassment Policy",
+    "category": "Workplace Safety",
+    "keywords": [
+      "disability",
+      "discrimination",
+      "harassment",
+      "jury",
+      "pregnancy",
+      "termination"
+    ],
+    "page_start": 27,
+    "page_end": 27
+  },
+  {
+    "policy_id": "policy_023",
+    "section": "Workplace Conduct",
+    "policy_name": "Standards of Conduct Policy",
+    "category": "Workplace Safety",
+    "keywords": [
+      "conduct",
+      "harassment",
+      "standards"
+    ],
+    "page_start": 28,
+    "page_end": 28
+  },
+  {
+    "policy_id": "policy_024",
+    "section": "Workplace Conduct",
+    "policy_name": "Sexual Harassment Policy",
+    "category": "Workplace Safety",
+    "keywords": [
+      "alcohol",
+      "drug",
+      "harassment",
+      "safety",
+      "sexual",
+      "termination"
+    ],
+    "page_start": 29,
+    "page_end": 29
+  },
+  {
+    "policy_id": "policy_025",
+    "section": "Workplace Conduct",
+    "policy_name": "Violence in the Workplace Policy",
+    "category": "Workplace Safety",
+    "keywords": [
+      "safety",
+      "termination",
+      "violence",
+      "workplace"
+    ],
+    "page_start": 30,
+    "page_end": 30
+  },
+  {
+    "policy_id": "policy_026",
+    "section": "Workplace Conduct",
+    "policy_name": "Weapons in the Workplace Policy",
+    "category": "Workplace Safety",
+    "keywords": [
+      "safety",
+      "termination",
+      "weapons",
+      "workplace"
+    ],
+    "page_start": 31,
+    "page_end": 31
+  },
+  {
+    "policy_id": "policy_027",
+    "section": "Workplace Conduct",
+    "policy_name": "Workplace Bullying Policy",
+    "category": "Workplace Safety",
+    "keywords": [
+      "bullying",
+      "workplace"
+    ],
+    "page_start": 32,
+    "page_end": 32
+  },
+  {
+    "policy_id": "policy_028",
+    "section": "Employee Benefits",
+    "policy_name": "Diversity Policy",
+    "category": "Workplace Safety",
+    "keywords": [
+      "diversity"
+    ],
+    "page_start": 33,
+    "page_end": 33
+  },
+  {
+    "policy_id": "policy_029",
+    "section": "Employee Benefits",
+    "policy_name": "COBRA Benefits Policy",
+    "category": "Benefits",
+    "keywords": [
+      "benefits",
+      "cobra",
+      "insurance",
+      "termination"
+    ],
+    "page_start": 35,
+    "page_end": 35
+  },
+  {
+    "policy_id": "policy_030",
+    "section": "Employee Benefits",
+    "policy_name": "COBRA Benefits Policy",
+    "category": "Benefits",
+    "keywords": [
+      "benefits",
+      "cobra",
+      "insurance"
+    ],
+    "page_start": 36,
+    "page_end": 36
+  },
+  {
+    "policy_id": "policy_031",
+    "section": "Employee Benefits",
+    "policy_name": "Employer-offered Insurance Policy",
+    "category": "Benefits",
+    "keywords": [
+      "benefits",
+      "employer-offered",
+      "insurance",
+      "leave",
+      "military",
+      "termination",
+      "wage"
+    ],
+    "page_start": 37,
+    "page_end": 37
+  },
+  {
+    "policy_id": "policy_032",
+    "section": "Employee Benefits",
+    "policy_name": "Domestic Partnership Policy",
+    "category": "Benefits",
+    "keywords": [
+      "benefits",
+      "domestic",
+      "insurance",
+      "partnership"
+    ],
+    "page_start": 38,
+    "page_end": 38
+  },
+  {
+    "policy_id": "policy_033",
+    "section": "Employee Benefits",
+    "policy_name": "Adoption Assistance Policy",
+    "category": "Benefits",
+    "keywords": [
+      "adoption",
+      "assistance"
+    ],
+    "page_start": 39,
+    "page_end": 39
+  },
+  {
+    "policy_id": "policy_034",
+    "section": "Time Away From Work",
+    "policy_name": "Employment Taxes & Voluntary Deductions Policy",
+    "category": "Employment",
+    "keywords": [
+      "benefits",
+      "deductions",
+      "employment",
+      "insurance",
+      "taxes",
+      "voluntary"
+    ],
+    "page_start": 40,
+    "page_end": 40
+  },
+  {
+    "policy_id": "policy_035",
+    "section": "Time Away From Work",
+    "policy_name": "Communicable Disease Policy",
+    "category": "Leave",
+    "keywords": [
+      "communicable",
+      "disease",
+      "pto",
+      "termination"
+    ],
+    "page_start": 42,
+    "page_end": 42
+  },
+  {
+    "policy_id": "policy_036",
+    "section": "Time Away From Work",
+    "policy_name": "Contagious Illness Policy",
+    "category": "Leave",
+    "keywords": [
+      "contagious",
+      "illness",
+      "leave",
+      "termination"
+    ],
+    "page_start": 43,
+    "page_end": 43
+  },
+  {
+    "policy_id": "policy_037",
+    "section": "Time Away From Work",
+    "policy_name": "Federal Family and Medical Leave Policy",
+    "category": "Leave",
+    "keywords": [
+      "family",
+      "federal",
+      "fmla",
+      "jury",
+      "leave",
+      "medical",
+      "military"
+    ],
+    "page_start": 44,
+    "page_end": 44
+  },
+  {
+    "policy_id": "policy_038",
+    "section": "Time Away From Work",
+    "policy_name": "Family and Medical Leave Policy",
+    "category": "Leave",
+    "keywords": [
+      "family",
+      "fmla",
+      "leave",
+      "medical"
+    ],
+    "page_start": 45,
+    "page_end": 45
+  },
+  {
+    "policy_id": "policy_039",
+    "section": "Time Away From Work",
+    "policy_name": "Family and Medical Leave Policy",
+    "category": "Leave",
+    "keywords": [
+      "disability",
+      "family",
+      "fmla",
+      "jury",
+      "leave",
+      "medical"
+    ],
+    "page_start": 46,
+    "page_end": 46
+  },
+  {
+    "policy_id": "policy_040",
+    "section": "Time Away From Work",
+    "policy_name": "Family and Medical Leave Policy",
+    "category": "Leave",
+    "keywords": [
+      "benefits",
+      "compensation",
+      "disability",
+      "family",
+      "fmla",
+      "jury",
+      "leave",
+      "medical",
+      "military",
+      "vacation"
+    ],
+    "page_start": 47,
+    "page_end": 47
+  },
+  {
+    "policy_id": "policy_041",
+    "section": "Time Away From Work",
+    "policy_name": "Family and Medical Leave Policy",
+    "category": "Leave",
+    "keywords": [
+      "benefits",
+      "family",
+      "fmla",
+      "insurance",
+      "leave",
+      "medical",
+      "termination"
+    ],
+    "page_start": 48,
+    "page_end": 48
+  },
+  {
+    "policy_id": "policy_042",
+    "section": "Time Away From Work",
+    "policy_name": "Family and Medical Leave Policy",
+    "category": "Leave",
+    "keywords": [
+      "benefits",
+      "disability",
+      "family",
+      "fmla",
+      "jury",
+      "leave",
+      "medical",
+      "military"
+    ],
+    "page_start": 49,
+    "page_end": 49
+  },
+  {
+    "policy_id": "policy_043",
+    "section": "Time Away From Work",
+    "policy_name": "Family and Medical Leave Policy",
+    "category": "Leave",
+    "keywords": [
+      "disability",
+      "family",
+      "jury",
+      "leave",
+      "medical",
+      "military",
+      "pregnancy"
+    ],
+    "page_start": 50,
+    "page_end": 50
+  },
+  {
+    "policy_id": "policy_044",
+    "section": "Time Away From Work",
+    "policy_name": "Family and Medical Leave Policy",
+    "category": "Leave",
+    "keywords": [
+      "benefits",
+      "disability",
+      "discrimination",
+      "family",
+      "fmla",
+      "jury",
+      "leave",
+      "medical",
+      "military",
+      "pregnancy"
+    ],
+    "page_start": 51,
+    "page_end": 53
+  },
+  {
+    "policy_id": "policy_045",
+    "section": "Time Away From Work",
+    "policy_name": "Funeral Leave Policy",
+    "category": "Leave",
+    "keywords": [
+      "funeral",
+      "leave",
+      "pto",
+      "sick",
+      "vacation"
+    ],
+    "page_start": 54,
+    "page_end": 54
+  },
+  {
+    "policy_id": "policy_046",
+    "section": "Time Away From Work",
+    "policy_name": "Jury Duty Policy",
+    "category": "Leave",
+    "keywords": [
+      "duty",
+      "jury",
+      "leave",
+      "overtime",
+      "wage"
+    ],
+    "page_start": 55,
+    "page_end": 55
+  },
+  {
+    "policy_id": "policy_047",
+    "section": "Time Away From Work",
+    "policy_name": "Lunch and Rest Periods Policy",
+    "category": "Leave",
+    "keywords": [
+      "lunch",
+      "periods",
+      "rest"
+    ],
+    "page_start": 56,
+    "page_end": 56
+  },
+  {
+    "policy_id": "policy_048",
+    "section": "Time Away From Work",
+    "policy_name": "Military Leave Policy",
+    "category": "Leave",
+    "keywords": [
+      "benefits",
+      "jury",
+      "leave",
+      "military",
+      "vacation"
+    ],
+    "page_start": 57,
+    "page_end": 57
+  },
+  {
+    "policy_id": "policy_049",
+    "section": "Time Away From Work",
+    "policy_name": "Military Leave Policy",
+    "category": "Leave",
+    "keywords": [
+      "benefits",
+      "leave",
+      "military"
+    ],
+    "page_start": 58,
+    "page_end": 58
+  },
+  {
+    "policy_id": "policy_050",
+    "section": "Time Away From Work",
+    "policy_name": "Non-FMLA Leave Policy",
+    "category": "Leave",
+    "keywords": [
+      "fmla",
+      "jury",
+      "leave",
+      "non-fmla",
+      "pregnancy"
+    ],
+    "page_start": 59,
+    "page_end": 59
+  },
+  {
+    "policy_id": "policy_051",
+    "section": "Time Away From Work",
+    "policy_name": "Non-FMLA Leave Policy",
+    "category": "Leave",
+    "keywords": [
+      "benefits",
+      "fmla",
+      "insurance",
+      "leave",
+      "non-fmla"
+    ],
+    "page_start": 60,
+    "page_end": 60
+  },
+  {
+    "policy_id": "policy_052",
+    "section": "Time Away From Work",
+    "policy_name": "Non-FMLA Leave Policy",
+    "category": "Leave",
+    "keywords": [
+      "compensation",
+      "fmla",
+      "leave",
+      "non-fmla",
+      "termination"
+    ],
+    "page_start": 61,
+    "page_end": 61
+  },
+  {
+    "policy_id": "policy_053",
+    "section": "Time Away From Work",
+    "policy_name": "Nursing Mothers Policy",
+    "category": "Leave",
+    "keywords": [
+      "benefits",
+      "leave",
+      "maternity",
+      "mothers",
+      "nursing"
+    ],
+    "page_start": 62,
+    "page_end": 62
+  },
+  {
+    "policy_id": "policy_054",
+    "section": "Time Away From Work",
+    "policy_name": "Paid Time Off Policy",
+    "category": "Leave",
+    "keywords": [
+      "paid",
+      "pto",
+      "sick",
+      "time",
+      "vacation"
+    ],
+    "page_start": 63,
+    "page_end": 63
+  },
+  {
+    "policy_id": "policy_055",
+    "section": "Time Away From Work",
+    "policy_name": "PTO Policy",
+    "category": "Leave",
+    "keywords": [
+      "bereavement",
+      "compensation",
+      "jury",
+      "leave",
+      "pto",
+      "sick",
+      "vacation"
+    ],
+    "page_start": 64,
+    "page_end": 64
+  },
+  {
+    "policy_id": "policy_056",
+    "section": "Time Away From Work",
+    "policy_name": "Pandemic Flu Leave Policy",
+    "category": "Leave",
+    "keywords": [
+      "benefits",
+      "disability",
+      "leave",
+      "pandemic",
+      "pto",
+      "sick"
+    ],
+    "page_start": 65,
+    "page_end": 65
+  },
+  {
+    "policy_id": "policy_057",
+    "section": "Time Away From Work",
+    "policy_name": "Parental/School Leave Policy",
+    "category": "Leave",
+    "keywords": [
+      "leave",
+      "parental/school",
+      "sick"
+    ],
+    "page_start": 66,
+    "page_end": 66
+  },
+  {
+    "policy_id": "policy_058",
+    "section": "Time Away From Work",
+    "policy_name": "Personal Leave Policy",
+    "category": "Leave",
+    "keywords": [
+      "benefits",
+      "fmla",
+      "leave",
+      "personal"
+    ],
+    "page_start": 67,
+    "page_end": 67
+  },
+  {
+    "policy_id": "policy_059",
+    "section": "Time Away From Work",
+    "policy_name": "Personal Leave Policy",
+    "category": "Leave",
+    "keywords": [
+      "benefits",
+      "fmla",
+      "insurance",
+      "leave",
+      "personal",
+      "termination"
+    ],
+    "page_start": 68,
+    "page_end": 68
+  },
+  {
+    "policy_id": "policy_060",
+    "section": "Time Away From Work",
+    "policy_name": "Religious Observances Policy",
+    "category": "Leave",
+    "keywords": [
+      "leave",
+      "observances",
+      "religious"
+    ],
+    "page_start": 69,
+    "page_end": 69
+  },
+  {
+    "policy_id": "policy_061",
+    "section": "Time Away From Work",
+    "policy_name": "Sick Time Policy",
+    "category": "Leave",
+    "keywords": [
+      "benefits",
+      "fmla",
+      "leave",
+      "sick",
+      "termination",
+      "time",
+      "vacation"
+    ],
+    "page_start": 70,
+    "page_end": 70
+  },
+  {
+    "policy_id": "policy_062",
+    "section": "Time Away From Work",
+    "policy_name": "Time Off to Vote Policy",
+    "category": "Leave",
+    "keywords": [
+      "sick",
+      "time",
+      "vote"
+    ],
+    "page_start": 71,
+    "page_end": 71
+  },
+  {
+    "policy_id": "policy_063",
+    "section": "Information & Office Security",
+    "policy_name": "Vacation Policy",
+    "category": "Leave",
+    "keywords": [
+      "leave",
+      "vacation"
+    ],
+    "page_start": 72,
+    "page_end": 72
+  },
+  {
+    "policy_id": "policy_064",
+    "section": "Information & Office Security",
+    "policy_name": "Emergency Action Plan",
+    "category": "Safety",
+    "keywords": [
+      "action",
+      "emergency",
+      "leave",
+      "plan",
+      "safety"
+    ],
+    "page_start": 74,
+    "page_end": 74
+  },
+  {
+    "policy_id": "policy_065",
+    "section": "Information & Office Security",
+    "policy_name": "Emergency Action Plan",
+    "category": "Safety",
+    "keywords": [
+      "action",
+      "emergency",
+      "leave",
+      "plan",
+      "safety"
+    ],
+    "page_start": 75,
+    "page_end": 75
+  },
+  {
+    "policy_id": "policy_066",
+    "section": "Information & Office Security",
+    "policy_name": "Emergency Action Plan",
+    "category": "Safety",
+    "keywords": [
+      "action",
+      "emergency",
+      "plan"
+    ],
+    "page_start": 76,
+    "page_end": 76
+  },
+  {
+    "policy_id": "policy_067",
+    "section": "Information & Office Security",
+    "policy_name": "Facility Access & Visitors Policy",
+    "category": "Security",
+    "keywords": [
+      "access",
+      "facility",
+      "safety",
+      "visitors"
+    ],
+    "page_start": 77,
+    "page_end": 77
+  },
+  {
+    "policy_id": "policy_068",
+    "section": "Information & Office Security",
+    "policy_name": "General Computer Usage Policy",
+    "category": "Security",
+    "keywords": [
+      "computer",
+      "general",
+      "usage"
+    ],
+    "page_start": 78,
+    "page_end": 78
+  },
+  {
+    "policy_id": "policy_069",
+    "section": "General Practices",
+    "policy_name": "Recording Devices Prohibited Policy",
+    "category": "Operations",
+    "keywords": [
+      "devices",
+      "prohibited",
+      "recording"
+    ],
+    "page_start": 79,
+    "page_end": 79
+  },
+  {
+    "policy_id": "policy_070",
+    "section": "General Practices",
+    "policy_name": "Anti-discrimination Policy",
+    "category": "Operations",
+    "keywords": [
+      "anti-discrimination",
+      "disability",
+      "discrimination"
+    ],
+    "page_start": 81,
+    "page_end": 81
+  },
+  {
+    "policy_id": "policy_071",
+    "section": "General Practices",
+    "policy_name": "Attendance and Standard Working Hours Policy",
+    "category": "Operations",
+    "keywords": [
+      "attendance",
+      "compensation",
+      "hours",
+      "leave",
+      "standard",
+      "working"
+    ],
+    "page_start": 82,
+    "page_end": 82
+  },
+  {
+    "policy_id": "policy_072",
+    "section": "General Practices",
+    "policy_name": "Alternative Working Schedules Policy",
+    "category": "Operations",
+    "keywords": [
+      "alternative",
+      "schedules",
+      "working"
+    ],
+    "page_start": 83,
+    "page_end": 83
+  },
+  {
+    "policy_id": "policy_073",
+    "section": "General Practices",
+    "policy_name": "Flextime Policy",
+    "category": "Operations",
+    "keywords": [
+      "flextime"
+    ],
+    "page_start": 84,
+    "page_end": 84
+  },
+  {
+    "policy_id": "policy_074",
+    "section": "General Practices",
+    "policy_name": "Background Check Policy",
+    "category": "Operations",
+    "keywords": [
+      "background",
+      "check"
+    ],
+    "page_start": 85,
+    "page_end": 85
+  },
+  {
+    "policy_id": "policy_075",
+    "section": "General Practices",
+    "policy_name": "Business Expense Reimbursement Policy",
+    "category": "Operations",
+    "keywords": [
+      "business",
+      "expense",
+      "insurance",
+      "jury",
+      "reimbursement",
+      "safety"
+    ],
+    "page_start": 86,
+    "page_end": 86
+  },
+  {
+    "policy_id": "policy_076",
+    "section": "General Practices",
+    "policy_name": "Business Expense Reimbursement Policy",
+    "category": "Operations",
+    "keywords": [
+      "business",
+      "expense",
+      "reimbursement"
+    ],
+    "page_start": 87,
+    "page_end": 87
+  },
+  {
+    "policy_id": "policy_077",
+    "section": "General Practices",
+    "policy_name": "Company Car Policy",
+    "category": "Operations",
+    "keywords": [
+      "alcohol",
+      "company",
+      "drug",
+      "insurance",
+      "jury"
+    ],
+    "page_start": 88,
+    "page_end": 88
+  },
+  {
+    "policy_id": "policy_078",
+    "section": "General Practices",
+    "policy_name": "Company Car Policy",
+    "category": "Operations",
+    "keywords": [
+      "company"
+    ],
+    "page_start": 89,
+    "page_end": 89
+  },
+  {
+    "policy_id": "policy_079",
+    "section": "General Practices",
+    "policy_name": "Company Credit Card Policy",
+    "category": "Operations",
+    "keywords": [
+      "card",
+      "company",
+      "credit"
+    ],
+    "page_start": 90,
+    "page_end": 90
+  },
+  {
+    "policy_id": "policy_080",
+    "section": "General Practices",
+    "policy_name": "Employer-provided Mobile Devices Policy",
+    "category": "Operations",
+    "keywords": [
+      "devices",
+      "employer-provided",
+      "mobile"
+    ],
+    "page_start": 91,
+    "page_end": 91
+  },
+  {
+    "policy_id": "policy_081",
+    "section": "General Practices",
+    "policy_name": "Confidential Information and Company Property Policy",
+    "category": "Security",
+    "keywords": [
+      "company",
+      "confidential",
+      "information",
+      "property",
+      "pto",
+      "termination"
+    ],
+    "page_start": 92,
+    "page_end": 92
+  },
+  {
+    "policy_id": "policy_082",
+    "section": "General Practices",
+    "policy_name": "Conflicts of Interest Policy",
+    "category": "Operations",
+    "keywords": [
+      "conflicts",
+      "interest"
+    ],
+    "page_start": 93,
+    "page_end": 93
+  },
+  {
+    "policy_id": "policy_083",
+    "section": "General Practices",
+    "policy_name": "Customer Complaint Policy",
+    "category": "Workplace Safety",
+    "keywords": [
+      "complaint",
+      "customer"
+    ],
+    "page_start": 94,
+    "page_end": 94
+  },
+  {
+    "policy_id": "policy_084",
+    "section": "General Practices",
+    "policy_name": "Dress Code (General)",
+    "category": "Operations",
+    "keywords": [
+      "(general)",
+      "code",
+      "dress"
+    ],
+    "page_start": 95,
+    "page_end": 95
+  },
+  {
+    "policy_id": "policy_085",
+    "section": "General Practices",
+    "policy_name": "Dress Code (General)",
+    "category": "Operations",
+    "keywords": [
+      "(general)",
+      "code",
+      "dress"
+    ],
+    "page_start": 96,
+    "page_end": 96
+  },
+  {
+    "policy_id": "policy_086",
+    "section": "General Practices",
+    "policy_name": "Dress Code (Summer)",
+    "category": "Operations",
+    "keywords": [
+      "(summer)",
+      "code",
+      "dress"
+    ],
+    "page_start": 97,
+    "page_end": 97
+  },
+  {
+    "policy_id": "policy_087",
+    "section": "General Practices",
+    "policy_name": "Dress Code (Summer)",
+    "category": "Operations",
+    "keywords": [
+      "(summer)",
+      "code",
+      "dress",
+      "leave",
+      "vacation"
+    ],
+    "page_start": 98,
+    "page_end": 98
+  },
+  {
+    "policy_id": "policy_088",
+    "section": "General Practices",
+    "policy_name": "Driving While on Company Business Policy",
+    "category": "Operations",
+    "keywords": [
+      "alcohol",
+      "business",
+      "company",
+      "driving",
+      "insurance",
+      "pto",
+      "safety",
+      "while"
+    ],
+    "page_start": 99,
+    "page_end": 99
+  },
+  {
+    "policy_id": "policy_089",
+    "section": "General Practices",
+    "policy_name": "Educational Assistance Program Policy",
+    "category": "Operations",
+    "keywords": [
+      "assistance",
+      "educational",
+      "program"
+    ],
+    "page_start": 100,
+    "page_end": 100
+  },
+  {
+    "policy_id": "policy_090",
+    "section": "General Practices",
+    "policy_name": "Educational Assistance Program Policy",
+    "category": "Operations",
+    "keywords": [
+      "assistance",
+      "educational",
+      "military",
+      "program",
+      "termination"
+    ],
+    "page_start": 101,
+    "page_end": 101
+  },
+  {
+    "policy_id": "policy_091",
+    "section": "General Practices",
+    "policy_name": "Employee Classification Policy",
+    "category": "Operations",
+    "keywords": [
+      "benefits",
+      "classification",
+      "compensation",
+      "employee",
+      "overtime"
+    ],
+    "page_start": 102,
+    "page_end": 102
+  },
+  {
+    "policy_id": "policy_092",
+    "section": "General Practices",
+    "policy_name": "Employee Fraternization Policy",
+    "category": "Operations",
+    "keywords": [
+      "employee",
+      "fraternization",
+      "termination"
+    ],
+    "page_start": 103,
+    "page_end": 103
+  },
+  {
+    "policy_id": "policy_093",
+    "section": "General Practices",
+    "policy_name": "Employee Discount Policy",
+    "category": "Operations",
+    "keywords": [
+      "benefits",
+      "discount",
+      "employee"
+    ],
+    "page_start": 104,
+    "page_end": 104
+  },
+  {
+    "policy_id": "policy_094",
+    "section": "General Practices",
+    "policy_name": "Employee Referral Bonus Policy",
+    "category": "Operations",
+    "keywords": [
+      "bonus",
+      "employee",
+      "referral"
+    ],
+    "page_start": 105,
+    "page_end": 105
+  },
+  {
+    "policy_id": "policy_095",
+    "section": "General Practices",
+    "policy_name": "Employment of Relatives Policy",
+    "category": "Employment",
+    "keywords": [
+      "employment",
+      "relatives"
+    ],
+    "page_start": 106,
+    "page_end": 106
+  },
+  {
+    "policy_id": "policy_096",
+    "section": "General Practices",
+    "policy_name": "Improper Payments and Gifts Policy",
+    "category": "Operations",
+    "keywords": [
+      "gifts",
+      "improper",
+      "payments"
+    ],
+    "page_start": 107,
+    "page_end": 107
+  },
+  {
+    "policy_id": "policy_097",
+    "section": "General Practices",
+    "policy_name": "Injury & Illness Reporting Policy",
+    "category": "Leave",
+    "keywords": [
+      "illness",
+      "injury",
+      "jury",
+      "reporting",
+      "safety"
+    ],
+    "page_start": 108,
+    "page_end": 108
+  },
+  {
+    "policy_id": "policy_098",
+    "section": "General Practices",
+    "policy_name": "Media Relations Policy",
+    "category": "Operations",
+    "keywords": [
+      "media",
+      "relations"
+    ],
+    "page_start": 109,
+    "page_end": 109
+  },
+  {
+    "policy_id": "policy_099",
+    "section": "General Practices",
+    "policy_name": "Online Social Networking Policy",
+    "category": "Operations",
+    "keywords": [
+      "networking",
+      "online",
+      "social"
+    ],
+    "page_start": 110,
+    "page_end": 110
+  },
+  {
+    "policy_id": "policy_100",
+    "section": "General Practices",
+    "policy_name": "Social Networking Policy",
+    "category": "Operations",
+    "keywords": [
+      "disability",
+      "networking",
+      "social"
+    ],
+    "page_start": 111,
+    "page_end": 111
+  },
+  {
+    "policy_id": "policy_101",
+    "section": "General Practices",
+    "policy_name": "Open Door Policy",
+    "category": "Operations",
+    "keywords": [
+      "door",
+      "open"
+    ],
+    "page_start": 112,
+    "page_end": 112
+  },
+  {
+    "policy_id": "policy_102",
+    "section": "General Practices",
+    "policy_name": "Orientation Period Policy",
+    "category": "Operations",
+    "keywords": [
+      "orientation",
+      "period"
+    ],
+    "page_start": 113,
+    "page_end": 113
+  },
+  {
+    "policy_id": "policy_103",
+    "section": "General Practices",
+    "policy_name": "Overtime Pay Policy",
+    "category": "Operations",
+    "keywords": [
+      "overtime",
+      "wage"
+    ],
+    "page_start": 114,
+    "page_end": 114
+  },
+  {
+    "policy_id": "policy_104",
+    "section": "General Practices",
+    "policy_name": "Salary Advance Policy",
+    "category": "Operations",
+    "keywords": [
+      "advance",
+      "salary",
+      "vacation"
+    ],
+    "page_start": 115,
+    "page_end": 115
+  },
+  {
+    "policy_id": "policy_105",
+    "section": "General Practices",
+    "policy_name": "Pay Periods and Check Distribution Policy",
+    "category": "Operations",
+    "keywords": [
+      "check",
+      "distribution",
+      "periods",
+      "wage"
+    ],
+    "page_start": 116,
+    "page_end": 116
+  },
+  {
+    "policy_id": "policy_106",
+    "section": "General Practices",
+    "policy_name": "Direct Deposit Policy",
+    "category": "Operations",
+    "keywords": [
+      "benefits",
+      "deposit",
+      "direct",
+      "wage"
+    ],
+    "page_start": 117,
+    "page_end": 117
+  },
+  {
+    "policy_id": "policy_107",
+    "section": "General Practices",
+    "policy_name": "Performance Evaluation Policy",
+    "category": "Operations",
+    "keywords": [
+      "evaluation",
+      "performance"
+    ],
+    "page_start": 118,
+    "page_end": 118
+  },
+  {
+    "policy_id": "policy_108",
+    "section": "General Practices",
+    "policy_name": "Personnel Records Policy",
+    "category": "Operations",
+    "keywords": [
+      "personnel",
+      "records",
+      "salary"
+    ],
+    "page_start": 119,
+    "page_end": 119
+  },
+  {
+    "policy_id": "policy_109",
+    "section": "General Practices",
+    "policy_name": "Phone Call Policy",
+    "category": "Operations",
+    "keywords": [
+      "call",
+      "phone"
+    ],
+    "page_start": 120,
+    "page_end": 120
+  },
+  {
+    "policy_id": "policy_110",
+    "section": "General Practices",
+    "policy_name": "Physical Examination Policy",
+    "category": "Operations",
+    "keywords": [
+      "disability",
+      "examination",
+      "physical",
+      "safety"
+    ],
+    "page_start": 121,
+    "page_end": 121
+  },
+  {
+    "policy_id": "policy_111",
+    "section": "General Practices",
+    "policy_name": "Safety Policy",
+    "category": "Safety",
+    "keywords": [
+      "jury",
+      "safety"
+    ],
+    "page_start": 122,
+    "page_end": 122
+  },
+  {
+    "policy_id": "policy_112",
+    "section": "General Practices",
+    "policy_name": "Severe Weather Policy",
+    "category": "Operations",
+    "keywords": [
+      "leave",
+      "severe",
+      "sick",
+      "vacation",
+      "weather"
+    ],
+    "page_start": 123,
+    "page_end": 123
+  },
+  {
+    "policy_id": "policy_113",
+    "section": "General Practices",
+    "policy_name": "Smartphone Use Policy for Nonexempt Employees",
+    "category": "Operations",
+    "keywords": [
+      "employees",
+      "nonexempt",
+      "smartphone"
+    ],
+    "page_start": 124,
+    "page_end": 124
+  },
+  {
+    "policy_id": "policy_114",
+    "section": "General Practices",
+    "policy_name": "Smoke-free Environment Policy",
+    "category": "Operations",
+    "keywords": [
+      "environment",
+      "smoke-free"
+    ],
+    "page_start": 125,
+    "page_end": 125
+  },
+  {
+    "policy_id": "policy_115",
+    "section": "General Practices",
+    "policy_name": "Smoke-free Incentive Policy",
+    "category": "Operations",
+    "keywords": [
+      "incentive",
+      "insurance",
+      "smoke-free"
+    ],
+    "page_start": 126,
+    "page_end": 126
+  },
+  {
+    "policy_id": "policy_116",
+    "section": "General Practices",
+    "policy_name": "Social Functions Policy",
+    "category": "Operations",
+    "keywords": [
+      "alcohol",
+      "functions",
+      "social"
+    ],
+    "page_start": 127,
+    "page_end": 127
+  },
+  {
+    "policy_id": "policy_117",
+    "section": "General Practices",
+    "policy_name": "Solicitations, Distributions & Use of Bulletin Boards Policy",
+    "category": "Operations",
+    "keywords": [
+      "boards",
+      "bulletin",
+      "distributions",
+      "solicitations,"
+    ],
+    "page_start": 128,
+    "page_end": 128
+  },
+  {
+    "policy_id": "policy_118",
+    "section": "General Practices",
+    "policy_name": "Time Card Regulations Policy",
+    "category": "Operations",
+    "keywords": [
+      "card",
+      "overtime",
+      "regulations",
+      "time"
+    ],
+    "page_start": 129,
+    "page_end": 129
+  },
+  {
+    "policy_id": "policy_119",
+    "section": "Appendix",
+    "policy_name": "Workers’ Compensation Policy",
+    "category": "Compensation",
+    "keywords": [
+      "benefits",
+      "compensation",
+      "fmla",
+      "insurance",
+      "jury",
+      "leave",
+      "wage",
+      "workers’"
+    ],
+    "page_start": 130,
+    "page_end": 130
+  },
+  {
+    "policy_id": "policy_120",
+    "section": "Appendix",
+    "policy_name": "Application for Re-employment Following Military Leave",
+    "category": "Employment",
+    "keywords": [
+      "application",
+      "following",
+      "leave",
+      "military",
+      "re-employment"
+    ],
+    "page_start": 132,
+    "page_end": 132
+  },
+  {
+    "policy_id": "policy_121",
+    "section": "Appendix",
+    "policy_name": "Application & Request for Educational Reimbursement",
+    "category": "Operations",
+    "keywords": [
+      "application",
+      "educational",
+      "reimbursement",
+      "request"
+    ],
+    "page_start": 133,
+    "page_end": 133
+  },
+  {
+    "policy_id": "policy_122",
+    "section": "Appendix",
+    "policy_name": "Application & Request for Educational Reimbursement",
+    "category": "Operations",
+    "keywords": [
+      "application",
+      "educational",
+      "reimbursement",
+      "request"
+    ],
+    "page_start": 134,
+    "page_end": 134
+  },
+  {
+    "policy_id": "policy_123",
+    "section": "Appendix",
+    "policy_name": "Certificate of Entrance into Military Service",
+    "category": "Leave",
+    "keywords": [
+      "certificate",
+      "entrance",
+      "into",
+      "military",
+      "salary",
+      "service"
+    ],
+    "page_start": 135,
+    "page_end": 135
+  },
+  {
+    "policy_id": "policy_124",
+    "section": "Appendix",
+    "policy_name": "Certificate of Return from Military Service",
+    "category": "Leave",
+    "keywords": [
+      "certificate",
+      "from",
+      "military",
+      "return",
+      "salary",
+      "service"
+    ],
+    "page_start": 136,
+    "page_end": 136
+  },
+  {
+    "policy_id": "policy_125",
+    "section": "Appendix",
+    "policy_name": "Vacation Request Form",
+    "category": "Leave",
+    "keywords": [
+      "form",
+      "request",
+      "vacation"
+    ],
+    "page_start": 138,
+    "page_end": 138
+  },
+  {
+    "policy_id": "policy_126",
+    "section": "Appendix",
+    "policy_name": "Application for -issued Credit Card",
+    "category": "Forms",
+    "keywords": [
+      "-issued",
+      "application",
+      "card",
+      "credit"
+    ],
+    "page_start": 139,
+    "page_end": 139
+  },
+  {
+    "policy_id": "policy_127",
+    "section": "Appendix",
+    "policy_name": "Receipt of  Employee Handbook",
+    "category": "Forms",
+    "keywords": [
+      "benefits",
+      "employee",
+      "handbook",
+      "receipt"
+    ],
+    "page_start": 140,
+    "page_end": 140
+  },
+  {
+    "policy_id": "policy_128",
+    "section": "Appendix",
+    "policy_name": "Receipt of Harassment Policies",
+    "category": "Workplace Safety",
+    "keywords": [
+      "harassment",
+      "policies",
+      "receipt",
+      "termination"
+    ],
+    "page_start": 141,
+    "page_end": 141
+  }
+]

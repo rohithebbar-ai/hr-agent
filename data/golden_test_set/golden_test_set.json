@@ -1,0 +1,422 @@
+[
+  {
+    "question": "How many vacation days do full-time employees get per year?",
+    "expected_answer": "The Vacation Policy requires five consecutive business days of vacation each calendar year (after the third month of employment) and states that regular full-time employees receive a set amount of paid vacation per employment year, but the handbook leaves that amount as a template placeholder rather than a fixed number. PTO is handled separately: employees accrue PTO after 3 months of employment and employee PTO is capped at 40 hours.",
+    "source_section": "Time Away From Work",
+    "category": "factual",
+    "difficulty": "easy"
+  },
+  {
+    "question": "How many sick leave days are allowed per year?",
+    "expected_answer": "Beginning Jan. 1 of the first full year of full-time employment, full-time employees may use sick time up to a maximum of six days per calendar year (accrued pro-rata). Before that, sick time accrues at one half-day per calendar month through Dec. 31 starting the first of the month following 30 days of continuous employment.",
+    "source_section": "Time Away From Work",
+    "category": "factual",
+    "difficulty": "easy"
+  },
+  {
+    "question": "What is the probationary period for new employees?",
+    "expected_answer": "The first 90 days of employment are an orientation period: the employee receives training and orientation as directed, the supervisor monitors performance, and the employee may be terminated during this time if performance is unsatisfactory. A confidential performance evaluation is given at the end of the orientation period.",
+    "source_section": "Employment Policies",
+    "category": "factual",
+    "difficulty": "easy"
+  },
+  {
+    "question": "At what rate is overtime paid?",
+    "expected_answer": "Hourly, non-exempt employees must be compensated one-and-a-half times their regular wage rate for all hours worked in excess of 40 hours each week.",
+    "source_section": "Compensation",
+    "category": "factual",
+    "difficulty": "easy"
+  },
+  {
+    "question": "When does health insurance coverage begin for new employees?",
+    "expected_answer": "Insurance coverage (group health, dental and vision) begins on the first of the month following the date of hire; enrollment forms must be completed before that date.",
+    "source_section": "Employee Benefits",
+    "category": "factual",
+    "difficulty": "easy"
+  },
+  {
+    "question": "What is VanaciPrime's policy on at-will employment?",
+    "expected_answer": "VanaciPrime is an at-will employer: employment is not for a fixed term and may be terminated at the will of either party, with or without cause and without prior notice, and the handbook does not constitute an employment contract.",
+    "source_section": "Introduction",
+    "category": "factual",
+    "difficulty": "easy"
+  },
+  {
+    "question": "What are the standard working hours at VanaciPrime?",
+    "expected_answer": "The standard workweek is 40 hours, starting Monday at 9:00 AM and ending Friday at 5:00 PM. (Some other sections repeat template errors such as “9:00 AM to 9:00 AM.”)",
+    "source_section": "General Practices",
+    "category": "factual",
+    "difficulty": "easy"
+  },
+  {
+    "question": "How often are employees paid?",
+    "expected_answer": "Employees are paid on a semi-monthly basis; regular paydays are on the 15th and last day of each month.",
+    "source_section": "Compensation",
+    "category": "factual",
+    "difficulty": "easy"
+  },
+  {
+    "question": "Does VanaciPrime conduct drug testing?",
+    "expected_answer": "Yes. Testing includes pre-employment testing, periodic group testing, annual random testing, reasonable suspicion testing, post-accident testing, and follow-up testing. Employees are subject to drug and alcohol testing at any time, with or without notice, under the Drug and Alcohol Testing Policy.",
+    "source_section": "Workplace Conduct",
+    "category": "factual",
+    "difficulty": "easy"
+  },
+  {
+    "question": "How many personal days do employees receive?",
+    "expected_answer": "The handbook does not define a separate annual bank of “personal days.” Paid Time Off (PTO) can be used for personal business and similar needs; PTO accrues after 3 months of employment and is capped at 40 hours. Funeral leave for an immediate family member’s death is up to three paid days and does not count against PTO, vacation, or sick leave.",
+    "source_section": "Time Away From Work",
+    "category": "factual",
+    "difficulty": "easy"
+  },
+  {
+    "question": "What is the lunch break duration?",
+    "expected_answer": "Under the Flextime Policy, employees must take either a one-hour or a half-hour unpaid lunch period, normally between 11:00 a.m. and 2:00 p.m., as agreed with their supervisor.",
+    "source_section": "General Practices",
+    "category": "factual",
+    "difficulty": "easy"
+  },
+  {
+    "question": "Is VanaciPrime an equal opportunity employer?",
+    "expected_answer": "Yes. VanaciPrime provides equal employment opportunities without regard to race, color, religion, sex, national origin, age, disability or genetics, and complies with applicable nondiscrimination laws. Workplace harassment based on protected characteristics is expressly prohibited.",
+    "source_section": "Employment Policies",
+    "category": "factual",
+    "difficulty": "easy"
+  },
+  {
+    "question": "What is VanaciPrime's stance on workplace violence?",
+    "expected_answer": "VanaciPrime will not tolerate violence or threats of violence in the workplace, at work-related functions, or outside of work if it affects the workplace. Reports are investigated promptly and thoroughly, and violations may result in disciplinary action up to and including immediate termination.",
+    "source_section": "Workplace Conduct",
+    "category": "factual",
+    "difficulty": "easy"
+  },
+  {
+    "question": "What is the preferred car rental agency for business travel?",
+    "expected_answer": "VanaciPrime has a preferred relationship with Enterprise Rent-A-Car offering discounted rates and direct billing.",
+    "source_section": "General Practices",
+    "category": "factual",
+    "difficulty": "medium"
+  },
+  {
+    "question": "What is the standard workweek in hours?",
+    "expected_answer": "The standard workweek at VanaciPrime consists of 40 hours (Monday 9:00 AM through Friday 5:00 PM).",
+    "source_section": "Compensation",
+    "category": "factual",
+    "difficulty": "easy"
+  },
+  {
+    "question": "What are the steps to file a harassment complaint?",
+    "expected_answer": "If you feel harassed: (1) Tell the harasser the conduct is unwelcome and must stop, if you feel comfortable doing so; (2) Report the incident immediately to your manager or Human Resources; (3) Report any further incidents or retaliation to your manager or Human Resources. All reports are investigated immediately and thoroughly, with interim measures when needed. Retaliation for reporting or cooperating in an investigation is prohibited.",
+    "source_section": "Workplace Conduct",
+    "category": "procedural",
+    "difficulty": "medium"
+  },
+  {
+    "question": "How do I submit a resignation?",
+    "expected_answer": "Notify your manager of your anticipated departure date at least two weeks in advance in writing. A meeting with your manager will occur before your last day. Return parking passes, office keys, company equipment, building passes, and other company property and confidential information at that time.",
+    "source_section": "Employment Policies",
+    "category": "procedural",
+    "difficulty": "medium"
+  },
+  {
+    "question": "What is the process for reporting a workplace injury?",
+    "expected_answer": "Report all work-related injuries and illnesses immediately to Human Resources (even if you are unsure they are work-related). HR will complete an Accident Report from your information. For workers’ compensation, also report immediately to your supervisor and HR so paperwork can be completed.",
+    "source_section": "General Practices",
+    "category": "procedural",
+    "difficulty": "medium"
+  },
+  {
+    "question": "How do I request FMLA leave?",
+    "expected_answer": "You must generally complete an application for leave. Foreseeable non-emergency leave should be requested from Human Resources at least 30 days in advance (or as soon as practical). In emergencies, give verbal notice as soon as possible and complete the application when practical. Medical certification is required when leave is for a serious health condition. Eligible employees may take up to 12 weeks of FMLA leave in a rolling 12-month period if they meet eligibility requirements (e.g., 12 months of employment, 1,250 hours worked, and applicable location headcount rules).",
+    "source_section": "Time Away From Work",
+    "category": "procedural",
+    "difficulty": "medium"
+  },
+  {
+    "question": "What should I do if I suspect a coworker is under the influence at work?",
+    "expected_answer": "Reasonable suspicion may require a drug and/or alcohol test. Report concerns through appropriate channels (e.g., supervisor or Human Resources) so the company can follow the Drug and Alcohol Testing Policy; do not attempt to diagnose or confront unsafe behavior alone.",
+    "source_section": "Workplace Conduct",
+    "category": "procedural",
+    "difficulty": "medium"
+  },
+  {
+    "question": "How do I request time off?",
+    "expected_answer": "Submit time-off requests to your supervisor with as much advance notice as possible. Requests are subject to approval based on staffing needs. PTO requests are evaluated under the PTO Policy; vacation requests must be submitted in writing at least one month before the desired start under the Vacation Policy.",
+    "source_section": "Time Away From Work",
+    "category": "procedural",
+    "difficulty": "easy"
+  },
+  {
+    "question": "What is the process for an internal transfer or promotion?",
+    "expected_answer": "The handbook does not spell out a dedicated transfer process; employees should work with their manager and Human Resources. Background checks may be completed during reassignment or promotion.",
+    "source_section": "Employment Policies",
+    "category": "procedural",
+    "difficulty": "medium"
+  },
+  {
+    "question": "How do I report an ethics violation?",
+    "expected_answer": "Under the Code of Ethics Policy, employees who learn of payments or conduct that may violate the policy must report immediately to their supervisor or the company’s legal counsel. Management receiving a report will promptly involve legal counsel for further investigation.",
+    "source_section": "Workplace Conduct",
+    "category": "procedural",
+    "difficulty": "medium"
+  },
+  {
+    "question": "What should I do if I need emergency leave?",
+    "expected_answer": "For FMLA, give verbal notice as soon as possible in emergencies and complete required forms when practical. For general absences, notify your supervisor immediately per sick time and attendance expectations; follow up with documentation as required.",
+    "source_section": "Time Away From Work",
+    "category": "procedural",
+    "difficulty": "medium"
+  },
+  {
+    "question": "How do I file for workers compensation?",
+    "expected_answer": "Report any work-related injury or disease immediately (or as soon as practicable) to your supervisor and Human Resources so required paperwork can be completed. Delays may reduce or deny benefits under state law.",
+    "source_section": "General Practices",
+    "category": "procedural",
+    "difficulty": "medium"
+  },
+  {
+    "question": "What is the onboarding process for new hires?",
+    "expected_answer": "New employees undergo the first 90 days as an orientation period with training and orientation as directed, performance monitoring, and an evaluation at the end. New hires also complete handbook acknowledgment, benefits enrollment (coverage begins the first of the month following hire when forms are completed), and other standard employment paperwork.",
+    "source_section": "Employment Policies",
+    "category": "procedural",
+    "difficulty": "medium"
+  },
+  {
+    "question": "How do I request a reasonable accommodation for a disability?",
+    "expected_answer": "Contact Human Resources. VanaciPrime complies with the ADA and does not discriminate against qualified individuals with disabilities; reasonable accommodations are provided unless they impose undue hardship.",
+    "source_section": "Employment Policies",
+    "category": "procedural",
+    "difficulty": "medium"
+  },
+  {
+    "question": "What is the difference between sick leave and personal days?",
+    "expected_answer": "Sick time is for illness and medical/dental appointments for you or a family member, with accrual and a maximum of six days per calendar year after the first full calendar year of full-time employment (subject to earlier half-day monthly accrual). The handbook does not define a separate “personal days” allotment; PTO covers personal business and emergencies and is capped at 40 hours of accrued time.",
+    "source_section": "Time Away From Work",
+    "category": "comparison",
+    "difficulty": "medium"
+  },
+  {
+    "question": "How do exempt and non-exempt employees differ?",
+    "expected_answer": "Exempt employees meet FLSA exemption standards (e.g., managerial, professional, administrative). Non-exempt employees do not meet those standards; overtime work is prohibited without supervisor authorization, and non-exempt employees must be paid 1.5× the regular rate for hours over 40 per week.",
+    "source_section": "Compensation",
+    "category": "comparison",
+    "difficulty": "medium"
+  },
+  {
+    "question": "What is the difference between voluntary and involuntary termination?",
+    "expected_answer": "Resignation is voluntary termination by the employee; the handbook asks for at least two weeks’ written notice. Involuntary termination is initiated by the company (including layoff for nondisciplinary reasons). Failing to report for three consecutive days without informing management is treated as voluntary resignation.",
+    "source_section": "Employment Policies",
+    "category": "comparison",
+    "difficulty": "medium"
+  },
+  {
+    "question": "How does FMLA leave differ from personal leave?",
+    "expected_answer": "Federal FMLA provides up to 12 weeks of unpaid, job-protected leave per rolling 12 months for eligible employees (12 months of service, 1,250 hours, and other eligibility rules) with required notices and certification. Company personal leave is discretionary, may be limited to a stated maximum in the template, generally requires 12 months of service and good standing, and does not guarantee job restoration.",
+    "source_section": "Time Away From Work",
+    "category": "comparison",
+    "difficulty": "hard"
+  },
+  {
+    "question": "What is the difference between a drug-free workplace policy and a drug testing policy?",
+    "expected_answer": "The Drug-free Workplace Policy prohibits unlawful use, possession, and being under the influence of alcohol or illegal drugs on the job or company premises. The Drug and Alcohol Testing Policy describes when testing occurs (pre-employment, periodic, random, reasonable suspicion, post-accident, follow-up) and how positive tests and refusals are handled.",
+    "source_section": "Workplace Conduct",
+    "category": "comparison",
+    "difficulty": "medium"
+  },
+  {
+    "question": "How do bereavement leave and personal days differ?",
+    "expected_answer": "Funeral leave provides up to three paid days for the death of an immediate family member (as defined in the policy) and does not count against PTO, vacation, or sick leave. There is no separate handbook “personal days” bucket; general personal needs are typically addressed through PTO (capped at 40 accrued hours).",
+    "source_section": "Time Away From Work",
+    "category": "comparison",
+    "difficulty": "medium"
+  },
+  {
+    "question": "What is the difference between harassment and sexual harassment policies?",
+    "expected_answer": "The Harassment Policy covers harassment based on protected characteristics (race, color, religion, sex, national origin, age, disability, genetic information, etc.) and sets steps for reporting and investigation. The Standards of Conduct / sexual harassment provisions address unwelcome sexual advances, requests for sexual favors, and sexual conduct, with emphasis on reporting to Human Resources.",
+    "source_section": "Workplace Conduct",
+    "category": "comparison",
+    "difficulty": "medium"
+  },
+  {
+    "question": "How does the disciplinary action process differ from immediate termination?",
+    "expected_answer": "Discipline may include verbal, written, and final warnings, suspensions, and termination, but prior warning is not always required. Immediate termination may apply for listed examples including insubordination, dishonesty, fighting, policy violations, serious performance or conduct issues, or failing a drug or alcohol test.",
+    "source_section": "Workplace Conduct",
+    "category": "comparison",
+    "difficulty": "hard"
+  },
+  {
+    "question": "If I exhaust all my PTO and sick leave, what options do I have for additional time off?",
+    "expected_answer": "You may request FMLA leave if eligible (up to 12 weeks unpaid for qualifying reasons). You might also request non-FMLA medical leave or personal leave depending on circumstances; personal leave requires exhausting accrued paid time first and does not guarantee job restoration.",
+    "source_section": "Multiple",
+    "category": "multi_hop",
+    "difficulty": "hard"
+  },
+  {
+    "question": "Can a new hire in their probationary period use vacation days?",
+    "expected_answer": "PTO accrual begins after 3 months of employment, and no paid vacation days are granted until the third month of employment is completed under the Vacation Policy. During the first 90-day orientation period, performance is monitored and termination is possible for unsatisfactory performance, so scheduling extended paid time off early on is unlikely and may not align with accrual rules.",
+    "source_section": "Multiple",
+    "category": "multi_hop",
+    "difficulty": "hard"
+  },
+  {
+    "question": "If I get injured at work during my probationary period, am I covered?",
+    "expected_answer": "Yes. Report work-related injuries immediately to Human Resources (and to your supervisor for workers’ compensation). Coverage and reporting obligations apply regardless of being in the 90-day orientation period.",
+    "source_section": "Multiple",
+    "category": "multi_hop",
+    "difficulty": "hard"
+  },
+  {
+    "question": "Can I use my PTO concurrently with FMLA leave?",
+    "expected_answer": "Yes. Federal FMLA leave is unpaid, but the company requires substitution of vacation/PTO according to the FMLA policy’s substitution schedule; substituted paid leave runs concurrently with FMLA and does not extend the leave entitlement.",
+    "source_section": "Multiple",
+    "category": "multi_hop",
+    "difficulty": "hard"
+  },
+  {
+    "question": "If I am terminated, do I get paid for unused vacation days?",
+    "expected_answer": "For termination due to resignation, retirement, or permanent reduction in force, accrued vacation pay is paid on a pro-rata basis. Unused personal time is not paid upon termination. Sick time is not paid out at separation.",
+    "source_section": "Multiple",
+    "category": "multi_hop",
+    "difficulty": "hard"
+  },
+  {
+    "question": "If I fail a drug test, what happens to my employment?",
+    "expected_answer": "Employees who test positive or refuse testing are subject to disciplinary action up to and including termination and may be removed from duty until rehabilitation and negative retest requirements are met. The EAP may be available, but participation does not excuse policy violations.",
+    "source_section": "Multiple",
+    "category": "multi_hop",
+    "difficulty": "hard"
+  },
+  {
+    "question": "Can I bring a personal weapon to work if I have a concealed carry permit?",
+    "expected_answer": "No. Firearms and other lethal weapons are prohibited on company property, in vehicles used for company business, in company parking facilities, and at work-related functions, including for employees licensed to carry weapons, except when weapons are required for specific job duties.",
+    "source_section": "Multiple",
+    "category": "multi_hop",
+    "difficulty": "medium"
+  },
+  {
+    "question": "What insurance coverage do I need to use my personal car for business travel?",
+    "expected_answer": "Your automobile must be covered by a current insurance policy with limits not less than $100,000 for bodily injury and $50,000 for property damage. You remain responsible for damages, repair, and maintenance costs.",
+    "source_section": "Multiple",
+    "category": "multi_hop",
+    "difficulty": "medium"
+  },
+  {
+    "question": "Under what conditions can an employee be terminated immediately without warning?",
+    "expected_answer": "Prior warning is not always required for termination. Examples where immediate termination may result include insubordination, dishonesty, breach of confidentiality, destruction of property, fighting, serious policy violations, serious conduct or performance issues, or failing a drug or alcohol test.",
+    "source_section": "Workplace Conduct",
+    "category": "conditional",
+    "difficulty": "medium"
+  },
+  {
+    "question": "When is an employee eligible for FMLA leave?",
+    "expected_answer": "After at least 12 months of employment, at least 1,250 hours worked in the 12 months before leave begins, and work at a site with 50 or more employees within 75 miles (federal FMLA eligibility).",
+    "source_section": "Time Away From Work",
+    "category": "conditional",
+    "difficulty": "medium"
+  },
+  {
+    "question": "Under what circumstances is overtime mandatory?",
+    "expected_answer": "The handbook states employees may be asked to work overtime to complete necessary tasks and supervisors should give notice as early as possible. Working more than 40 hours in a workweek requires written supervisor authorization for non-exempt employees; mandatory overtime with discipline for refusal is not spelled out the way the old summary suggested.",
+    "source_section": "Compensation",
+    "category": "conditional",
+    "difficulty": "medium"
+  },
+  {
+    "question": "What happens if an employee doesn't return from leave by the expected date?",
+    "expected_answer": "Under personal leave, failing to return as scheduled may be treated as voluntary termination or require reimbursing premiums, depending on circumstances. Generally, if you fail to report to work for three consecutive days without informing management of the planned absence, the company will assume you voluntarily resigned.",
+    "source_section": "Time Away From Work",
+    "category": "conditional",
+    "difficulty": "medium"
+  },
+  {
+    "question": "When can an employee access their personnel file?",
+    "expected_answer": "Employees are entitled to inspect and obtain copies of their personnel files (a copying fee may be charged). Contact Human Resources to arrange access.",
+    "source_section": "General Practices",
+    "category": "conditional",
+    "difficulty": "easy"
+  },
+  {
+    "question": "What happens if payday falls on a holiday?",
+    "expected_answer": "If paydays fall on non-workdays or holidays, employees are paid on the last workday before the regularly scheduled payday.",
+    "source_section": "Compensation",
+    "category": "conditional",
+    "difficulty": "medium"
+  },
+  {
+    "question": "Do non-smokers get a discount on health insurance?",
+    "expected_answer": "Yes. Non-smokers are eligible for a 5 percent discount on the overall cost of their health insurance premium annually, with at least one opportunity per year to qualify.",
+    "source_section": "Employee Benefits",
+    "category": "conditional",
+    "difficulty": "medium"
+  },
+  {
+    "question": "What is VanaciPrime's stock price today?",
+    "expected_answer": "REFUSE",
+    "source_section": "N/A",
+    "category": "out_of_scope",
+    "difficulty": "easy"
+  },
+  {
+    "question": "Can you help me write my resume?",
+    "expected_answer": "REFUSE",
+    "source_section": "N/A",
+    "category": "out_of_scope",
+    "difficulty": "easy"
+  },
+  {
+    "question": "What is the weather forecast for tomorrow?",
+    "expected_answer": "REFUSE",
+    "source_section": "N/A",
+    "category": "out_of_scope",
+    "difficulty": "easy"
+  },
+  {
+    "question": "How do I fix a bug in my Python code?",
+    "expected_answer": "REFUSE",
+    "source_section": "N/A",
+    "category": "out_of_scope",
+    "difficulty": "easy"
+  },
+  {
+    "question": "What are VanaciPrime's quarterly revenue numbers?",
+    "expected_answer": "REFUSE",
+    "source_section": "N/A",
+    "category": "out_of_scope",
+    "difficulty": "easy"
+  },
+  {
+    "question": "Who is the CEO of Google?",
+    "expected_answer": "REFUSE",
+    "source_section": "N/A",
+    "category": "out_of_scope",
+    "difficulty": "easy"
+  },
+  {
+    "question": "Can you recommend a good restaurant near the office?",
+    "expected_answer": "REFUSE",
+    "source_section": "N/A",
+    "category": "out_of_scope",
+    "difficulty": "easy"
+  },
+  {
+    "question": "Tell me about VanaciPrime's competitors.",
+    "expected_answer": "REFUSE",
+    "source_section": "N/A",
+    "category": "out_of_scope",
+    "difficulty": "easy"
+  },
+  {
+    "question": "Can you order office supplies for me?",
+    "expected_answer": "REFUSE",
+    "source_section": "N/A",
+    "category": "out_of_scope",
+    "difficulty": "easy"
+  },
+  {
+    "question": "What is the meaning of life?",
+    "expected_answer": "REFUSE",
+    "source_section": "N/A",
+    "category": "out_of_scope",
+    "difficulty": "easy"
+  }
+]

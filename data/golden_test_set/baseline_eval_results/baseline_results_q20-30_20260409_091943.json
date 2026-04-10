@@ -1,0 +1,122 @@
+[
+  {
+    "question": "How do I request time off?",
+    "answer": "According to [Source 2 | Policy: PTO Policy | Section: Time Away From Work], every time-off request will be evaluated and subject to approval depending on staffing needs.\n\nTherefore, I recommend that you submit your time-off request to your supervisor for approval, and they will evaluate it based on the company's staffing needs.",
+    "contexts": [
+      "Please note that while there are no federal laws pertaining to an employee’s right to take time off from work to vote,\nmost states have relevant laws. Refer to your state laws and establish this policy accordingly.",
+      "As mentioned above, employee PTO is capped at 40 hours. Therefore, would like to remind employees\nto use their PTO time before reaching their maximum accrual, so additional PTO accrual time is not lost.\nUse and Management of PTO\nencourages employees to use their PTO responsibly and, whenever possible, to schedule time for vacations or personal\nleave appointments in advance. Every time-off request will be evaluated and subject to approval depending on staffing",
+      "believes that employees should have opportunities to enjoy time away from work to help balance their lives. For this\nreason, we provide a Paid Time Off (PTO) program to all full-time (if applicable: and part-time) employees.\nPTO provides employees the freedom to decide how to use their personal time off. believes this program offers more\ngenerous time off with pay than traditional vacation, sick and personal time packages. Employees can use their PTO days"
+    ],
+    "ground_truth": "Submit time-off requests to your supervisor with as much advance notice as possible. Requests are subject to approval based on staffing needs. PTO requests are evaluated under the PTO Policy; vacation requests must be submitted in writing at least one month before the desired start under the Vacation Policy.",
+    "category": "procedural",
+    "difficulty": "easy"
+  },
+  {
+    "question": "What is the process for an internal transfer or promotion?",
+    "answer": "To be considered for an internal transfer or promotion, you must complete the Internal Transfer/Promotion Application form and submit it to Human Resources with your manager's signature (Source 1: Internal Transfer/Promotion Policy, Section: Employment Policies).\n\nAfter submitting the application, you will be given the opportunity to provide input during the interview process (Source 2: Internal Transfer/Promotion Policy, Section: Employment Policies). If you are selected for the position, you will receive documentation and the transition process will begin (Source 4: Internal Transfer/Promotion Policy, Section: Employment Policies).",
+    "contexts": [
+      "employee should not be approached by management without the knowledge of his or her manager and Human\nResources. Transfers will be made in a manner that disrupts ongoing operations as little as possible.\nIn order to be considered for a transfer or promotion, you must complete the Internal Transfer/Promotion Application\nform and submit it to Human Resources with your manager’s signature. After the interview process is complete, if you",
+      "At times, positions may be filled internally without being posted. This could relate to a business need or a planned career\nprogression that includes an employee being assigned new responsibilities.\nTransfers can be either management- or employee-initiated. They are determined by business needs and employee\nqualifications. Employees being considered for transfer will be given the opportunity to provide input; however, an",
+      "The company strives to retain employees through an environment that creates opportunity and encourages\nadvancement. It is our goal to allow employees to fully use and develop their skills.\nWhen a position becomes available, it will be advertised both internally and externally. Current employees are welcome\nto apply, as are external candidates. All staffing decisions will be made with the position goals in mind, with the desire to\nhire the most-qualified individual being paramount."
+    ],
+    "ground_truth": "The handbook does not spell out a dedicated transfer process; employees should work with their manager and Human Resources. Background checks may be completed during reassignment or promotion.",
+    "category": "procedural",
+    "difficulty": "medium"
+  },
+  {
+    "question": "How do I report an ethics violation?",
+    "answer": "According to the Code of Ethics Policy (Source 1, Section: Workplace Conduct), if you suspect a coworker is engaging in conduct contrary to this policy, you must report this information immediately to your supervisor or the Company's legal counsel.\n\nAdditionally, the Code of Ethics Policy (Source 1, Section: Workplace Conduct) also states that management personnel who receive a report will promptly discuss the issue with legal counsel for further investigation.",
+    "contexts": [
+      "report a violation of this policy.\n\nManagement personnel who fail to report violation of this policy by their subordinates.\nIf an employee is accused of violating antitrust laws, yet he or she did consult legal counsel and acted in good faith, the\nemployee may not face disciplinary action under this policy. The Company may also assist in the employee’s defense,\nwithin the confines of the law.",
+      "Petty slights, annoyances and isolated incidents (unless extremely serious) will not rise to the level of illegality. To be\nunlawful, the conduct must create a work environment that would be intimidating, hostile or offensive to reasonable\npeople.\nOffensive conduct may include, but is not limited to, offensive jokes, slurs, epithets or name-calling, physical assaults or\nthreats, intimidation, ridicule or mockery, insults or put-downs, offensive objects or pictures, and interference with work",
+      "o\nNegligence or improper conduct leading to damage of company, customer or co-worker’s property\no\nInsubordination or other disrespectful conduct\no\nViolation of safety or health rules\no\nSexual or other unlawful or unwelcome harassment or touching\no\nExcessive absenteeism or any absence without notice\no\nUnauthorized use of telephones or other company equipment\no\nUsing company equipment for purposes other than business\no\nUnauthorized disclosure of confidential information\no"
+    ],
+    "ground_truth": "Under the Code of Ethics Policy, employees who learn of payments or conduct that may violate the policy must report immediately to their supervisor or the company’s legal counsel. Management receiving a report will promptly involve legal counsel for further investigation.",
+    "category": "procedural",
+    "difficulty": "medium"
+  },
+  {
+    "question": "What should I do if I need emergency leave?",
+    "answer": "If you need emergency leave, you should give verbal notice as soon as possible, and the application form should be completed as soon as practical. This is stated in the Family and Medical Leave Policy, Section: Time Away From Work (Source 3). \n\nNote: If you are incapacitated, you should have your representative give verbal notice on your behalf.",
+    "contexts": [
+      "Upon discovering a medical emergency, call 911.\no\nCall the receptionist and page an emergency announcement, if possible.\no\nStay with the ill or injured person, being careful not to come into contact with any body fluids unless properly\ntrained and protected.\no\nSend one person to alert Human Resources so they can notify family members of the ill or injured person.\no\nEmployees in the immediate vicinity of the emergency, but not involved in the emergency effort, should leave\nthe area.",
+      "be provided should an emergency occur.",
+      "leave is expected to begin. In cases of emergency, you (or your representative, if you are incapacitated) should give\nverbal notice as soon as possible, and the application form should be completed as soon as practical. Failure to provide\nadequate notice may, in the case of foreseeable leave, result in a delay or denial of leave. It is your responsibility to notify\nyour manager and Human Resources of absences that may be covered by the FMLA."
+    ],
+    "ground_truth": "For FMLA, give verbal notice as soon as possible in emergencies and complete required forms when practical. For general absences, notify your supervisor immediately per sick time and attendance expectations; follow up with documentation as required.",
+    "category": "procedural",
+    "difficulty": "medium"
+  },
+  {
+    "question": "How do I file for workers compensation?",
+    "answer": "According to our Workers’ Compensation Policy, you must report any work-related injury or disease immediately (or as soon as practicable) to your supervisor and Human Resources so that the necessary paperwork can be completed in a timely manner. [Source 1 | Policy: Workers’ Compensation Policy | Section: Appendix]",
+    "contexts": [
+      "will provide workers’ compensation, a type of accident and injury insurance that compensates an employee for lost\nwages, medical expenses and permanent impairment that results from an injury arising out of or in the course of work.\nEmployees must report any work-related injury or disease immediately (or as soon as practicable) to their supervisor and\nHuman Resources so that the necessary paperwork can be completed in a timely manner. Please note that under state",
+      "laws, employees who fail to report work-related injuries in a timely manner may see a reduction or denial of their\nworkers’ compensation benefits.\nIf an employee is able to return to work after an injury or illness for which he or she was receiving workers’\ncompensation, the employee must provide documentation from his or her medical provider that either outlines any\nwork-related restrictions or verifies that the employee is able to complete all job-related tasks. In the event that an",
+      "legal advisor to make sure your wage payment policies comply with state requirements.)"
+    ],
+    "ground_truth": "Report any work-related injury or disease immediately (or as soon as practicable) to your supervisor and Human Resources so required paperwork can be completed. Delays may reduce or deny benefits under state law.",
+    "category": "procedural",
+    "difficulty": "medium"
+  },
+  {
+    "question": "What is the onboarding process for new hires?",
+    "answer": "I don't have enough information in our HR policies to answer that question.",
+    "contexts": [
+      "are selected for the position, you will receive documentation and the transition process will begin.",
+      "The company strives to retain employees through an environment that creates opportunity and encourages\nadvancement. It is our goal to allow employees to fully use and develop their skills.\nWhen a position becomes available, it will be advertised both internally and externally. Current employees are welcome\nto apply, as are external candidates. All staffing decisions will be made with the position goals in mind, with the desire to\nhire the most-qualified individual being paramount.",
+      "carefully selects quality employees. Background checks help to ensure that new employees have the skills for the job\nand have performed well in the past.\nconducts background checks on all job candidates after a contingent offer of employment has been extended. A\nbackground check may also be completed during reassignment or promotion of an employee. A third-party\nadministrator may be used to conduct the background checks, and all background checks will be compliant with"
+    ],
+    "ground_truth": "New employees undergo the first 90 days as an orientation period with training and orientation as directed, performance monitoring, and an evaluation at the end. New hires also complete handbook acknowledgment, benefits enrollment (coverage begins the first of the month following hire when forms are completed), and other standard employment paperwork.",
+    "category": "procedural",
+    "difficulty": "medium"
+  },
+  {
+    "question": "How do I request a reasonable accommodation for a disability?",
+    "answer": "To request a reasonable accommodation for a disability, you should contact the Disability Accommodation Team (as mentioned in Source 2). They will assist you with your request and work with you to find a suitable accommodation that meets your needs without creating an undue hardship or safety risk.",
+    "contexts": [
+      "When a job applicant with a disability requests accommodation that can be reasonably provided without creating an\nundue hardship or causing a workplace safety risk, he or she will be given the same consideration for employment as any\nother applicant.\nwill reasonably accommodate qualified individuals (candidates and employees) with disabilities so that they can perform\nthe essential functions of a job, unless the requested accommodations result in the following:\n",
+      "accommodation, safety, direct threat and undue hardship issues. Contact them with any questions or requests for\naccommodation.",
+      "The request will be evaluated considering whether a work conflict exists and whether an accommodation is available\nthat is reasonable and that would not create an undue hardship for the company. Possible accommodations may be a\nchange in job duties, using paid or unpaid leave, or an exception to dress and appearances. Human Resources will confer\nwith the employee’s immediate supervisor concerning the requested accommodation. The supervisor will provide the"
+    ],
+    "ground_truth": "Contact Human Resources. VanaciPrime complies with the ADA and does not discriminate against qualified individuals with disabilities; reasonable accommodations are provided unless they impose undue hardship.",
+    "category": "procedural",
+    "difficulty": "medium"
+  },
+  {
+    "question": "What is the difference between sick leave and personal days?",
+    "answer": "I don't have enough information in our HR policies to answer that question.",
+    "contexts": [
+      "Sick time may not be carried over from year to year. If you are away from work for less than half of a day, the option of a\nhalf sick day may be used, or the missed amount of time may be made up during that workweek if the work schedule\npermits and your supervisor approves.\nSick time is a benefit provided to you in the event you need to take time off because of your health or the health of a",
+      "who are too injured or ill to work, not as additional personal or vacation time. Employees should be prepared to furnish a\ndoctor’s note or similar evidence of inability to work if the supervisor requests one. Abuse of sick leave is grounds for\ndiscipline, up to and including termination.\nExtended Leave\nEmployees who require three or more days off due their own health issue or a health issue of a family member may be",
+      "family member. It is not merely additional paid vacation or personal, thus no pay is provided for unused sick leave at the\nend of employment.\nIf state law requires a different arrangement, will comply with state law. Questions about the company’s sick time policy\nshould be directed to Human Resources.\nAbuse of Sick Leave\nRegular attendance is crucial to the success our business. Paid sick leave is provided as a financial buffer for employees"
+    ],
+    "ground_truth": "Sick time is for illness and medical/dental appointments for you or a family member, with accrual and a maximum of six days per calendar year after the first full calendar year of full-time employment (subject to earlier half-day monthly accrual). The handbook does not define a separate “personal days” allotment; PTO covers personal business and emergencies and is capped at 40 hours of accrued time.",
+    "category": "comparison",
+    "difficulty": "medium"
+  },
+  {
+    "question": "How do exempt and non-exempt employees differ?",
+    "answer": "According to the Employee Classification Policy, Section: General Practices (Source 1), exempt employees meet any of the FLSA's exemption standards, including managerial, supervisory, professional, sales, or administrative employees. Non-exempt employees, on the other hand, are those whose positions do not meet the FLSA exemption standards. Additionally, overtime work is prohibited for non-exempt employees.",
+    "contexts": [
+      "Employees are classified as either exempt or non-exempt for pay administration purposes, as determined by the federal\nFair Labor Standards Act (FLSA).\nThe definitions of the worker classification categories can be summarized as follows:\nExempt—Employees who meet any of the FLSA’s exemption standards, including managerial, supervisory, professional,\nsales or administrative employees.\nNon-exempt—Employees whose positions do not meet the FLSA exemption standards. Overtime work is prohibited",
+      "portion of the premium. Employees will have an opportunity to qualify for the non-smoking discount at least once per\nyear.\nThe company is committed to helping employees achieve their best health. If an employee thinks that he or she might\nbe unable to meet the non-smoking standard, the employee might qualify for an opportunity to earn the same discount\nby different means. An employee should contact Human Resources and Human Resources will work with the employee",
+      "company policies, procedures, benefits and work conditions—both published and unpublished.\nNo provision in this handbook can be waived without written permission from ’s President, or designee. Please review\nthe policies, procedures, working conditions and benefits described in this handbook. You will be asked to affirm that\nyou have read, understand, agree to, abide by and acknowledge your receipt of this employee handbook."
+    ],
+    "ground_truth": "Exempt employees meet FLSA exemption standards (e.g., managerial, professional, administrative). Non-exempt employees do not meet those standards; overtime work is prohibited without supervisor authorization, and non-exempt employees must be paid 1.5× the regular rate for hours over 40 per week.",
+    "category": "comparison",
+    "difficulty": "medium"
+  },
+  {
+    "question": "What is the difference between voluntary and involuntary termination?",
+    "answer": "I don't have enough information in our HR policies to answer that question. However, based on the given context, I can infer that voluntary termination is initiated by the employee (Source 1 | Employment Termination Policy | Section: Employment Policies), whereas involuntary termination is initiated by VanaciPrime (Source 1 | Employment Termination Policy | Section: Employment Policies).",
+    "contexts": [
+      "Termination of employment is an inevitable part of personnel activity within any organization, and many of the reasons\nfor termination are routine. Below are examples of some of the most common circumstances under which employment\nis terminated:\n\nResignation—voluntary employment termination initiated by an employee\n\nTermination—involuntary employment termination initiated by\n\nLayoff—involuntary employment termination initiated by VanaciPrime for nondisciplinary reasons",
+      "In addition to those situations discussed elsewhere in this handbook, listed below are some examples where immediate\ntermination could result. This list is general in nature and is not intended to be all inclusive:\no\nDiscourtesy to a customer, vendor or the general public resulting in a complaint or loss of good will\no\nRefusal or failure to follow directions from management; insubordination\no\nBreach of confidentiality relating to employer, employee, customer or vendor information\no",
+      "termination. If you have questions or concerns regarding this policy, please contact Human Resources."
+    ],
+    "ground_truth": "Resignation is voluntary termination by the employee; the handbook asks for at least two weeks’ written notice. Involuntary termination is initiated by the company (including layoff for nondisciplinary reasons). Failing to report for three consecutive days without informing management is treated as voluntary resignation.",
+    "category": "comparison",
+    "difficulty": "medium"
+  }
+]

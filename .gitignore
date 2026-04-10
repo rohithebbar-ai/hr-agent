@@ -1,0 +1,23 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+*.egg-info/
+.env
+.venv/
+venv/
+.vscode/
+.idea/
+data/hr_documents/raw/*.pdf
+data/attrition_dataset/*.csv
+mlruns/
+qdrant_data/
+.ipynb_checkpoints/
+.DS_Store
