@@ -1,23 +1,206 @@
-# Python-generated files
+# ───────────────────────────────────────────
+# Python
+# ───────────────────────────────────────────
 __pycache__/
-*.py[oc]
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+*.egg
+.eggs/
 build/
 dist/
+develop-eggs/
+downloads/
+eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
 wheels/
-*.egg-info
+pip-wheel-metadata/
+share/python-wheels/
+MANIFEST
+.installed.cfg
+.pi
 
+# ───────────────────────────────────────────
 # Virtual environments
-.venv
-
-*.egg-info/
-.env
+# ───────────────────────────────────────────
 .venv/
 venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# ───────────────────────────────────────────
+# Environment variables (CRITICAL)
+# ───────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+*.env
+!.env.example
+
+# ───────────────────────────────────────────
+# uv package manager
+# ───────────────────────────────────────────
+# Keep uv.lock in version control for reproducible builds
+# Uncomment if you want to exclude it:
+# uv.lock
+
+# ───────────────────────────────────────────
+# Testing & coverage
+# ───────────────────────────────────────────
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+nosetests.xml
+
+# ───────────────────────────────────────────
+# Jupyter / IPython
+# ───────────────────────────────────────────
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+profile_default/
+ipython_config.py
+
+# ───────────────────────────────────────────
+# IDE & editors
+# ───────────────────────────────────────────
 .vscode/
 .idea/
-data/hr_documents/raw/*.pdf
-data/attrition_dataset/*.csv
-mlruns/
-qdrant_data/
-.ipynb_checkpoints/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.settings/
+.spyderproject
+.spyproject
+.ropeproject
+
+# ───────────────────────────────────────────
+# OS files
+# ───────────────────────────────────────────
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# ───────────────────────────────────────────
+# Qdrant local storage
+# ───────────────────────────────────────────
+qdrant_data/
+qdrant_storage/
+storage/
+
+# ───────────────────────────────────────────
+# HuggingFace model cache
+# ───────────────────────────────────────────
+.cache/
+huggingface/
+transformers_cache/
+
+# ───────────────────────────────────────────
+# ML / Data artifacts
+# ───────────────────────────────────────────
+# Raw PDFs (keep the processed JSON in git)
+data/hr_documents/raw/*.pdf
+data/hr_documents/raw/*.PDF
+
+# Debug outputs from preprocessing
+data/hr_documents/processed/full_text_debug.txt
+data/hr_documents/processed/remaining_placeholders.txt
+
+# Evaluation result files (keep the golden test set, exclude run outputs)
+data/golden_test_set/baseline_results_*.json
+data/golden_test_set/baseline_scores_*.json
+data/golden_test_set/policy_aware_eval_results/
+data/golden_test_set/agentic_eval_results/
+
+# Attrition dataset (Phase 2)
+data/attrition_dataset/*.csv
+data/attrition_dataset/*.xlsx
+
+# Trained models
+models/*.pkl
+models/*.joblib
+models/*.pt
+models/*.bin
+models/*.safetensors
+
+# ───────────────────────────────────────────
+# MLflow
+# ───────────────────────────────────────────
+mlruns/
+mlflow.db
+artifacts/
+
+# ───────────────────────────────────────────
+# LangSmith / LangChain
+# ───────────────────────────────────────────
+.langsmith/
+.langchain/
+
+# ───────────────────────────────────────────
+# Generated outputs (keep directory, exclude contents)
+# ───────────────────────────────────────────
+outputs/*.png
+outputs/*.html
+outputs/*.json
+!outputs/.gitkeep
+
+# ───────────────────────────────────────────
+# Logs
+# ───────────────────────────────────────────
+*.log
+logs/
+*.log.*
+
+# ───────────────────────────────────────────
+# Docker
+# ───────────────────────────────────────────
+.dockerignore
+docker-compose.override.yml
+
+# ───────────────────────────────────────────
+# Node (if any tooling)
+# ───────────────────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ───────────────────────────────────────────
+# Secrets / credentials
+# ───────────────────────────────────────────
+*.pem
+*.key
+*.crt
+secrets/
+credentials.json
+service-account*.json
+
+# ───────────────────────────────────────────
+# Temporary files
+# ───────────────────────────────────────────
+*.tmp
+*.bak
+*.swp
+tmp/
+temp/
