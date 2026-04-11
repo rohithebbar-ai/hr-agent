@@ -22,6 +22,7 @@ from rag.retriever import (
         get_rerank_retriever,
         get_retriever
     )
+from scripts.llm_manager import LLMTask, get_llm
 import pandas 
 from ragas.metrics import context_recall, faithfulness
 from ragas.llms import LangchainLLMWrapper
@@ -112,13 +113,7 @@ def evaluate_results_ragas(results:list) -> dict:
     - answer_relevancy: is the answer relevant to the question?
     """
     # Configure RAGAS to use llm
-    llm = LangchainLLMWrapper(
-        ChatGroq(
-        model="llama-3.1-8b-instant",
-        temperature=0,
-        max_retries=5,
-        )
-    )
+    llm = LangchainLLMWrapper(get_llm(LLMTask.RAGAS_JUDGE))
 
     data = {
         "question": [r["question"] for r in results],

@@ -7,7 +7,7 @@ proper multi-turn support comes with the LangGraph pipeline.
 
 import streamlit as st
 
-from rag.policy_aware_rag import build_chain
+from rag.policy_aware.policy_aware_rag import build_chain
 
 
 # ── Page config ──────────────────────────────────────────────

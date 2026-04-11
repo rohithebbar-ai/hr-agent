@@ -21,6 +21,7 @@ from rag.retriever import (
     get_rerank_retriever,
     get_retriever
 )
+from scripts.llm_manager import LLMTask, get_llm
 
 load_dotenv()
 
@@ -81,7 +82,8 @@ def build_chain():
         k=5,
     )
 
-    llm = ChatGroq(model=LLM_MODEL, temperature=0)
+    #llm = ChatGroq(model=LLM_MODEL, temperature=0)
+    llm = get_llm(LLMTask.GENERATION)
 
     return (
         {

@@ -126,7 +126,7 @@ PLACEHOLDER_REPLACEMENTS = {
     "[insert\nlocation]": "the north and south ends of the building",
     "[insert name]": "VanaciPrime HR",
     "[insert amount of time]": "30 minutes",
-    "[insert dollar amount]": "$50",
+    "[insert dollar amount]": "50",
     "[Insert amount here]": "$500",
     "[insert amount]": "$500",
     "[insert number\nhere]": "5",
@@ -170,6 +170,104 @@ SENTENCE_REPLACEMENTS = {
         "For any tickets with a round trip cost over $500",
 }
 
+
+# ═══════════════════════════════════════════════════════
+# CONTEXT-AWARE REPLACEMENTS (regex-based)
+# ═══════════════════════════════════════════════════════
+# Replaces placeholders based on their surrounding context.
+# Each pattern matches a specific phrase, not just the placeholder.
+
+CONTEXT_AWARE_REPLACEMENTS = [
+    # ── Lunch and rest periods ──
+    (
+        r"\[insert number\]-minute lunch break",
+        "30-minute lunch break",
+    ),
+    (
+        r"hours of \[insert time\] and \[insert time\]",
+        "hours of 11:30 AM and 1:30 PM",
+    ),
+    (
+        r"Two paid rest periods of \[insert number\] minutes",
+        "Two paid rest periods of 15 minutes",
+    ),
+
+    # ── Employee classification (full-time / part-time) ──
+    (
+        r"work at least \[insert number\] hours per week",
+        "work at least 40 hours per week",
+    ),
+    (
+        r"work fewer than \[insert number\] hours per week",
+        "work fewer than 40 hours per week",
+    ),
+    (
+        r"work \[insert number\] hours or fewer per week",
+        "work 20 hours or fewer per week",
+    ),
+
+    # ── Salary advance ──
+    (
+        r"no more than \[insert number\] months of net pay",
+        "no more than 2 months of net pay",
+    ),
+    (
+        r"in no more than \[insert number\] equal installments",
+        "in no more than 6 equal installments",
+    ),
+    (
+        r"more than \[insert number\] months of repayment",
+        "more than 6 months of repayment",
+    ),
+    (
+        r"\[insert number\] percent of the advance",
+        "5 percent of the advance",
+    ),
+
+    # ── Vacation request form ──
+    (
+        r"\[insert number\]-hour increments",
+        "4-hour increments",
+    ),
+
+    # ── Benefits eligibility ──
+    (
+        r"\[insert # of hours\] hours per week",
+        "40 hours per week",
+    ),
+    (
+        r"after \[insert # of months\] months",
+        "after 3 months",
+    ),
+
+    # ── Time and dollar amounts (specific contexts) ──
+    (
+        r"deadline of \[insert hour\]",
+        "deadline of 9:00 AM",
+    ),
+    (
+        r"by \[insert hour\] on",
+        "by 9:00 AM on",
+    ),
+
+    # ── Salary advance dollar amount fix ──
+    (
+        r"processing fee of \$\[insert dollar amount\]",
+        "processing fee of $50",
+    ),
+]
+
+
+def apply_context_aware_replacements(text: str) -> str:
+    """
+    Apply position-aware regex replacements BEFORE global placeholder
+    replacement. This handles cases where the same placeholder
+    (e.g., [insert number]) needs different values in different
+    contexts.
+    """
+    for pattern, replacement in CONTEXT_AWARE_REPLACEMENTS:
+        text = re.sub(pattern, replacement, text, flags=re.IGNORECASE)
+    return text
 
 # ═══════════════════════════════════════════════════════
 # BLANK FIELD PATTERNS (regex)
@@ -552,11 +650,12 @@ def preprocess_pages(pages: list[Page]) -> list[Page]:
     """
     Full pipeline. Order matters:
     1. Remove repeated headers/footers (Zywave)
-    2. Full sentence replacements
-    3. Individual placeholder replacements
-    4. Fill blank fields (regex)
-    5. Fix blank company names
-    6. Clean text
+    2. Apply CONTEXT-AWARE replacements
+    3. Full sentence replacements
+    4. Individual placeholder replacements (catches remaining generics)
+    5. Fill blank fields (regex)
+    6. Fix blank company names
+    7. Clean text
     """
     processed: list[Page] = []
 
@@ -564,6 +663,7 @@ def preprocess_pages(pages: list[Page]) -> list[Page]:
         text = page.text
 
         text = remove_repeated_lines(text)
+        text = apply_context_aware_replacements(text) 
         text = replace_sentences(text)
         text = replace_placeholders(text)
         text = fill_blank_fields(text)

@@ -25,6 +25,7 @@ share/python-wheels/
 MANIFEST
 .installed.cfg
 .pi
+graphify-out
 
 # ───────────────────────────────────────────
 # Virtual environments
