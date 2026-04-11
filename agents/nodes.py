@@ -60,19 +60,22 @@ def route_query_node(
     """Classify query as CHAT or RAG and route accordingly."""
     print(f"\n[ROUTE] Classifying: {state['question'][:60]}")
 
-    structured_llm = base_llm.with_structured_output(RouteQuery)
-    chain = ROUTER_PROMPT | structured_llm
-
-    result = chain.invoke({"question": state["question"]})
-    category = result.category
+    try:
+        structured_llm = base_llm.with_structured_output(RouteQuery)
+        chain = ROUTER_PROMPT | structured_llm
+        result = chain.invoke({"question": state["question"]})
+        category = result.category
+    except Exception as e:
+        print(f"[ROUTE] Routing failed: {e}, defaulting to CHAT")
+        category = "CHAT"
 
     goto = "chat_node" if category == "CHAT" else "transform_query"
-    print(f"[ROUTE] -> {category} -> {goto}")
+    print(f"[ROUTE] → {category} → {goto}")
 
     return Command(
         update={
             "question_category": category,
-            "messages": [HumanMessage(content=state["question"])]
+            "messages": [HumanMessage(content=state["question"])],
         },
         goto=goto,
     )
@@ -220,4 +223,306 @@ def retrieve_node(
         update={"documents": all_docs},
         goto="grade_documents",
     )
+
+
+# ══════════════════════════════════════════════════
+# NODE 5: grade_documents (BATCHED)
+# ══════════════════════════════════════════════════
+
+BATCH_GRADER_PROMPT = ChatPromptTemplate.from_messages([
+    ("system",
+     "You are a relevance grader for an HR retrieval system.\n"
+     "For each document, determine if it could help answer the "
+     "user's question — even partially.\n\n"
+     "Be GENEROUS with relevance. A document is relevant if:\n"
+     "- It mentions the topic in the question\n"
+     "- It contains policies related to the topic\n"
+     "- It provides background or context for the answer\n"
+     "- It defines terms used in the question\n"
+     "- It's from the same policy area (e.g., 'Vacation Policy' "
+     "is relevant to 'How many vacation days?')\n\n"
+     "A document is NOT relevant only if it's about a "
+     "completely different topic with no connection to the question.\n\n"
+     "When in doubt, mark as 'yes'. Better to keep too much "
+     "context than to lose relevant information.\n\n"
+     "Return one grade per document in the same order."),
+    ("human",
+     "Question: {question}\n\n"
+     "Documents:\n{documents}\n\n"
+     "Grade each document as 'yes' or 'no'."),
+])
+
+
+def grade_documents_node(
+    state: PolicyAgentState,
+    base_llm,
+) -> Command[Literal["generate", "transform_query"]]:
+    """
+    Grade all documents in ONE batched LLM call.
+
+    Routes to retry or generate based on grading result.
+    Uses a generous grading prompt to avoid filtering out
+    relevant documents.
+    """
+    documents = state["documents"]
+    print(f"\n[GRADE] Batch-grading {len(documents)} documents...")
+
+    # ── Handle empty case ──
+    if not documents:
+        print(f"[GRADE] → No documents to grade")
+        retry_count = state.get("retrieval_retry_count", 0)
+        if retry_count < 2:
+            print(f"[GRADE] → Retrying (attempt {retry_count + 1}/2)")
+            return Command(
+                update={
+                    "graded_documents": [],
+                    "grade_summary": "none_relevant",
+                    "retrieval_retry_count": retry_count + 1,
+                },
+                goto="transform_query",
+            )
+        return Command(
+            update={
+                "graded_documents": [],
+                "grade_summary": "none_relevant",
+            },
+            goto="generate",
+        )
+
+    # ── Format documents for batch grading ──
+    doc_text = "\n\n".join([
+        f"[Document {i+1}] (Policy: {doc.metadata.get('policy_name', 'Unknown')})\n"
+        f"{doc.page_content[:500]}"
+        for i, doc in enumerate(documents)
+    ])
+
+    # ── Run batched grader ──
+    structured_llm = base_llm.with_structured_output(BatchDocumentGrades)
+    chain = BATCH_GRADER_PROMPT | structured_llm
+
+    try:
+        result = chain.invoke({
+            "question": state["question"],
+            "documents": doc_text,
+        })
+        grades = result.grades
+
+        # Defensive: handle mismatched grade count
+        if len(grades) != len(documents):
+            print(
+                f"[GRADE] Grade count mismatch "
+                f"({len(grades)} grades for {len(documents)} docs), "
+                f"keeping all documents"
+            )
+            grades = ["yes"] * len(documents)
+
+    except Exception as e:
+        print(f"[GRADE] Batch grading failed: {e}, keeping all docs")
+        grades = ["yes"] * len(documents)
+
+    # ── Filter and log per-document decisions ──
+    graded = []
+    for i, (doc, grade) in enumerate(zip(documents, grades)):
+        policy = doc.metadata.get("policy_name", "?")[:50]
+        marker = "correct" if grade == "yes" else "wrong"
+        print(f"  {marker} [{grade}] {policy}")
+        if grade == "yes":
+            graded.append(doc)
+
+    # ── Calculate summary ──
+    total = len(documents)
+    kept = len(graded)
+
+    if kept == 0:
+        summary = "none_relevant"
+    elif kept == total:
+        summary = "all_relevant"
+    else:
+        summary = "some_relevant"
+
+    print(f"[GRADE] → {kept}/{total} relevant ({summary})")
+
+    # ── Safety net: if grader rejected EVERYTHING but we have docs,
+    # ── that's almost certainly a grader failure. Keep all docs anyway.
+    if kept == 0 and total > 0:
+        print(f"[GRADE] → Grader rejected all docs (suspicious), "
+              f"keeping all as safety net")
+        return Command(
+            update={
+                "graded_documents": documents,  # Keep ALL
+                "grade_summary": "all_relevant",
+            },
+            goto="generate",
+        )
+
+    # ── Decide routing ──
+    retry_count = state.get("retrieval_retry_count", 0)
+
+    if summary == "none_relevant" and retry_count < 2:
+        print(f"[GRADE] → Retrying retrieval (attempt {retry_count + 1}/2)")
+        return Command(
+            update={
+                "graded_documents": graded,
+                "grade_summary": summary,
+                "retrieval_retry_count": retry_count + 1,
+            },
+            goto="transform_query",
+        )
+
+    return Command(
+        update={
+            "graded_documents": graded,
+            "grade_summary": summary,
+        },
+        goto="generate",
+    )
+# ══════════════════════════════════════════════════
+# NODE 6: generate
+# ══════════════════════════════════════════════════
+
+
+GENERATE_PROMPT = ChatPromptTemplate.from_messages([
+    ("system",
+     "You are an HR Policy Assistant for VanaciPrime.\n"
+     "Answer the employee's question based ONLY on the provided "
+     "context. If the context doesn't contain enough information, "
+     "say so clearly.\n\n"
+     "Cite which policy or section each part of your answer "
+     "comes from.\n\n"
+     "Context:\n{context}"),
+    ("placeholder", "{history}"),
+    ("human", "{question}"),
+])
+
+def _format_context(docs: List[Document]) -> str:
+    """Format documents into context string for the LLM."""
+    if not docs:
+        return "(no documents retrieved)"
+
+    formatted = []
+    for i, doc in enumerate(docs, 1):
+        policy = doc.metadata.get("policy_name", "Unknown")
+        section = doc.metadata.get("section", "Unknown")
+        formatted.append(
+            f"[Source {i} | Policy: {policy} | Section: {section}]\n"
+            f"{doc.page_content}"
+        )
+    return "\n\n".join(formatted)
+
+
+def generate_node(
+    state: PolicyAgentState,
+    base_llm,
+) -> Command[Literal["check_grounding"]]:
+    """Generate answer from graded documents."""
+    print(f"\n[GENERATE] Using {len(state['graded_documents'])} documents...")
+
+    context = _format_context(state["graded_documents"])
+    history = state.get("messages", [])[-6:]
+
+    chain = GENERATE_PROMPT | base_llm
+    response = chain.invoke({
+        "question": state["question"],
+        "context": context,
+        "history": history,
+    })
+    answer = response.content
+    print(f"[GENERATE] → Generated {len(answer)} chars")
+    print(f"[GENERATE] → Preview: {answer[:80]}...")
+
+    return Command(
+        update={"answer": answer},
+        goto="check_grounding",
+    )
+
+# ══════════════════════════════════════════════════
+# NODE 7: check_grounding
+# ══════════════════════════════════════════════════
+
+
+GROUNDING_PROMPT = ChatPromptTemplate.from_messages([
+    ("system",
+     "You are a hallucination checker. Determine if the given "
+     "answer is fully grounded in the provided context.\n\n"
+     "An answer is GROUNDED if every factual claim can be "
+     "verified from the context.\n"
+     "An answer is NOT GROUNDED if it contains claims not "
+     "supported by the context.\n\n"
+     "'I don't have enough information' answers are always GROUNDED."),
+    ("human",
+     "Context:\n{context}\n\n"
+     "Answer:\n{answer}\n\n"
+     "Is the answer grounded?"),
+])
+
+def check_grounding_node(
+    state: PolicyAgentState,
+    base_llm,
+) -> Command[Literal["generate", "__end__"]]:
+    """Check if the answer is grounded. Retry generation if not."""
+    answer = state["answer"]
+
+    # OPTIMIZATION: skip grounding for refusal answers
+    refusal_phrases = [
+        "don't have enough",
+        "i don't have",
+        "cannot answer",
+        "not enough information",
+    ]
+
+    if (len(answer) < 150 and
+            any(phrase in answer.lower() for phrase in refusal_phrases)):
+        print(f"\n[GROUND] Skipped (refusal detected)")
+        return Command(
+            update={
+                "is_grounded": True,
+                "messages": [AIMessage(content=answer)],
+            },
+            goto=END,
+        )
+
+    print(f"\n[GROUND] Checking grounding...")
+
+    context = _format_context(state["graded_documents"])
+
+    structured_llm = base_llm.with_structured_output(GroundingCheck)
+    chain = GROUNDING_PROMPT | structured_llm
+    try:
+        result = chain.invoke({
+            "context": context,
+            "answer": answer,
+        })
+        is_grounded = result.is_grounded == "grounded"
+    except Exception as e:
+        print(f"[GROUND] Check failed: {e}, assuming grounded")
+        is_grounded = True
+
+    print(f"[GROUND] → {'grounded ✓' if is_grounded else 'NOT grounded ✗'}")
+
+    # Decide routing inline
+    retry_count = state.get("generation_retry_count", 0)
+
+    if not is_grounded and retry_count < 1:
+        print(f"[GROUND] → Regenerating (attempt {retry_count + 1}/1)")
+        return Command(
+            update={
+                "is_grounded": is_grounded,
+                "generation_retry_count": retry_count + 1,
+            },
+            goto="generate",
+        )
+
+    return Command(
+        update={
+            "is_grounded": is_grounded,
+            "messages": [AIMessage(content=answer)],
+        },
+        goto=END,
+    )
+
+
+
+
+
+
 

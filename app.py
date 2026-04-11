@@ -1,105 +1,114 @@
 """
-HR Policy Assistant — Streamlit UI
-───────────────────────────────────
-Wraps the policy-aware RAG chain. Single-turn for now —
-proper multi-turn support comes with the LangGraph pipeline.
+Streamlit UI for the Policy Agent.
+ 
+Features:
+- Chat interface with conversation memory
+- Thread ID per browser session
+- Graph visualization in sidebar
 """
-
+ 
+import uuid
+from pathlib import Path
+ 
 import streamlit as st
-
-from rag.policy_aware.policy_aware_rag import build_chain
-
-
-# ── Page config ──────────────────────────────────────────────
+ 
+from agents.pipeline import PolicyAgentPipeline
+ 
+ 
+# ── Page config ──
 st.set_page_config(
     page_title="HR Policy Assistant",
     page_icon="📋",
     layout="centered",
 )
-
+ 
 st.title("📋 HR Policy Assistant")
-st.caption("Powered by Policy-Aware RAG · VanaciPrime")
+st.caption("Powered by LangGraph Agentic RAG · VanaciPrime")
 st.divider()
-
-
-# ── Session state ────────────────────────────────────────────
+ 
+ 
+# ── Session state ──
 if "messages" not in st.session_state:
     st.session_state.messages = []
-
-if "chain" not in st.session_state:
+ 
+if "thread_id" not in st.session_state:
+    st.session_state.thread_id = str(uuid.uuid4())
+ 
+if "pipeline" not in st.session_state:
     with st.spinner(
-        "Loading model and connecting to Qdrant… "
-        "(first load may take a minute)"
+        "Initializing agent… (loading model, connecting to Qdrant)"
     ):
-        st.session_state.chain = build_chain()
-
-
-# ── Render existing conversation ─────────────────────────────
+        st.session_state.pipeline = PolicyAgentPipeline(top_k=5)
+        # Pre-compile graph
+        st.session_state.pipeline.create_agent()
+ 
+ 
+# ── Render conversation ──
 for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
-
-
-# ── Chat input ───────────────────────────────────────────────
+ 
+ 
+# ── Chat input ──
 question = st.chat_input("Ask an HR policy question…")
-
+ 
 if question:
-    # Show user message
     st.session_state.messages.append({
         "role": "user",
         "content": question,
     })
     with st.chat_message("user"):
         st.markdown(question)
-
-    # Stream the answer — send ONLY the current question
-    # Conversation history is NOT used here because the chain
-    # doesn't separate retrieval from generation. Sending history
-    # would contaminate the vector search.
+ 
     with st.chat_message("assistant"):
-        placeholder = st.empty()
-        answer_chunks = []
-
-        try:
-            for chunk in st.session_state.chain.stream(question):
-                answer_chunks.append(chunk)
-                placeholder.markdown("".join(answer_chunks) + "▌")
-            answer = "".join(answer_chunks)
-            placeholder.markdown(answer)
-        except Exception as exc:
-            answer = f"⚠️ Error: {exc}"
-            placeholder.markdown(answer)
-
+        with st.spinner("Thinking…"):
+            try:
+                answer = st.session_state.pipeline.run(
+                    query=question,
+                    thread_id=st.session_state.thread_id,
+                )
+            except Exception as exc:
+                answer = f"⚠️ Error: {exc}"
+ 
+        st.markdown(answer)
+ 
     st.session_state.messages.append({
         "role": "assistant",
         "content": answer,
     })
-
-
-# ── Sidebar controls ─────────────────────────────────────────
+ 
+ 
+# ── Sidebar ──
 with st.sidebar:
     st.header("Controls")
-
-    if st.button("🗑️ Clear conversation", use_container_width=True):
+ 
+    if st.button("🗑️ New conversation", use_container_width=True):
         st.session_state.messages = []
+        st.session_state.thread_id = str(uuid.uuid4())
         st.rerun()
-
+ 
     st.divider()
-    st.markdown("**Model:** `llama-3.1-70b-versatile`")
+ 
+    # ── Graph visualization ──
+    graph_path = Path("outputs/policy_agent_graph.png")
+    if graph_path.exists():
+        st.markdown("**Agent Architecture**")
+        st.image(str(graph_path))
+ 
+    st.divider()
+ 
+    st.markdown("**Main Model:** `llama-3.1-70b-versatile`")
+    st.markdown("**Grading Model:** `llama-3.1-8b-instant`")
     st.markdown("**Retrieval:** Policy-Aware MMR (k=5)")
-    st.markdown("**Embeddings:** `all-MiniLM-L6-v2`")
     st.markdown("**Vector DB:** Qdrant")
-
+    st.markdown("**Memory:** Per-session thread")
+ 
     st.divider()
+ 
     st.caption(
-        "ℹ️ Single-turn mode. Each question is independent. "
-        "Multi-turn conversation memory will be added with the "
-        "LangGraph agentic pipeline."
+        "💡 Try multi-hop questions:\n\n"
+        "- How does FMLA differ from personal leave?\n"
+        "- If I exhaust PTO and sick leave, what options do I have?\n"
+        "- What's the difference between harassment policies?"
     )
-    st.divider()
-    st.caption(
-        "💡 Try asking:\n\n"
-        "- How many vacation days do I get?\n"
-        "- What is the drug testing policy?\n"
-        "- How does FMLA work?"
-    )
+ 

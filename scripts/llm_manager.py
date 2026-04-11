@@ -135,7 +135,7 @@ TASK_CONFIG = {
         "max_retries": 3,
     },
     LLMTask.DOCUMENT_GRADING: {
-        "model": ModelID.LLAMA_3_1_8B_INSTANT,
+        "model": ModelID.LLAMA_3_3_70B,
         "temperature": 0,
         "max_retries": 3,
     },

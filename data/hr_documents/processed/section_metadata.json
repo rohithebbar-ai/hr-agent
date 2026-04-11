@@ -1793,5 +1793,20 @@
     ],
     "page_start": 141,
     "page_end": 141
+  },
+  {
+    "policy_id": "supplementary_001",
+    "section": "Employment Policies",
+    "policy_name": "Probationary Period Policy",
+    "category": "Employment",
+    "keywords": [
+      "benefits",
+      "insurance",
+      "period",
+      "probationary",
+      "pto"
+    ],
+    "page_start": 999,
+    "page_end": 999
   }
 ]

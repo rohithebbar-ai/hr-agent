@@ -30,12 +30,12 @@ from rag.config import (
     resolve_qdrant_force_recreate,
 )
 
-CHUNK_SIZE = 500
-CHUNK_OVERLAP = 50
+CHUNK_SIZE = 800
+CHUNK_OVERLAP = 100
 
 # Policies shorter than this are embedded as a single unit.
 # This prevents short policies from being split across chunks, which destroys context for the LLM.
-WHOLE_POLICY_THRESHOLD = 1000
+WHOLE_POLICY_THRESHOLD = 2000
 
 def load_policies() -> list[dict]:
     """ Load structured policy objects from preprocessing output """

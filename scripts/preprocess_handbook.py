@@ -55,6 +55,7 @@ HANDBOOK_URL = (
     "employeehandbookandguidelines.pdf"
 )
 HANDBOOK_FILENAME = "gallagher_employee_handbook.pdf"
+SUPPLEMENTARY_FILE = RAW_DIR / "supplementary_policies.txt"
 
 
 # ═══════════════════════════════════════════════════════
@@ -255,6 +256,22 @@ CONTEXT_AWARE_REPLACEMENTS = [
         r"processing fee of \$\[insert dollar amount\]",
         "processing fee of $50",
     ),
+
+    # ── Vacation Policy (uses parentheses, not brackets!) ──
+    (
+        r"full-time employees are permitted \(insert amount here\) paid vacation",
+        "full-time employees are permitted 15 days of paid vacation",
+    ),
+    (
+        r"part-time employees will be eligible for \(insert amount here\) of paid vacation",
+        "part-time employees will be eligible for 8 days of paid vacation",
+    ),
+    
+    # ── PTO Policy (parenthesis variant) ──
+    (
+        r"part-time\s*employees earn PTO by working at least \(insert # of hours\) hours",
+        "part-time employees earn PTO by working at least 20 hours",
+    ),
 ]
 
 
@@ -393,6 +410,20 @@ KNOWN_SECTIONS = {
     "Appendix",
 }
 
+def fix_parenthesis_placeholders(text: str) -> str:
+    """
+    Catch placeholders that use parentheses instead of brackets.
+    These are leftover template artifacts the bracket-based 
+    replacements missed.
+    """
+    # Match patterns like (insert amount here), (insert # of hours), etc.
+    text = re.sub(
+        r"\(insert [^)]+\)",
+        "[see policy details]",
+        text,
+        flags=re.IGNORECASE,
+    )
+    return text
 
 # ═══════════════════════════════════════════════════════
 # DOWNLOAD
@@ -411,6 +442,62 @@ def download_handbook() -> Path:
     print(f"[OK] Downloaded to: {filepath}")
     return filepath
 
+
+def load_supplementary_policies() -> list[PolicyObject]:
+    """
+    Load manually-written supplementary policies that aren't in
+    the Gallagher handbook. Format: sections separated by 
+    '=== Policy Name ===' headers.
+    """
+    if not SUPPLEMENTARY_FILE.exists():
+        print(f"[INFO] No supplementary policies file found")
+        return []
+    
+    print(f"[LOAD] Reading supplementary policies...")
+    
+    with open(SUPPLEMENTARY_FILE, "r", encoding="utf-8") as f:
+        content = f.read()
+    
+    policies = []
+    # Split on === Policy Name === headers
+    sections = re.split(r"===\s*([^=]+?)\s*===", content)
+    
+    # sections is like: ['', 'Policy Name 1', 'body 1', 'Policy Name 2', 'body 2', ...]
+    for i in range(1, len(sections), 2):
+        if i + 1 >= len(sections):
+            break
+        
+        policy_name = sections[i].strip()
+        body = sections[i + 1].strip()
+        
+        # Parse Section: and Category: lines from the body
+        section = "Employment Policies"  # default
+        category = "Employment"          # default
+        body_lines = []
+        
+        for line in body.split("\n"):
+            if line.startswith("Section:"):
+                section = line.replace("Section:", "").strip()
+            elif line.startswith("Category:"):
+                category = line.replace("Category:", "").strip()
+            else:
+                body_lines.append(line)
+        
+        full_text = "\n".join(body_lines).strip()
+        
+        policies.append(PolicyObject(
+            policy_id=f"supplementary_{i//2 + 1:03d}",
+            section=section,
+            policy_name=policy_name,
+            full_text=full_text,
+            page_start=999,  # marker for supplementary
+            page_end=999,
+            category=category,
+            keywords=extract_keywords(full_text, policy_name),
+        ))
+    
+    print(f"[OK] Loaded {len(policies)} supplementary policies")
+    return policies
 
 # ═══════════════════════════════════════════════════════
 # DETECT PAGES TO SKIP
@@ -666,6 +753,7 @@ def preprocess_pages(pages: list[Page]) -> list[Page]:
         text = apply_context_aware_replacements(text) 
         text = replace_sentences(text)
         text = replace_placeholders(text)
+        text = fix_parenthesis_placeholders(text) 
         text = fill_blank_fields(text)
         text = fix_blank_company_names(text)
         text = clean_text(text)
@@ -948,14 +1036,21 @@ def main():
     # 4. Extract policy objects
     policies = extract_policies(processed_pages)
 
-    # 5. Save
+    # 5. Add supplementary policies
+    supplementary = load_supplementary_policies()
+    policies.extend(supplementary)
+
+    print(f"[OK] Total policies: {len(policies)} "
+          f"({len(supplementary)} supplementary)")
+
+    # 6. Save
     print("\n[SAVE] Writing outputs")
     save_policies_json(policies)
     save_section_metadata(policies)
     save_debug_txt(processed_pages)
     save_remaining_placeholders(processed_pages)
 
-    # 6. Summary
+    # 7. Summary
     total_chars = sum(len(p.full_text) for p in policies)
     sections = set(p.section for p in policies)
     categories = set(p.category for p in policies)

@@ -10,7 +10,7 @@ from typing import Annotated, List, Literal, Optional, Sequence
 from langchain_core.documents import Document
 from langchain_core.messages import BaseMessage
 from langgraph.graph import add_messages
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from typing_extensions import TypedDict
 
 
@@ -25,14 +25,23 @@ from typing_extensions import TypedDict
 
 class RouteQuery(BaseModel):
     """Routes a user question to CHAT or RAG pipeline."""
-    category: Literal["chat", "RAG"] = Field(
+    category: Literal["CHAT", "RAG"] = Field(
         description=(
-            "CHAT for greetings, small talk, or general questions"
-            "not requiring document retrieval"
-            "RAG for HR policy, benefits, leave, workplace conduct,"
-            "or anything requiring the HR handbook"
+            "CHAT for greetings, small talk, or general questions "
+            "not requiring document retrieval. "
+            "RAG for HR policy, benefits, leave, workplace conduct, "
+            "or anything requiring the HR handbook."
         )
     )
+
+    @field_validator("category", mode="before")
+    @classmethod
+    def normalize_category(cls, v):
+        if isinstance(v, str):
+            v_upper = v.upper()
+            if v_upper in ("CHAT", "RAG"):
+                return v_upper
+        return v
 
 class QueryDecomposition(BaseModel):
     """Decomposes a user query into sub-queries for multi-hop retrieval."""
@@ -57,14 +66,31 @@ class DocumentGrade(BaseModel):
 
 class GroundingCheck(BaseModel):
     """Checks if a generated answer is grounded in the context."""
-    is_grounded : Literal["grounded", "not_grounded"] = Field(
+    is_grounded: Literal["grounded", "not_grounded"] = Field(
         description=(
             "'grounded' if every factual claim in the answer can be "
             "verified from the context. 'not_grounded' if the answer "
             "contains unsupported claims. "
-            "'I don't have enough information' is always 'grounded'."
+            "'I don't have enough information' answers are 'grounded'."
         )
     )
+
+    @field_validator("is_grounded", mode="before")
+    @classmethod
+    def normalize_grounded(cls, v):
+        if isinstance(v, str):
+            v_lower = v.lower().strip()
+            # Catch refusal phrases and treat as grounded
+            if any(phrase in v_lower for phrase in [
+                "don't have", "not enough", "cannot", "no information"
+            ]):
+                return "grounded"
+            # Catch any "grounded" variant
+            if "not_grounded" in v_lower or "not grounded" in v_lower:
+                return "not_grounded"
+            if "grounded" in v_lower:
+                return "grounded"
+        return v
 
 class BatchDocumentGrades(BaseModel):
     """Grades for a batch of documents."""

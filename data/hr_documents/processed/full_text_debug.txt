@@ -1975,8 +1975,7 @@ In the event of severe weather or adverse driving conditions
 PTO does not replace the Company holiday schedule. We will continue to have compensated holidays each year.
 Eligibility for PTO
 All full-time (if applicable: and part-time) employees are eligible to earn PTO on a (pick one: weekly/monthly) basis. Full-
-time employees earn PTO by working at least 40 hours per week (if applicable: while part-time
-employees earn PTO by working at least (insert # of hours) hours per week).
+time employees earn PTO by working at least 40 hours per week (if applicable: while part-time employees earn PTO by working at least 20 hours per week).
 PTO Accrual
 Employees accrue PTO hours after 3 months of employment. After that point, full-time employees will
 accrue PTO hours each pay period. Accrued PTO is available for immediate use. (if applicable: Part-time employees will
@@ -2274,11 +2273,11 @@ o
 Length of desired vacation
 o
 Elapsed time since employee’s last five-day (or longer) vacation
-Regular full-time employees are permitted (insert amount here) paid vacation per employment year. If an employee
+Regular full-time employees are permitted 15 days of paid vacation per employment year. If an employee
 requires more vacation than is allotted, Human Resources must determine whether or not it is allowable to provide the
 employee more vacation without pay. For each continuous year of employment, an additional eight hours of vacation
 time will accrue.
-Regular part-time employees will be eligible for (insert amount here) of paid vacation per employment year.
+Regular part-time employees will be eligible for 8 days of paid vacation per employment year.
 If your employment is terminated, either voluntarily or involuntarily, you will be paid for unused vacation leave.
 Please contact Human Resources with all questions or concerns.
 
