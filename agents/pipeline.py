@@ -5,6 +5,7 @@ Class-based wrapper around the LangGraph graph.
 Uses functools.partial for dependency injection.
 """
 
+from ast import NodeTransformer
 import os
 from functools import partial
 from pathlib import Path
@@ -60,7 +61,7 @@ class PolicyAgentPipeline:
         if os.environ.get("LANGSMITH_API_KEY"):
             os.environ["LANGSMITH_TRACING_V2"] = "true"
             os.environ["LANGSMITH_PROJECT"] = os.environ.get(
-                "LANGSMITH_PROJECT", "vanaciretain"
+                "LANGSMITH_PROJECT", "hragent"
             )
 
         os.environ["TOKENIZERS_PARALLELISM"] = "false"
@@ -119,9 +120,22 @@ class PolicyAgentPipeline:
         except Exception as e:
             print(f"[GRAPH] Could not save visualization: {e}")
 
-    def run(self, query: str, thread_id: str = "default") -> str:
+    def run(
+        self,
+        query: str,
+        thread_id: str = "default",
+        metadata: dict = None,
+        tags: list = None,
+        ) -> str:
+        """Run a single query through the agent."""
         graph = self.create_agent()
-        config = {"configurable": {"thread_id": thread_id}}
+
+
+        config = {
+            "configurable": {"thread_id": thread_id},
+            "metadata": metadata or {},
+            "tags": tags or [],
+            }
         final_state = graph.invoke(
             {"question": query},
             config=config,

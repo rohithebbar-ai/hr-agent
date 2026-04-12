@@ -31,8 +31,8 @@ load_dotenv()
 # Two keys: one for runtime traffic, one for evaluation.
 # Keeps RAGAS from burning through runtime quota.
 
-GROQ_API_KEY_RUNTIME = os.environ.get("GROQ_API_KEY")
-GROQ_API_KEY_EVAL = os.environ.get("GROQ_API_KEY_2")
+GROQ_API_KEY_RUNTIME = os.environ.get("GROQ_API_KEY_4")
+GROQ_API_KEY_EVAL = os.environ.get("GROQ_API_KEY_3")
 
 def get_api_key_for_task(task: "LLMTask") -> str:
     """
@@ -150,6 +150,12 @@ TASK_CONFIG = {
         "model": ModelID.LLAMA_GUARD_4_12B,
         "temperature": 0,
         "max_retries": 3,
+    },
+
+     LLMTask.RAGAS_JUDGE: {
+        "model": ModelID.LLAMA_3_1_8B_INSTANT,
+        "temperature": 0,
+        "max_retries": 5,
     },
 }
 

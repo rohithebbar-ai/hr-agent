@@ -341,6 +341,15 @@ def grade_documents_node(
         summary = "some_relevant"
 
     print(f"[GRADE] → {kept}/{total} relevant ({summary})")
+    if total >= 4 and kept / total < 0.25:
+        print(
+            f"[GRADE] → Grader too aggressive "
+            f"({kept}/{total} = {kept/total:.0%}), "
+            f"keeping all docs as safety net"
+        )
+        graded = documents
+        summary = "all_relevant"
+        kept = total
 
     # ── Safety net: if grader rejected EVERYTHING but we have docs,
     # ── that's almost certainly a grader failure. Keep all docs anyway.
@@ -483,7 +492,12 @@ def check_grounding_node(
 
     print(f"\n[GROUND] Checking grounding...")
 
-    context = _format_context(state["graded_documents"])
+    context_snippets = []
+    for i, doc in enumerate(state["graded_documents"][:5], 1):  # Max 5 docs
+        snippet = doc.page_content[:300]  # Truncate
+        context_snippets.append(f"[Doc {i}] {snippet}")
+    
+    context = "\n\n".join(context_snippets)
 
     structured_llm = base_llm.with_structured_output(GroundingCheck)
     chain = GROUNDING_PROMPT | structured_llm
@@ -497,7 +511,7 @@ def check_grounding_node(
         print(f"[GROUND] Check failed: {e}, assuming grounded")
         is_grounded = True
 
-    print(f"[GROUND] → {'grounded ✓' if is_grounded else 'NOT grounded ✗'}")
+    print(f"[GROUND] → {'grounded' if is_grounded else 'NOT grounded'}")
 
     # Decide routing inline
     retry_count = state.get("generation_retry_count", 0)

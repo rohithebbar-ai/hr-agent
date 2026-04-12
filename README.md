@@ -276,8 +276,8 @@ Set `EVAL_START` and `EVAL_END` at the top of each script to control which batch
 * [X] Multi-LLM routing (small for grading, large for generation)
 * [X] Centralized LLM manager with dual API key isolation
 * [X] Streamlit UI with conversation memory
-* [ ] Full agentic evaluation across all 5 batches
-* [ ] LangSmith tracing integration
+* [X] Full agentic evaluation across all 5 batches
+* [X] LangSmith tracing integration
 * [ ] FastAPI backend with streaming
 * [ ] AWS EC2 deployment
 
@@ -357,6 +357,48 @@ Per-category analysis revealed that single-pass retrieval has a fundamental limi
 **TypedDict over Pydantic for agent state** — TypedDict has lower overhead for partial state updates that happen between every node. Pydantic is reserved for the LLM input/output boundary where validation actually matters (parsing untrusted LLM output via with_structured_output).
 
 ---
+
+## Observability with LangSmith
+
+The agentic pipeline is fully instrumented with LangSmith for distributed tracing, evaluation tracking, and user feedback collection. Every query through the system generates a complete trace showing each LangGraph node's input, output, latency, and token usage — making it possible to diagnose failures at the node level instead of guessing from terminal logs.
+
+### What's traced
+
+Every agent invocation captures:
+
+- Per-node latency for all 7 LangGraph nodes (route, transform, retrieve, grade, generate, check_grounding, chat)
+- Token usage per node, broken down by input and output tokens
+- Full state transitions between nodes with the actual document content
+- Routing decisions (which conditional edge fired and why)
+- Errors and retry attempts with full stack traces
+- Metadata tags for filtering by question category, difficulty, and evaluation batch
+
+### Evaluation integration
+
+Two complementary evaluation paths feed into LangSmith:
+
+1. **Batch evaluation** (`rag/eval_agentic.py`) runs the full golden test set in batches of 10, scores with RAGAS (context_recall, faithfulness), and pushes per-question scores back to the original LangGraph traces as feedback. Used for tracking iteration-over-iteration progress against the baseline and policy-aware versions.
+
+2. **Deep-dive evaluation** (`scripts/eval_langsmith.py`) runs a smaller batch (4 questions) with three RAGAS metrics — context_recall, context_precision, and faithfulness — and attaches them to LangSmith traces. The fourth standard RAGAS metric (answer_relevancy) was excluded because it requires the LLM provider to support generating multiple completions per request, which Groq does not. Rather than introducing OpenAI as a second provider for one metric, the project uses context_precision and faithfulness as proxies for answer quality.
+
+After running either script, individual traces in the LangSmith UI show the question, the agent's full execution flow, the retrieved documents, the generated answer, and all attached RAGAS scores in one place. Filtering traces by `feedback.context_recall < 0.6` instantly surfaces the worst-performing queries for investigation.
+
+### User feedback collection
+
+The Streamlit UI captures user thumbs up/down on every assistant response. Each feedback action pushes a `user_rating` entry to LangSmith attached to that specific run ID. This builds a real production feedback loop where bad answers can be investigated alongside their full agent traces and RAGAS scores.
+
+### Configuration
+
+LangSmith integration requires three environment variables in `.env`:
+LANGSMITH_API_KEY=lsv2_pt_xxxxx
+LANGSMITH_TRACING=true
+LANGSMITH_PROJECT=hragent
+
+When these are set, every agent run is automatically traced. When they're absent, the pipeline runs normally without tracing — making LangSmith a true observability layer rather than a hard dependency.
+
+### Why LangSmith over local logging
+
+The print statements in each LangGraph node provide a quick view of agent flow during development, but they don't scale once the system is deployed. LangSmith provides three things print statements cannot: persistent trace history (debug yesterday's failures, not just today's), per-node aggregated metrics (find which node is consistently slowest across all runs), and feedback correlation (link RAGAS scores or user ratings to specific traces for diagnosis). All of this fits within the free tier (5,000 traces per month), which is more than sufficient for portfolio development and demo traffic.
 
 ## Lessons Learned
 
