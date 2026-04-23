@@ -396,8 +396,13 @@ GENERATE_PROMPT = ChatPromptTemplate.from_messages([
      "Answer the employee's question based ONLY on the provided "
      "context. If the context doesn't contain enough information, "
      "say so clearly.\n\n"
-     "Cite which policy or section each part of your answer "
-     "comes from.\n\n"
+     "IMPORTANT formatting rules:\n"
+     "- Do NOT include source numbers or citations inline "
+     "(no 'Source 1', 'Source 2', etc.)\n"
+     "- Do NOT mention policy sections or document metadata "
+     "in your answer\n"
+     "- Just answer naturally as if you know the information\n"
+     "- Keep answers concise and friendly\n\n"
      "Context:\n{context}"),
     ("placeholder", "{history}"),
     ("human", "{question}"),

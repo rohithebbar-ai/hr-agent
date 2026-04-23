@@ -205,3 +205,5 @@ service-account*.json
 *.swp
 tmp/
 temp/
+
+planning/

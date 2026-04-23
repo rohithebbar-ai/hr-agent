@@ -44,6 +44,10 @@ dependencies = [
     # Rate limit retry
     "groq>=0.37.0",
     "streamlit>=1.56.0",
+    "discord-py>=2.7.1",
+    "httpx>=0.28.1",
+    "redis>=7.4.0",
+    "slowapi>=0.1.9",
 ]
 
 [dependency-groups]
