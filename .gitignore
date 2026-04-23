@@ -207,3 +207,4 @@ tmp/
 temp/
 
 planning/
+redis_data/
