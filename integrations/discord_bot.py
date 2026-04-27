@@ -66,11 +66,15 @@ async def on_message(message: discord.Message):
     # Respond to DMs or when mentioned
     is_dm = isinstance(message.channel, discord.DMChannel)
     is_mentioned = client.user in message.mentions
+    is_bot_thread = (
+        isinstance(message.channel, discord.Thread)
+        and message.channel.name.startswith("HR Chat -")
+    )
 
-    if not is_dm and not is_mentioned:
+    if not is_dm and not is_mentioned and not is_bot_thread:
         return
 
-    # Clean the message (remove the bot mention)
+    # Clean the message (remove the bot mention if present)
     question = message.content
     if is_mentioned:
         question = question.replace(
@@ -78,21 +82,75 @@ async def on_message(message: discord.Message):
         ).strip()
 
     if not question:
-        await message.reply(
-            "Please include a question after mentioning me!"
-        )
+        await message.reply("Please include a question!")
         return
 
     print(f"[DISCORD] Question from {message.author}: {question[:60]}")
 
-    # Use channel ID as thread_id for conversation memory
-    # This means each Discord channel has its own conversation
-    thread_id = f"discord_{message.channel.id}"
+    # Use the user's ID as thread_id for conversation memory
+    thread_id = f"discord_dm_{message.author.id}"
 
-    # Show typing indicator while processing
+    # If mentioned in a channel, redirect to DM for privacy
+    if not is_dm:
+        try:
+            await message.reply(
+                "I've sent you a private message with the answer! "
+                "Check your DMs. All future conversations happen "
+                "there for privacy."
+            )
+        except Exception:
+            pass
+
+        # Send the actual response via DM
+        dm_channel = await message.author.create_dm()
+
+        async with dm_channel.typing():
+            try:
+                response = await http_client.post(
+                    API_CHAT_ENDPOINT,
+                    json={
+                        "question": question,
+                        "thread_id": thread_id,
+                    },
+                )
+
+                if response.status_code == 200:
+                    data = response.json()
+                    answer = data["answer"]
+                    sources = data.get("sources", [])
+
+                    reply = answer
+                    if sources and len(answer) > 100:
+                        clean_sources = []
+                        for s in sources[:3]:
+                            name = s.split("(")[0].strip()
+                            if name and name not in clean_sources:
+                                clean_sources.append(name)
+                        if clean_sources:
+                            reply += f"\n\n📋 *{', '.join(clean_sources)}*"
+
+                    if len(reply) > 2000:
+                        reply = reply[:1997] + "..."
+
+                    await dm_channel.send(reply)
+                else:
+                    error = response.json().get("detail", "Unknown error")
+                    await dm_channel.send(f"Sorry, I encountered an error: {error}")
+
+            except httpx.TimeoutException:
+                await dm_channel.send("Sorry, the request timed out. Please try again.")
+            except httpx.ConnectError:
+                await dm_channel.send("Sorry, I can't reach the HR system.")
+            except Exception as e:
+                print(f"[DISCORD] Error: {type(e).__name__}: {e}")
+                await dm_channel.send("Sorry, something went wrong. Please try again.")
+
+        print(f"[DISCORD] Replied to {message.author} via DM")
+        return
+
+    # Already in a DM — respond directly
     async with message.channel.typing():
         try:
-            # Call the FastAPI backend
             response = await http_client.post(
                 API_CHAT_ENDPOINT,
                 json={
@@ -106,52 +164,33 @@ async def on_message(message: discord.Message):
                 answer = data["answer"]
                 sources = data.get("sources", [])
 
-                # Format the reply
                 reply = answer
-
-                # Add sources if available
                 if sources and len(answer) > 100:
-                    # Clean source names (remove section info for readability)
                     clean_sources = []
                     for s in sources[:3]:
-                        # "Vacation Policy (Information & Office Security)" → "Vacation Policy"
                         name = s.split("(")[0].strip()
                         if name and name not in clean_sources:
                             clean_sources.append(name)
-
                     if clean_sources:
-                        reply += f"\n\n*{', '.join(clean_sources)}*"
+                        reply += f"\n\n📋 *{', '.join(clean_sources)}*"
 
                 if len(reply) > 2000:
                     reply = reply[:1997] + "..."
 
                 await message.reply(reply)
-
             else:
                 error = response.json().get("detail", "Unknown error")
-                await message.reply(
-                    f"Sorry, I encountered an error: {error}"
-                )
+                await message.reply(f"Sorry, I encountered an error: {error}")
 
         except httpx.TimeoutException:
-            await message.reply(
-                "Sorry, the request timed out. "
-                "The HR system might be busy. Please try again."
-            )
-
+            await message.reply("Sorry, the request timed out. Please try again.")
         except httpx.ConnectError:
-            await message.reply(
-                "Sorry, I can't reach the HR system. "
-                "Make sure the API server is running."
-            )
-
+            await message.reply("Sorry, I can't reach the HR system.")
         except Exception as e:
             print(f"[DISCORD] Error: {type(e).__name__}: {e}")
-            await message.reply(
-                "Sorry, something went wrong. Please try again."
-            )
+            await message.reply("Sorry, something went wrong. Please try again.")
 
-    print(f"[DISCORD] Replied to {message.author}")
+    print(f"[DISCORD] Replied to {message.author} via DM")
 
 
 def main():

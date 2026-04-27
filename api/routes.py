@@ -6,12 +6,22 @@ The pipeline is injected via FastAPI's dependency system.
 """
 
 import os
+import logging
 from functools import lru_cache
 
 from dotenv import load_dotenv
 from fastapi import APIRouter, HTTPException
+from starlette.requests import Request
 
 from agents.pipeline import PolicyAgentPipeline
+from api.guardrails.cache import cache_clear, cache_get, cache_set, cache_stats
+from api.guardrails.guardrails import(
+    redact_pii_logging,
+    sanitize_output,
+    validate_input,
+)
+from api.guardrails.limiter import limiter
+from api.redis_client import is_redis_available
 from api.schemas import(
     ChatRequest,
     ChatResponse,
@@ -23,6 +33,7 @@ from api.schemas import(
 load_dotenv()
 
 router = APIRouter()
+logger = logging.getLogger("vanacihr.api")
 
 # ---- Pipeline singleton ------
 @lru_cache(maxsize=1)
@@ -51,36 +62,86 @@ async def health_check():
     except Exception:
         loaded = False
 
-    return HealthResponse(status="ok", pipeline_loaded=loaded)
+    return {
+        "status":"ok",
+        "pipeline_loaded": loaded,
+        "redis_connected": is_redis_available(),
+    }
 
+@router.get("/cache/stats")
+async def get_cache_stats():
+    """Cache hit/miss statistics for monitoring."""
+    return cache_stats()
+
+
+@router.delete("/cache")
+async def clear_response_cache():
+    """Clear all cached responses. Use after re-ingesting documents."""
+    cache_clear()
+    return {"status": "cleared"}
+
+# ══════════════════════════════════════════════════
+# MAIN CHAT ENDPOINT
+# ══════════════════════════════════════════════════
 
 @router.post("/chat", response_model=ChatResponse)
-async def chat(request: ChatRequest):
+@limiter.limit("10/minute")
+async def chat(request: Request, body: ChatRequest):
     """
-    Main chat endpoint
-    Runs the question through the langgraph agentic pipeline.
+    Main chat endpoint with full guardrails.
+
+    Flow:
+    1. Validate input (length, injection, special chars)
+    2. Check Redis cache for repeat questions
+    3. Run LangGraph pipeline
+    4. Sanitize output (strip URLs, cap length)
+    5. Cache the response in Redis
+    6. Log with PII redaction
     """
+    # ── Step 1: Input validation ──
+    is_valid, error_msg = validate_input(body.question)
+    if not is_valid:
+        logger.warning(
+            f"[GUARDRAIL] Rejected: {error_msg} | "
+            f"Input: {redact_pii_logging(body.question[:50])}"
+        )
+        raise HTTPException(status_code=400, detail=error_msg)
+
+    # ── Step 2: Check cache ──
+    cached = cache_get(body.question)
+    if cached:
+        logger.info(
+            f"[CACHE HIT] "
+            f"{redact_pii_logging(body.question[:50])}"
+        )
+        return ChatResponse(
+            answer=cached["answer"],
+            thread_id=body.thread_id,
+            sources=cached["sources"],
+        )
+
+    # ── Step 3: Run the agent ──
     pipeline = get_pipeline()
 
     try:
-        # run the agent
         graph = pipeline.create_agent()
         config = {
-            "configurable": {"thread_id": request.thread_id},
+            "configurable": {"thread_id": body.thread_id},
             "metadata": {"source": "api"},
         }
 
         final_state = graph.invoke(
-            {"question": request.question},
-            config = config,
+            {"question": body.question},
+            config=config,
         )
 
         answer = final_state.get("answer", "")
 
-        # Extract the source citation from graded documents
-        # Extract source citations only for RAG responses
+        # Extract sources only for RAG responses
         sources = []
-        question_category = final_state.get("question_category", "")
+        question_category = final_state.get(
+            "question_category", ""
+        )
 
         if question_category == "RAG":
             graded_docs = final_state.get("graded_documents", [])
@@ -90,18 +151,43 @@ async def chat(request: ChatRequest):
                 if policy_name and policy_name not in sources:
                     sources.append(f"{policy_name} ({section})")
 
-        return ChatResponse(
-            answer = answer,
-            thread_id = request.thread_id,
-            sources = sources,
+    except Exception as e:
+        logger.error(
+            f"[AGENT ERROR] {type(e).__name__}: "
+            f"{redact_pii_logging(str(e))}"
+        )
+        raise HTTPException(
+            status_code=500,
+            detail=f"Agent error: {str(e)}",
         )
 
-    except Exception as e:
-        print(f"[API] Error: {type(e).__name__}: {e}")
-        raise HTTPException(
-            status_code = 500,
-            detail = f"Agent error: {str(e)}"
-        )
+    # ── Step 4: Sanitize output ──
+    answer = sanitize_output(answer)
+
+    # ── Step 5: Cache the response ──
+    if question_category == "RAG":
+        cache_set(body.question, answer, sources)
+
+    # ── Step 6: Log with PII redaction ──
+    logger.info(
+        f"[CHAT] "
+        f"Q: {redact_pii_logging(body.question[:80])} | "
+        f"A: {redact_pii_logging(answer[:80])} | "
+        f"Category: {question_category} | "
+        f"Sources: {len(sources)} | "
+        f"Cached: {question_category == 'RAG'}"
+    )
+
+    return ChatResponse(
+        answer=answer,
+        thread_id=body.thread_id,
+        sources=sources,
+    )
+
+
+# ══════════════════════════════════════════════════
+# SESSION MANAGEMENT
+# ══════════════════════════════════════════════════
 
 
 @router.get(

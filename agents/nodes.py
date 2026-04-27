@@ -110,18 +110,27 @@ def chat_node(
     chain = CHAT_PROMPT | base_llm
     history = state.get("messages", [])[-6:]
 
-    response = chain.invoke({
-        "question": state["question"],
-        "history": history,
-    })
+    try:
+        response = chain.invoke({
+            "question": state["question"],
+            "history": history,
+        })
+        answer = response.content
+    except Exception as e:
+        print(f"[CHAT] LLM failed: {e}")
+        # Fallback response for non-HR questions
+        answer = (
+            "I'm sorry, but I can only help with HR-related "
+            "questions. If you have any questions about company "
+            "policies, benefits, or procedures, feel free to ask!"
+        )
 
-    answer = response.content
-    print(f"[CHAT] -> Generated {len(answer)} chars")
+    print(f"[CHAT] → Generated {len(answer)} chars")
 
     return Command(
         update={
             "answer": answer,
-            "messages": [response],
+            "messages": [AIMessage(content=answer)],
         },
         goto=END,
     )

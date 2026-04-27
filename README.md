@@ -16,7 +16,7 @@ The project iterates through three RAG architectures and measures each against a
 | ------------ | -------------------------------------------------- | -------------- | ------------ |
 | Baseline     | Blind 500-token chunking + similarity search       | 0.65           | 0.47         |
 | Policy-Aware | Structural chunking + MMR retrieval                | 0.69           | 0.54         |
-| Agentic      | LangGraph + query decomposition + corrective loops | TBD            | TBD          |
+| Agentic      | LangGraph + query decomposition + corrective loops | 0.71           | 0.92         |
 
 The evaluation revealed a fundamental limitation: single-pass retrieval cannot satisfy multi-hop questions that need information from multiple semantically distant policies. This finding motivated the LangGraph agentic pipeline with query decomposition.
 
@@ -278,18 +278,18 @@ Set `EVAL_START` and `EVAL_END` at the top of each script to control which batch
 * [X] Streamlit UI with conversation memory
 * [X] Full agentic evaluation across all 5 batches
 * [X] LangSmith tracing integration
-* [ ] FastAPI backend with streaming
+* [X] FastAPI backend with streaming
 * [ ] AWS EC2 deployment
 
 ### Phase 1.5 — Production Hardening (planned)
 
 See `VanaciRetain_Updated_Phase_Roadmap.docx` for detailed sub-phases:
 
-* [ ] LangSmith tracing + per-node latency tracking
-* [ ] Input/output guardrails (rate limiting, PII redaction, prompt injection detection)
-* [ ] Redis response caching
+* [X] LangSmith tracing + per-node latency tracking
+* [X] Input/output guardrails (rate limiting, PII redaction, prompt injection detection)
+* [X] Redis response caching
 * [ ] AWS Bedrock vs Groq comparison evaluation
-* [ ] FastAPI REST backend with streaming endpoints
+* [X] FastAPI REST backend with streaming endpoints
 
 ### Phase 1.6 — Cloud Deployment
 
@@ -378,7 +378,6 @@ Every agent invocation captures:
 Two complementary evaluation paths feed into LangSmith:
 
 1. **Batch evaluation** (`rag/eval_agentic.py`) runs the full golden test set in batches of 10, scores with RAGAS (context_recall, faithfulness), and pushes per-question scores back to the original LangGraph traces as feedback. Used for tracking iteration-over-iteration progress against the baseline and policy-aware versions.
-
 2. **Deep-dive evaluation** (`scripts/eval_langsmith.py`) runs a smaller batch (4 questions) with three RAGAS metrics — context_recall, context_precision, and faithfulness — and attaches them to LangSmith traces. The fourth standard RAGAS metric (answer_relevancy) was excluded because it requires the LLM provider to support generating multiple completions per request, which Groq does not. Rather than introducing OpenAI as a second provider for one metric, the project uses context_precision and faithfulness as proxies for answer quality.
 
 After running either script, individual traces in the LangSmith UI show the question, the agent's full execution flow, the retrieved documents, the generated answer, and all attached RAGAS scores in one place. Filtering traces by `feedback.context_recall < 0.6` instantly surfaces the worst-performing queries for investigation.

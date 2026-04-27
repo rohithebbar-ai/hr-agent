@@ -21,6 +21,8 @@ from typing import Optional
 
 from dotenv import load_dotenv
 from langchain_groq import ChatGroq
+from langchain_openai import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
 
 
 load_dotenv()
@@ -33,30 +35,14 @@ load_dotenv()
 
 GROQ_API_KEY_RUNTIME = os.environ.get("GROQ_API_KEY_4")
 GROQ_API_KEY_EVAL = os.environ.get("GROQ_API_KEY_3")
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
+GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY")
 
-def get_api_key_for_task(task: "LLMTask") -> str:
-    """
-    Pick the right API key based on task type.
 
-    - Eval tasks (RAGAS) → Key 2
-    - Everything else (runtime) → Key 1
-
-    This isolation prevents evaluation runs from eating
-    into the runtime token budget.
-    """
-    eval_tasks = {
-        LLMTask.RAGAS_JUDGE,
-        #LLMTask.DEEPEVAL_JUDGE,
-        }
-
-    if task in eval_tasks:
-        if not GROQ_API_KEY_EVAL:
-            # Fallback to runtime key if eval key not configured
-            return GROQ_API_KEY_RUNTIME
-        return GROQ_API_KEY_EVAL
-
-    return GROQ_API_KEY_RUNTIME
-
+class Provider(str, Enum):
+    GROQ="groq"
+    OPENAI="openai"
+    GEMINI="gemini"
 
 # ══════════════════════════════════════════════════
 # MODEL REGISTRY
@@ -65,7 +51,7 @@ def get_api_key_for_task(task: "LLMTask") -> str:
 # When Groq deprecates a model, only update it here.
 
 class ModelID:
-    """Available Groq models. Update IDs here when Groq deprecates."""
+    """Available models across all providers."""
 
     # ── Production models ──
     LLAMA_3_3_70B = "llama-3.3-70b-versatile"
@@ -76,9 +62,17 @@ class ModelID:
     LLAMA_4_SCOUT = "meta-llama/llama-4-scout-17b-16e-instruct"
     QWEN3_32B = "qwen/qwen3-32b"
 
+    # ── OpenAI ──
+    GPT_4O_MINI = "gpt-4o-mini"
+    GPT_4O = "gpt-4o"
+
+    # ── Gemini ──
+    GEMINI_2_5_FLASH = "gemini-2.5-flash"            # Best balance of speed + quality
+    GEMINI_2_5_FLASH_LITE = "gemini-2.5-flash-lite"   # Cheapest, fastest, simple tasks
+    GEMINI_2_5_PRO = "gemini-2.5-pro"                 # Complex reasoning (1M context)
+
     # ── Specialized ──
     WHISPER_LARGE_V3 = "whisper-large-v3"
-
 
 # ══════════════════════════════════════════════════
 # TASK TYPES
@@ -113,51 +107,111 @@ class LLMTask(str, Enum):
 TASK_CONFIG = {
     # ── Tasks needing reasoning power → big model ──
     LLMTask.GENERATION: {
-        "model": ModelID.LLAMA_3_3_70B,
+        "provider": Provider.OPENAI,
+        "model": ModelID.GPT_4O_MINI,
         "temperature": 0,
         "max_retries": 3,
     },
     LLMTask.QUERY_DECOMPOSITION: {
-        "model": ModelID.LLAMA_3_3_70B,
+        "provider": Provider.OPENAI,
+        "model": ModelID.GPT_4O_MINI,
         "temperature": 0,
         "max_retries": 3,
     },
     LLMTask.CHAT: {
-        "model": ModelID.GPT_OSS_20B,
+        "provider": Provider.GEMINI,
+        "model": ModelID.GEMINI_2_5_PRO,
         "temperature": 0.6,  # Slightly creative for chat
         "max_retries": 5,
     },
 
     # ── Fast classification tasks → small model ──
     LLMTask.QUERY_ROUTING: {
+        "provider": Provider.GROQ,
         "model": ModelID.LLAMA_4_SCOUT,
         "temperature": 0,
         "max_retries": 3,
     },
     LLMTask.DOCUMENT_GRADING: {
-        "model": ModelID.LLAMA_3_3_70B,
+        "provider": Provider.GEMINI,
+        "model": ModelID.GEMINI_2_5_FLASH,
         "temperature": 0,
         "max_retries": 3,
     },
     LLMTask.GROUNDING_CHECK: {
-        "model": ModelID.LLAMA_3_1_8B_INSTANT,
+        "provider": Provider.GEMINI,
+        "model": ModelID.GEMINI_2_5_FLASH,
         "temperature": 0,
         "max_retries": 3,
     },
 
     # ── Safety ──
     LLMTask.CONTENT_MODERATION: {
+        "provider": Provider.GROQ,
         "model": ModelID.LLAMA_GUARD_4_12B,
         "temperature": 0,
         "max_retries": 3,
     },
 
      LLMTask.RAGAS_JUDGE: {
-        "model": ModelID.LLAMA_3_1_8B_INSTANT,
+        "provider": Provider.GEMINI,
+        "model": ModelID.GEMINI_2_5_FLASH,
         "temperature": 0,
         "max_retries": 5,
     },
 }
+
+
+# ══════════════════════════════════════════════════
+# LLM FACTORY
+# ══════════════════════════════════════════════════
+
+def _create_llm(provider: Provider, model: str, temperature:float, max_retries:int):
+    """
+    Create an LLM instance for given provider.
+    All providers return langchain compatiable chat model.
+    """
+    if provider == Provider.GROQ:
+        api_key = GROQ_API_KEY_RUNTIME
+        return ChatGroq(
+            api_key=api_key,
+            model=model,
+            temperature=temperature,
+            max_retries=max_retries,
+        )
+    elif provider == Provider.OPENAI:
+        api_key = OPENAI_API_KEY
+        return ChatOpenAI(
+            api_key=api_key,
+            model=model,
+            temperature=temperature,
+            max_retries=max_retries,
+        )
+    elif provider == Provider.GEMINI:
+        api_key = GOOGLE_API_KEY
+        return ChatGoogleGenerativeAI(
+            api_key=api_key,
+            model=model,
+            temperature=temperature,
+            max_retries=max_retries,
+        )
+    else:
+        raise ValueError(f"Unknown Provider: {provider}")
+
+# ══════════════════════════════════════════════════
+# API KEY ROUTING (for Groq eval isolation)
+# ══════════════════════════════════════════════════
+
+def get_api_key_for_task(task: LLMTask) -> str:
+    """Route Groq tasks to the right API key."""
+    eval_tasks = {LLMTask.RAGAS_JUDGE}
+
+    if task in eval_tasks:
+        if not GROQ_API_KEY_EVAL:
+            return GROQ_API_KEY_RUNTIME
+        return GROQ_API_KEY_EVAL
+
+    return GROQ_API_KEY_RUNTIME
 
 # ══════════════════════════════════════════════════
 # MANAGER
@@ -176,15 +230,20 @@ class LLMManager:
     avoiding repeated client creation overhead.
     """
     def __init__(self):
-        if not GROQ_API_KEY_RUNTIME:
+        # Validate atleast one provider is configured.
+        available = []
+        if GROQ_API_KEY_RUNTIME:
+            available.append("Groq")
+        if OPENAI_API_KEY:
+            available.append("OpenAI")
+        if GOOGLE_API_KEY:
+            available.append("Gemini")
+        
+        if not available:
             raise ValueError(
-                "GROQ_API_KEY not found. Set it in your .env file."
+                "No LLM API keys found. Set atleast one of the keys: GROQ_API_KEY, OPENAI_API_KEY, GOOGLE_API_KEY "
             )
-        if not GROQ_API_KEY_EVAL:
-            print(
-                "[LLM_MANAGER] Warning: GROQ_API_KEY_2 not set. "
-                "Evaluation will use the runtime key (shared quota)."
-            )
+        print(f"[LLM_MANAGER] Available providers: {', '.join(available)}")
 
     @lru_cache(maxsize=None)
     def get_llm(self, task: LLMTask) -> ChatGroq:
@@ -199,11 +258,20 @@ class LLMManager:
                 f"Available: {list(TASK_CONFIG.keys())}"
             )
         config = TASK_CONFIG[task]
-        api_key = get_api_key_for_task(task)
-
-        return ChatGroq(
-            api_key=api_key,
-            model=config["model"],
+        provider = config["provider"]
+        
+        # For groq eval tasks use eval API key
+        if provider == Provider.GROQ and task in {LLMTask.RAGAS_JUDGE}:
+            api_key = GROQ_API_KEY_EVAL or GROQ_API_KEY_RUNTIME
+            return ChatGroq(
+                api_key=api_key,
+                model=config["model"],
+                temperature=config["temperature"],
+                max_retries=config["max_retries"],
+            )
+        return _create_llm(
+            provider = provider,
+            model = config["model"],
             temperature=config["temperature"],
             max_retries=config["max_retries"],
         )
@@ -215,7 +283,10 @@ class LLMManager:
     def list_tasks(self) -> dict:
         """Return a summary of all task → model mappings (for debugging)."""
         return {
-            task.value: config["model"]
+            task.value: {
+                "model": config["model"],
+                "provider": config["provider"].value,
+                }
             for task, config in TASK_CONFIG.items()
         }
 
@@ -257,25 +328,20 @@ if __name__ == "__main__":
 
     manager = get_manager()
     config = manager.list_tasks()
-
-    print(f"  {'Task':<22} {'Model':<32} {'Key':<10}")
+ 
+    print(f"  {'Task':<22} {'Provider':<10} {'Model':<40}")
     print("  " + "─" * 64)
 
-    for task_name, model_id in config.items():
-        # Reconstruct the LLMTask enum to check key routing
-        task = LLMTask(task_name)
-        key = get_api_key_for_task(task)
-        # Show which key is being used (mask the actual value)
-        if key == GROQ_API_KEY_EVAL:
-            key_label = "Key 2 (eval)"
-        else:
-            key_label = "Key 1 (runtime)"
+    for task_name, info in config.items():
+        print(
+            f"  {task_name:<22} "
+            f"{info['provider']:<10} "
+            f"{info['model']:<40}"
+        )
 
-        print(f"  {task_name:<22} {model_id:<32} {key_label:<10}")
-
-    print("\n" + "=" * 70)
-    print(f"  Runtime key configured: {bool(GROQ_API_KEY_RUNTIME)}")
-    print(f"  Eval key configured:    {bool(GROQ_API_KEY_EVAL)}")
-    print("=" * 70 + "\n")
-
-        
+    print("\n" + "=" * 75)
+    print(f"  Groq Runtime:  {'configured' if GROQ_API_KEY_RUNTIME else 'missing'}")
+    print(f"  Groq Eval:     {'configured' if GROQ_API_KEY_EVAL else 'missing'}")
+    print(f"  OpenAI:        {'configured' if OPENAI_API_KEY else 'missing'}")
+    print(f"  Gemini:        {'configured' if GOOGLE_API_KEY else 'missing'}")
+    print("=" * 75 + "\n")

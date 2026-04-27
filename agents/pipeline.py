@@ -5,6 +5,9 @@ Class-based wrapper around the LangGraph graph.
 Uses functools.partial for dependency injection.
 """
 
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning, module="pydantic")
+
 from ast import NodeTransformer
 import os
 from functools import partial

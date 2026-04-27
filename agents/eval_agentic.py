@@ -35,8 +35,8 @@ GOLDEN_TEST_PATH = Path("data/golden_test_set/golden_test_set.json")
 RESULTS_DIR = Path("data/golden_test_set/agentic_eval_results")
 
 # Run in batches of 10 to stay under Groq rate limits
-EVAL_START = 20
-EVAL_END = 30
+EVAL_START = 0
+EVAL_END = 50
 
 
 # Previous scores average for comparison (from baseline + policy-aware runs)

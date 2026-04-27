@@ -48,6 +48,8 @@ dependencies = [
     "httpx>=0.28.1",
     "redis>=7.4.0",
     "slowapi>=0.1.9",
+    "langchain-google-genai>=2.1.12",
+    "langchain-openai>=0.3.35",
 ]
 
 [dependency-groups]

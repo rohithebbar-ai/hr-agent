@@ -27,7 +27,7 @@ def _make_key(question: str) -> str:
     """
     normalized = question.lower().strip()
     normalized = " ".join(normalized.split())
-    question_hash = hashlib.md5(normalized.encode().hexdigest())
+    question_hash = hashlib.md5(normalized.encode()).hexdigest()
     return f"{CACHE_PREFIX}{question_hash}"
 
 def cache_get(question: str) -> dict | None:
