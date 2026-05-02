@@ -23,3 +23,22 @@ services:
       timeout: 5s
       retries: 3
     restart: unless-stopped
+
+  localstack:
+    image: localstack/localstack:4.14.0
+    container_name: hr-copilot-localstack
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=s3, secretsmanager, sqs
+      - DEBUG=0
+      - DEFAULT_REGION=us-east-1
+    volumes:
+      - ./localstack_data:/var/lib/localstack
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+
+volumes:
+  qdrant_data:
+  redis_data:
+  localstack_data:
