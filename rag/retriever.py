@@ -13,7 +13,7 @@ from langchain_qdrant import QdrantVectorStore
 
 load_dotenv()
 
-QDRANT_URL = os.getenv("QDRANT_URL","http://localhost:6333")
+QDRANT_URL = os.getenv("QDRANT_URL","http://qdrant:6333")
 
 COLLECTION_NAIVE = "hr_naive"
 COLLECTION_POLICY_AWARE = "hr_policy_aware"
