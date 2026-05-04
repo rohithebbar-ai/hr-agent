@@ -36,4 +36,4 @@ HEALTHCHECK --interval=30s --timeout=10s --retries=3 \
     CMD curl -f http://localhost:8000/api/v1/health || exit 1
 
 # Start FastAPI with uvicorn
-CMD ["uv", "run", "uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2"]
+CMD ["sh", "-c", "uv run python scripts/aws_secrets.py && uv run uvicorn api.main:app --host 0.0.0.0 --port 8000 --workers 2"]
