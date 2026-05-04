@@ -15,11 +15,8 @@ WORKDIR /app
 # Copy dependency files first (Docker caches this layer)
 COPY pyproject.toml uv.lock README.md ./
 
-# Install CPU-only PyTorch
-RUN uv pip install torch --index-url https://download.pytorch.org/whl/cpu --system
-
-# Install Python dependencies
-RUN uv sync --frozen --no-dev
+# Install Python dependencies (CPU-only torch via index override)
+RUN UV_EXTRA_INDEX_URL=https://download.pytorch.org/whl/cpu uv sync --frozen --no-dev
 
 # Copy application code
 COPY . .
