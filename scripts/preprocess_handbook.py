@@ -16,6 +16,10 @@ from pathlib import Path
 
 import pymupdf
 from pydantic import BaseModel
+import boto3
+
+BUCKET_NAME = "rohit-hr-documents-2026"
+S3_PREFIX = "raw/"
 
 
 # ═══════════════════════════════════════════════════════
@@ -425,23 +429,13 @@ def fix_parenthesis_placeholders(text: str) -> str:
     )
     return text
 
-# ═══════════════════════════════════════════════════════
-# DOWNLOAD
-# ═══════════════════════════════════════════════════════
+def download_from_s3(s3, key: str) -> Path:
+    local_path = Path(f"/tmp/{key.split('/')[-1]}")
 
-def download_handbook() -> Path:
-    RAW_DIR.mkdir(parents=True, exist_ok=True)
-    filepath = RAW_DIR / HANDBOOK_FILENAME
+    print(f"[S3 DOWNLOAD] {key}")
+    s3.download_file(BUCKET_NAME, key, str(local_path))
 
-    if filepath.exists():
-        print(f"[OK] Handbook already exists: {filepath}")
-        return filepath
-
-    print(f"[DOWNLOAD] Fetching handbook...")
-    urllib.request.urlretrieve(HANDBOOK_URL, filepath)
-    print(f"[OK] Downloaded to: {filepath}")
-    return filepath
-
+    return local_path
 
 def load_supplementary_policies() -> list[PolicyObject]:
     """
@@ -1024,8 +1018,21 @@ def main():
     print("  PyMuPDF + Policy Object Architecture")
     print("=" * 60 + "\n")
 
-    # 1. Download
-    pdf_path = download_handbook()
+    s3 = boto3.client("s3")
+
+    response = s3.list_objects_v2(
+        Bucket=BUCKET_NAME,
+        Prefix=S3_PREFIX
+    )
+
+    for obj in response.get("Contents", []):
+        key = obj["Key"]
+
+        if not key.endswith(".pdf"):
+            continue
+
+    # 1. Download from S3
+    pdf_path = download_from_s3(s3, key)
 
     # 2. Extract
     pages = extract_with_pymupdf(pdf_path)
@@ -1033,18 +1040,14 @@ def main():
     # 3. Preprocess
     processed_pages = preprocess_pages(pages)
 
-    # 4. Extract policy objects
+    # 4. Extract policies
     policies = extract_policies(processed_pages)
 
-    # 5. Add supplementary policies
+    # 5. Supplementary
     supplementary = load_supplementary_policies()
     policies.extend(supplementary)
 
-    print(f"[OK] Total policies: {len(policies)} "
-          f"({len(supplementary)} supplementary)")
-
     # 6. Save
-    print("\n[SAVE] Writing outputs")
     save_policies_json(policies)
     save_section_metadata(policies)
     save_debug_txt(processed_pages)
