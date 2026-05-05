@@ -24,7 +24,10 @@ services:
       context: ..
       dockerfile: deployment/Dockerfile
     container_name: hr-copilot-discord
-    command: [ "uv", "run", "python", "-m", "integrations.discord_bot" ]
+    command:
+      - sh
+      - -c
+      - uv run python scripts/aws_secrets.py && uv run python -m integrations.discord_bot
     environment:
       - AWS_REGION=ap-south-1
       - API_BASE_URL=http://app:8000
