@@ -1,22 +1,14 @@
 """
-VanaciRetain Discord Bot
-────────────────────────
-Listens for messages in Discord and forwards them to the
-FastAPI backend for processing.
-
-Setup:
-    1. Create a bot at https://discord.com/developers/applications
-    2. Copy the bot token to .env as DISCORD_BOT_TOKEN
-    3. Invite the bot to your server using the OAuth2 URL
-    4. Start FastAPI: uvicorn api.main:app --port 8000
-    5. Start the bot: uv run python -m integrations.discord_bot
-
-The bot uses each Discord thread/channel as a conversation
-thread_id, so conversation memory is preserved per channel.
+VanaciRetain Discord Bot (Production Ready)
+──────────────────────────────────────────
+- Uses AWS Secrets Manager directly (no aws_secrets.py)
+- Cached secrets (no repeated AWS calls)
+- Docker-compatible (service networking)
 """
 
 import json
 import os
+from functools import lru_cache
 
 import discord
 import httpx
@@ -24,43 +16,56 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# ── Config ──
-def get_bot_token() -> str:
-    """Return the Discord bot token.
+# ─────────────────────────────────────────────
+# AWS Secrets Loader (centralized + cached)
+# ─────────────────────────────────────────────
+@lru_cache(maxsize=1)
+def _get_secrets() -> dict:
+    import boto3
 
-    Resolution order:
-    1. DISCORD_BOT_TOKEN environment variable / .env file
-    2. AWS Secrets Manager secret "hragent/api-keys" → key DISCORD_BOT_TOKEN
-    """
-    token = os.environ.get("DISCORD_BOT_TOKEN")
-    if token:
-        return token
+    secret_name = os.getenv("AWS_SECRET_NAME", "hragent/api-keys")
+    region = os.getenv("AWS_REGION", "ap-south-1")
 
-    # Fallback: pull from AWS Secrets Manager
+    client = boto3.client("secretsmanager", region_name=region)
+    response = client.get_secret_value(SecretId=secret_name)
+
+    return json.loads(response["SecretString"])
+
+
+def get_secret(key: str, default: str | None = None) -> str | None:
+    # Priority 1: environment
+    value = os.getenv(key)
+    if value:
+        return value
+
+    # Priority 2: AWS Secrets Manager
     try:
-        import boto3  # noqa: PLC0415
+        secrets = _get_secrets()
+        return secrets.get(key, default)
+    except Exception as e:
+        print(f"[SECRETS] Error fetching {key}: {e}")
+        return default
 
-        secret_name = os.environ.get("AWS_SECRET_NAME", "hragent/api-keys")
-        region = os.environ.get("AWS_DEFAULT_REGION", "ap-south-1")
 
-        client = boto3.client("secretsmanager", region_name=region)
-        response = client.get_secret_value(SecretId=secret_name)
-        secrets = json.loads(response["SecretString"])
-        token = secrets.get("DISCORD_BOT_TOKEN")
-    except Exception as exc:
-        print(f"[DISCORD] Could not fetch token from AWS Secrets Manager: {exc}")
-
+# ─────────────────────────────────────────────
+# Config
+# ─────────────────────────────────────────────
+def get_bot_token() -> str:
+    token = get_secret("DISCORD_BOT_TOKEN")
     if not token:
-        raise ValueError(
-            "DISCORD_BOT_TOKEN not found. "
-            "Set it in .env or as a key inside the AWS Secrets Manager "
-            "secret 'hragent/api-keys'."
-        )
+        raise ValueError("DISCORD_BOT_TOKEN not found")
     return token
 
-# ── Bot setup ──
+
+API_BASE_URL = get_secret("API_BASE_URL", "http://app:8000")
+API_CHAT_ENDPOINT = f"{API_BASE_URL}/api/v1/chat"
+
+
+# ─────────────────────────────────────────────
+# Bot setup
+# ─────────────────────────────────────────────
 intents = discord.Intents.default()
-intents.message_content = True  # Required to read message text
+intents.message_content = True
 
 client = discord.Client(intents=intents)
 http_client = httpx.AsyncClient(timeout=30.0)
@@ -68,156 +73,68 @@ http_client = httpx.AsyncClient(timeout=30.0)
 
 @client.event
 async def on_ready():
-    """Called when the bot connects to Discord."""
-    print(f"\n{'='*50}")
-    print(f"  VanaciRetain Discord Bot")
-    print(f"  Logged in as: {client.user}")
-    print(f"  API endpoint: {API_CHAT_ENDPOINT}")
-    print(f"{'='*50}\n")
+    print("\n" + "=" * 50)
+    print("VanaciRetain Discord Bot")
+    print(f"Logged in as: {client.user}")
+    print(f"API endpoint: {API_CHAT_ENDPOINT}")
+    print("=" * 50 + "\n")
 
 
 @client.event
 async def on_message(message: discord.Message):
-    """Called when any message is sent in a channel the bot can see."""
-
-    # Ignore messages from the bot itself
     if message.author == client.user:
         return
 
-    # Respond to DMs or when mentioned
     is_dm = isinstance(message.channel, discord.DMChannel)
     is_mentioned = client.user in message.mentions
-    is_bot_thread = (
-        isinstance(message.channel, discord.Thread)
-        and message.channel.name.startswith("HR Chat -")
-    )
 
-    if not is_dm and not is_mentioned and not is_bot_thread:
+    if not is_dm and not is_mentioned:
         return
 
-    # Clean the message (remove the bot mention if present)
-    question = message.content
-    if is_mentioned:
-        question = question.replace(
-            f"<@{client.user.id}>", ""
-        ).strip()
+    question = message.content.replace(f"<@{client.user.id}>", "").strip()
 
     if not question:
         await message.reply("Please include a question!")
         return
 
-    print(f"[DISCORD] Question from {message.author}: {question[:60]}")
+    print(f"[DISCORD] {message.author}: {question[:80]}")
 
-    # Use the user's ID as thread_id for conversation memory
-    thread_id = f"discord_dm_{message.author.id}"
+    thread_id = f"discord_{message.author.id}"
 
-    # If mentioned in a channel, redirect to DM for privacy
-    if not is_dm:
-        try:
-            await message.reply(
-                "I've sent you a private message with the answer! "
-                "Check your DMs. All future conversations happen "
-                "there for privacy."
-            )
-        except Exception:
-            pass
-
-        # Send the actual response via DM
-        dm_channel = await message.author.create_dm()
-
-        async with dm_channel.typing():
-            try:
-                response = await http_client.post(
-                    API_CHAT_ENDPOINT,
-                    json={
-                        "question": question,
-                        "thread_id": thread_id,
-                    },
-                )
-
-                if response.status_code == 200:
-                    data = response.json()
-                    answer = data["answer"]
-                    sources = data.get("sources", [])
-
-                    reply = answer
-                    if sources and len(answer) > 100:
-                        clean_sources = []
-                        for s in sources[:3]:
-                            name = s.split("(")[0].strip()
-                            if name and name not in clean_sources:
-                                clean_sources.append(name)
-                        if clean_sources:
-                            reply += f"\n\n📋 *{', '.join(clean_sources)}*"
-
-                    if len(reply) > 2000:
-                        reply = reply[:1997] + "..."
-
-                    await dm_channel.send(reply)
-                else:
-                    error = response.json().get("detail", "Unknown error")
-                    await dm_channel.send(f"Sorry, I encountered an error: {error}")
-
-            except httpx.TimeoutException:
-                await dm_channel.send("Sorry, the request timed out. Please try again.")
-            except httpx.ConnectError:
-                await dm_channel.send("Sorry, I can't reach the HR system.")
-            except Exception as e:
-                print(f"[DISCORD] Error: {type(e).__name__}: {e}")
-                await dm_channel.send("Sorry, something went wrong. Please try again.")
-
-        print(f"[DISCORD] Replied to {message.author} via DM")
-        return
-
-    # Already in a DM — respond directly
     async with message.channel.typing():
         try:
             response = await http_client.post(
                 API_CHAT_ENDPOINT,
-                json={
-                    "question": question,
-                    "thread_id": thread_id,
-                },
+                json={"question": question, "thread_id": thread_id},
             )
 
             if response.status_code == 200:
                 data = response.json()
-                answer = data["answer"]
-                sources = data.get("sources", [])
-
-                reply = answer
-                if sources and len(answer) > 100:
-                    clean_sources = []
-                    for s in sources[:3]:
-                        name = s.split("(")[0].strip()
-                        if name and name not in clean_sources:
-                            clean_sources.append(name)
-                    if clean_sources:
-                        reply += f"\n\n📋 *{', '.join(clean_sources)}*"
+                reply = data["answer"]
 
                 if len(reply) > 2000:
                     reply = reply[:1997] + "..."
 
                 await message.reply(reply)
+
             else:
-                error = response.json().get("detail", "Unknown error")
-                await message.reply(f"Sorry, I encountered an error: {error}")
+                await message.reply("Error processing request")
 
-        except httpx.TimeoutException:
-            await message.reply("Sorry, the request timed out. Please try again.")
         except httpx.ConnectError:
-            await message.reply("Sorry, I can't reach the HR system.")
+            await message.reply("Cannot reach backend service")
         except Exception as e:
-            print(f"[DISCORD] Error: {type(e).__name__}: {e}")
-            await message.reply("Sorry, something went wrong. Please try again.")
-
-    print(f"[DISCORD] Replied to {message.author} via DM")
+            print(f"[ERROR] {e}")
+            await message.reply("Something went wrong")
 
 
+# ─────────────────────────────────────────────
+# Entry point
+# ─────────────────────────────────────────────
 def main():
     print("[DISCORD] Starting bot")
     token = get_bot_token()
     client.run(token)
+
 
 if __name__ == "__main__":
     main()
