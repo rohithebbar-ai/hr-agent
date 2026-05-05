@@ -33,10 +33,12 @@ load_dotenv()
 # Two keys: one for runtime traffic, one for evaluation.
 # Keeps RAGAS from burning through runtime quota.
 
-GROQ_API_KEY_RUNTIME = os.environ.get("GROQ_API_KEY_4")
-GROQ_API_KEY_EVAL = os.environ.get("GROQ_API_KEY_3")
-OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
-GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY")
+from core.secrets import get_secret
+
+GROQ_API_KEY_RUNTIME = get_secret("GROQ_API_KEY_4")
+GROQ_API_KEY_EVAL = get_secret("GROQ_API_KEY_3")
+OPENAI_API_KEY = get_secret("OPENAI_API_KEY")
+GOOGLE_API_KEY = get_secret("GOOGLE_API_KEY")
 
 
 class Provider(str, Enum):
