@@ -15,6 +15,7 @@ The bot uses each Discord thread/channel as a conversation
 thread_id, so conversation memory is preserved per channel.
 """
 
+import json
 import os
 
 import discord
@@ -25,11 +26,35 @@ load_dotenv()
 
 # ── Config ──
 def get_bot_token() -> str:
+    """Return the Discord bot token.
+
+    Resolution order:
+    1. DISCORD_BOT_TOKEN environment variable / .env file
+    2. AWS Secrets Manager secret "hragent/api-keys" → key DISCORD_BOT_TOKEN
+    """
     token = os.environ.get("DISCORD_BOT_TOKEN")
+    if token:
+        return token
+
+    # Fallback: pull from AWS Secrets Manager
+    try:
+        import boto3  # noqa: PLC0415
+
+        secret_name = os.environ.get("AWS_SECRET_NAME", "hragent/api-keys")
+        region = os.environ.get("AWS_DEFAULT_REGION", "ap-south-1")
+
+        client = boto3.client("secretsmanager", region_name=region)
+        response = client.get_secret_value(SecretId=secret_name)
+        secrets = json.loads(response["SecretString"])
+        token = secrets.get("DISCORD_BOT_TOKEN")
+    except Exception as exc:
+        print(f"[DISCORD] Could not fetch token from AWS Secrets Manager: {exc}")
+
     if not token:
         raise ValueError(
             "DISCORD_BOT_TOKEN not found. "
-            "Set it in .env or AWS Secrets Manager."
+            "Set it in .env or as a key inside the AWS Secrets Manager "
+            "secret 'hragent/api-keys'."
         )
     return token
 
