@@ -9,13 +9,17 @@ RUN pip install uv
 
 WORKDIR /app
 
+# Copy only dependency files first (stable layer)
 COPY pyproject.toml uv.lock README.md ./
 
+# Install dependencies
 RUN uv sync --frozen --no-dev
 
-COPY . .
-
+# Download embedding model (cached unless dependencies change)
 RUN uv run python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('all-MiniLM-L6-v2')"
+
+# Copy application code (changes frequently)
+COPY . .
 
 EXPOSE 8000
 
