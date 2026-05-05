@@ -60,7 +60,7 @@ def get_vector_store(
     )
 
 def get_retriever(
-    collection: str = COLLECTION_NAIVE,
+    collection: str = COLLECTION_POLICY_AWARE,
     search_type: str = "similarity",
     k: int = 5,
     ):
