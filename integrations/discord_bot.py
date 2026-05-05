@@ -24,18 +24,14 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # ── Config ──
-DISCORD_BOT_TOKEN = os.environ.get("DISCORD_BOT_TOKEN")
-API_BASE_URL = os.environ.get(
-    "API_BASE_URL", "http://localhost:8000"
-)
-API_CHAT_ENDPOINT = f"{API_BASE_URL}/api/v1/chat"
-
-if not DISCORD_BOT_TOKEN:
-    raise ValueError(
-        "DISCORD_BOT_TOKEN not found in .env. "
-        "Create a bot at https://discord.com/developers/applications"
-    )
-
+def get_bot_token() -> str:
+    token = os.environ.get("DISCORD_BOT_TOKEN")
+    if not token:
+        raise ValueError(
+            "DISCORD_BOT_TOKEN not found. "
+            "Set it in .env or AWS Secrets Manager."
+        )
+    return token
 
 # ── Bot setup ──
 intents = discord.Intents.default()
@@ -194,10 +190,9 @@ async def on_message(message: discord.Message):
 
 
 def main():
-    """Start the Discord bot."""
-    print("[DISCORD] Starting bot...")
-    client.run(DISCORD_BOT_TOKEN)
-
+    print("[DISCORD] Starting bot")
+    token = get_bot_token()
+    client.run(token)
 
 if __name__ == "__main__":
     main()
