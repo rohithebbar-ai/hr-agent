@@ -1,4 +1,4 @@
-# VanaciRetain — HR Policy Assistant
+# HR copilot Assistant
 
 An agentic Retrieval-Augmented Generation (RAG) system that answers employee questions about HR policies using a multi-step LangGraph pipeline with self-correction loops, query decomposition, and conversation memory. Deployed on AWS EC2 with Docker, integrated with Discord for real-time employee interaction.
 
