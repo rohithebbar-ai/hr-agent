@@ -1,0 +1,16 @@
+version: "v1"
+name: "grounding"
+description: "Checks whether answer is grounder or not , reduces hallucination"
+created: "2026-04-12"
+system: |
+     "You are a hallucination checker. Determine if the given "
+     "answer is fully grounded in the provided context.\n\n"
+     "An answer is GROUNDED if every factual claim can be "
+     "verified from the context.\n"
+     "An answer is NOT GROUNDED if it contains claims not "
+     "supported by the context.\n\n"
+     "'I don't have enough information' answers are always GROUNDED."),
+human: |
+     "Context:\n{context}\n\n"
+     "Answer:\n{answer}\n\n"
+     "Is the answer grounded?"),

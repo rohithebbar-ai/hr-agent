@@ -12,6 +12,7 @@ from langchain_core.messages import AIMessage, HumanMessage
 from langchain_core.prompts import ChatPromptTemplate
 from langgraph.graph import END
 from langgraph.types import Command
+from agents.prompt_loader import load_prompt
 
 from agents.schemas import(
     BatchDocumentGrades,
@@ -40,18 +41,7 @@ def _extract_text(content) -> str:
 # Classifies query as CHAT (small talk) or RAG (needs retrieval).
 
 
-ROUTER_PROMPT = ChatPromptTemplate.from_messages([
-    ("system",
-     "You are a query router for VanaciPrime's HR assistant.\n"
-     "Classify the user's question:\n"
-     "- 'RAG' if it requires HR policy information, benefits, "
-     "leave details, workplace conduct, compensation, or any "
-     "topic from an employee handbook\n"
-     "- 'CHAT' for greetings, thanks, small talk, meta-questions "
-     "about the assistant, or general questions not requiring "
-     "document retrieval"),
-    ("human", "{question}"),
-])
+ROUTER_PROMPT = load_prompt("router", version="v1")
 
 def route_query_node(
     state: PolicyAgentState,
@@ -85,19 +75,7 @@ def route_query_node(
 # ══════════════════════════════════════════════════
 # Handles non-RAG questions directly without retrieval.
 
-CHAT_PROMPT = ChatPromptTemplate.from_messages([
-    ("system",
-     "You are the HR Policy Assistant for VanaciPrime. "
-     "You are friendly and helpful. For greetings, small talk, "
-     "or meta questions, respond briefly and naturally.\n\n"
-     "If the user asks about a topic outside HR (like coding, "
-     "weather, general knowledge), politely explain that you "
-     "only help with HR policies and suggest they ask an HR "
-     "question instead.\n\n"
-     "Keep responses under 3 sentences."),
-    ("placeholder", "{history}"),
-    ("human", "{question}"),
-])
+CHAT_PROMPT = CHAT_PROMPT = load_prompt("chat", version="v1")
 
 
 def chat_node(
@@ -140,27 +118,7 @@ def chat_node(
 # ══════════════════════════════════════════════════
 # Decomposes multi-hop queries into sub-queries.
 
-TRANSFORM_PROMPT = ChatPromptTemplate.from_messages([
-    ("system",
-     "You help rewrite HR questions for better document retrieval.\n\n"
-     "Analyze the user's question:\n"
-     "- If it's a simple single-topic question, return it as one query.\n"
-     "- If it's a comparison, multi-hop, or conditional question "
-     "that needs information from multiple policies, decompose "
-     "into 2-4 focused sub-queries.\n\n"
-     "Use conversation history to resolve pronouns and references.\n\n"
-     "Examples:\n"
-     "'How many vacation days?' → ['How many vacation days?']\n"
-     "'How does FMLA differ from personal leave?' → "
-     "['What is the FMLA leave policy?', "
-     "'What is the personal leave policy?']\n"
-     "'If I exhaust PTO and sick leave, what options remain?' → "
-     "['What is the PTO policy?', "
-     "'What is the sick leave policy?', "
-     "'What unpaid leave options exist?']"),
-    ("placeholder", "{history}"),
-    ("human", "{question}"),
-])
+TRANSFORM_PROMPT = load_prompt("transform", version="v1")
 
 def transform_query(
     state: PolicyAgentState,
@@ -238,29 +196,7 @@ def retrieve_node(
 # NODE 5: grade_documents (BATCHED)
 # ══════════════════════════════════════════════════
 
-BATCH_GRADER_PROMPT = ChatPromptTemplate.from_messages([
-    ("system",
-     "You are a relevance grader for an HR retrieval system.\n"
-     "For each document, determine if it could help answer the "
-     "user's question — even partially.\n\n"
-     "Be GENEROUS with relevance. A document is relevant if:\n"
-     "- It mentions the topic in the question\n"
-     "- It contains policies related to the topic\n"
-     "- It provides background or context for the answer\n"
-     "- It defines terms used in the question\n"
-     "- It's from the same policy area (e.g., 'Vacation Policy' "
-     "is relevant to 'How many vacation days?')\n\n"
-     "A document is NOT relevant only if it's about a "
-     "completely different topic with no connection to the question.\n\n"
-     "When in doubt, mark as 'yes'. Better to keep too much "
-     "context than to lose relevant information.\n\n"
-     "Return one grade per document in the same order."),
-    ("human",
-     "Question: {question}\n\n"
-     "Documents:\n{documents}\n\n"
-     "Grade each document as 'yes' or 'no'."),
-])
-
+BATCH_GRADER_PROMPT = load_prompt("grader", version="v1")
 
 def grade_documents_node(
     state: PolicyAgentState,
@@ -406,24 +342,7 @@ def grade_documents_node(
 # ══════════════════════════════════════════════════
 
 
-GENERATE_PROMPT = ChatPromptTemplate.from_messages([
-    ("system",
-     "You are an HR Policy Assistant for VanaciPrime.\n"
-     "Answer the employee's question based ONLY on the provided "
-     "context. If the context doesn't contain enough information, "
-     "say so clearly.\n\n"
-     "IMPORTANT formatting rules:\n"
-     "- Do NOT include source numbers or citations inline "
-     "(no 'Source 1', 'Source 2', etc.)\n"
-     "- Do NOT mention policy sections or document metadata "
-     "in your answer\n"
-     "- Just answer naturally as if you know the information\n"
-     "- Keep answers concise and friendly\n\n"
-     "Context:\n{context}"),
-    ("placeholder", "{history}"),
-    ("human", "{question}"),
-])
-
+GENERATE_PROMPT = load_prompt("generate", version="v1")
 
 def _format_context(docs: List[Document]) -> str:
     """Format documents into context string for the LLM."""
@@ -471,20 +390,7 @@ def generate_node(
 # ══════════════════════════════════════════════════
 
 
-GROUNDING_PROMPT = ChatPromptTemplate.from_messages([
-    ("system",
-     "You are a hallucination checker. Determine if the given "
-     "answer is fully grounded in the provided context.\n\n"
-     "An answer is GROUNDED if every factual claim can be "
-     "verified from the context.\n"
-     "An answer is NOT GROUNDED if it contains claims not "
-     "supported by the context.\n\n"
-     "'I don't have enough information' answers are always GROUNDED."),
-    ("human",
-     "Context:\n{context}\n\n"
-     "Answer:\n{answer}\n\n"
-     "Is the answer grounded?"),
-])
+GROUNDING_PROMPT = load_prompt("grounding", version="v1")
 
 def check_grounding_node(
     state: PolicyAgentState,
