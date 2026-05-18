@@ -91,6 +91,7 @@ def validate_input(question: str) -> tuple[bool, str]:
     if special_ratio > 0.3:
         return False, "question contains too many special characters
     """
+    
 
 # ══════════════════════════════════════════════════
 # OUTPUT GUARDRAILS

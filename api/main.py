@@ -1,5 +1,5 @@
 """
-VanaciRetain FastAPI Backend
+HR-copilot FastAPI Backend
 ────────────────────────────
 REST API for the HR Policy Assistant.
 
@@ -31,9 +31,9 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="VanaciPrime HR Assistant API",
+    title="HR Assistant API",
     description=(
-        "REST API for the VanaciPrime HR Policy Assistant. "
+        "REST API for the HR Policy Assistant. "
         "Uses a LangGraph agentic RAG pipeline with query "
         "decomposition, document grading, and grounding checks."
     ),
@@ -62,7 +62,7 @@ app.include_router(router, prefix="/api/v1")
 async def root():
     """Root endpoint."""
     return {
-        "service": "VanaciPrime HR assistant",
+        "service": "HR assistant",
         "docs": "/docs",
         "health": "/api/v1/health",
     }
