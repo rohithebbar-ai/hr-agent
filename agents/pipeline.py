@@ -8,7 +8,6 @@ Uses functools.partial for dependency injection.
 import warnings
 warnings.filterwarnings("ignore", category=UserWarning, module="pydantic")
 
-from ast import NodeTransformer
 import os
 from functools import partial
 from pathlib import Path
@@ -17,7 +16,6 @@ from dotenv import load_dotenv
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import START, StateGraph
 
-from scripts.llm_manager import LLMTask, get_llm
 from agents.nodes import (
     chat_node,
     check_grounding_node,
@@ -28,78 +26,62 @@ from agents.nodes import (
     transform_query,
 )
 from agents.schemas import PolicyAgentState
-from rag.retriever import COLLECTION_POLICY_AWARE, get_retriever
 
 load_dotenv()
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
+
 class PolicyAgentPipeline:
     """LangGraph-based agentic RAG pipeline for HR policy questions."""
+
     def __init__(self, top_k: int = 5):
         self.top_k = top_k
-        
-        # ── Get LLMs from the manager──
-        self.routing_llm = get_llm(LLMTask.QUERY_ROUTING)
-        self.chat_llm = get_llm(LLMTask.CHAT)
-        self.decomp_llm = get_llm(LLMTask.QUERY_DECOMPOSITION)
-        self.grading_llm = get_llm(LLMTask.DOCUMENT_GRADING)
-        self.generation_llm = get_llm(LLMTask.GENERATION)
-        self.grounding_llm = get_llm(LLMTask.GROUNDING_CHECK)
+        self._graph = None
+        # ── Nothing heavy in __init__ ──
+        # LLMs, retriever, and graph are built lazily in create_agent()
 
-        # ── Retriever ──
-        self.retriever = get_retriever(
+    def create_agent(self):
+        """Build and compile the LangGraph agent. Cached after first call."""
+        if self._graph is not None:
+            return self._graph
+
+        # ── Import heavy dependencies only when first needed ──
+        from scripts.llm_manager import LLMTask, get_llm
+        from rag.retriever import COLLECTION_POLICY_AWARE, get_retriever
+
+        os.environ["TOKENIZERS_PARALLELISM"] = "false"
+
+        # ── LangSmith tracing (only if key exists) ──
+        if os.environ.get("LANGSMITH_API_KEY") and os.environ.get("LANGSMITH_TRACING", "true").lower() == "true":
+            os.environ["LANGSMITH_TRACING_V2"] = "true"
+            os.environ["LANGSMITH_PROJECT"] = os.environ.get("LANGSMITH_PROJECT", "hragent")
+
+        print("[PIPELINE] Loading LLMs...")
+        routing_llm = get_llm(LLMTask.QUERY_ROUTING)
+        chat_llm = get_llm(LLMTask.CHAT)
+        decomp_llm = get_llm(LLMTask.QUERY_DECOMPOSITION)
+        grading_llm = get_llm(LLMTask.DOCUMENT_GRADING)
+        generation_llm = get_llm(LLMTask.GENERATION)
+        grounding_llm = get_llm(LLMTask.GROUNDING_CHECK)
+
+        print("[PIPELINE] Loading retriever and embedding model...")
+        retriever = get_retriever(
             collection=COLLECTION_POLICY_AWARE,
             search_type="mmr",
             k=8,
         )
 
-        self._graph = None
-
-    def create_agent(self):
-        """Build and compile the LangGraph agent."""
-        if self._graph is not None:
-            return self._graph
-
-        if os.environ.get("LANGSMITH_API_KEY"):
-            os.environ["LANGSMITH_TRACING_V2"] = "true"
-            os.environ["LANGSMITH_PROJECT"] = os.environ.get(
-                "LANGSMITH_PROJECT", "hragent"
-            )
-
-        os.environ["TOKENIZERS_PARALLELISM"] = "false"
-
+        print("[PIPELINE] Building LangGraph...")
         workflow = StateGraph(PolicyAgentState)
 
-        # -- Each node gets its task-specific LLM --
-        workflow.add_node(
-            "route_query",
-            partial(route_query_node, base_llm=self.routing_llm),
-        )
-        workflow.add_node(
-            "chat_node",
-            partial(chat_node, base_llm=self.chat_llm),
-        )
-        workflow.add_node(
-            "transform_query",
-            partial(transform_query, base_llm=self.decomp_llm),
-        )
-        workflow.add_node(
-            "retrieve",
-            partial(retrieve_node, retriever=self.retriever),
-        )
-        workflow.add_node(
-            "grade_documents",
-            partial(grade_documents_node, base_llm=self.grading_llm),
-        )
-        workflow.add_node(
-            "generate",
-            partial(generate_node, base_llm=self.generation_llm),
-        )
-        workflow.add_node(
-            "check_grounding",
-            partial(check_grounding_node, base_llm=self.grounding_llm),
-        )
+        workflow.add_node("route_query", partial(route_query_node, base_llm=routing_llm))
+        workflow.add_node("chat_node", partial(chat_node, base_llm=chat_llm))
+        workflow.add_node("transform_query", partial(transform_query, base_llm=decomp_llm))
+        workflow.add_node("retrieve", partial(retrieve_node, retriever=retriever))
+        workflow.add_node("grade_documents", partial(grade_documents_node, base_llm=grading_llm))
+        workflow.add_node("generate", partial(generate_node, base_llm=generation_llm))
+        workflow.add_node("check_grounding", partial(check_grounding_node, base_llm=grounding_llm))
 
         workflow.add_edge(START, "route_query")
 
@@ -109,9 +91,18 @@ class PolicyAgentPipeline:
         self._save_graph_image(graph)
 
         self._graph = graph
-        return graph
+        print("[PIPELINE] Agent ready")
+        return self._graph
 
     def _save_graph_image(self, graph):
+        """Save graph visualization only in dev when explicitly enabled."""
+        should_generate = (
+            os.environ.get("ENVIRONMENT", "dev") == "dev"
+            and os.environ.get("GENERATE_GRAPH_VIZ", "false") == "true"
+        )
+        if not should_generate:
+            return
+
         try:
             outputs_dir = PROJECT_ROOT / "outputs"
             outputs_dir.mkdir(exist_ok=True)
@@ -129,18 +120,13 @@ class PolicyAgentPipeline:
         thread_id: str = "default",
         metadata: dict = None,
         tags: list = None,
-        ) -> str:
+    ) -> str:
         """Run a single query through the agent."""
         graph = self.create_agent()
-
-
         config = {
             "configurable": {"thread_id": thread_id},
             "metadata": metadata or {},
             "tags": tags or [],
-            }
-        final_state = graph.invoke(
-            {"question": query},
-            config=config,
-        )
+        }
+        final_state = graph.invoke({"question": query}, config=config)
         return final_state["answer"]

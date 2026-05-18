@@ -1,11 +1,13 @@
 [project]
 name = "hr-agent"
 version = "0.1.0"
-description = "VanaciRetain - Agentic RAG System for HR Teams"
+description = "HR-copilot- Agentic RAG System for HR Teams"
 readme = "README.md"
-requires-python = ">=3.11,<3.14"
+requires-python = ">=3.11,<3.12"
+
 license = { text = "MIT" }
-authors = [{ name = "VanaciPrime" }]
+authors = [{ name = "RohitHebbar" }]
+
 dependencies = [
     # Agent Framework
     "langgraph>=0.4.0,<2.0.0",
@@ -16,8 +18,11 @@ dependencies = [
     "langchain-text-splitters>=0.3.0,<2.0.0",
     # Document Loading
     "pymupdf>=1.24.0,<2.0.0",
-    # Embeddings (pinned for Intel Mac compatibility)
-    "torch>=2.6.0",
+    # Embeddings / ML
+    # Intel Mac
+    "torch>=2.2.2,<2.3.0; sys_platform == 'darwin' and platform_machine == 'x86_64'",
+    # Everything else
+    "torch>=2.6.0,<2.7.0; sys_platform != 'darwin' or platform_machine != 'x86_64'",
     "sentence-transformers>=3.0.0,<4.0.0",
     "transformers>=4.44.0,<4.50.0",
     "langchain-huggingface>=0.1.0,<2.0.0",
@@ -33,7 +38,7 @@ dependencies = [
     "pydantic>=2.0.0",
     # RAG Evaluation
     "ragas>=0.2.0,<0.4.0",
-    # ML Models
+    # ML / Data
     "scikit-learn>=1.5.0",
     "pandas>=2.2.0",
     "numpy>=1.26.0,<2.0.0",
@@ -41,15 +46,17 @@ dependencies = [
     "mlflow>=2.18.0",
     # Re-ranking
     "flashrank>=0.2.0",
-    # Rate limit retry
+    # LLM Providers
     "groq>=0.37.0",
+    "langchain-google-genai>=2.1.12",
+    "langchain-openai>=0.3.35",
+    # Infra / Backend
     "streamlit>=1.56.0",
     "discord-py>=2.7.1",
     "httpx>=0.28.1",
     "redis>=7.4.0",
     "slowapi>=0.1.9",
-    "langchain-google-genai>=2.1.12",
-    "langchain-openai>=0.3.35",
+    # AWS
     "boto3>=1.42.97",
 ]
 
@@ -60,6 +67,7 @@ dev = [
     "ipykernel>=6.29.0",
     "jupyter>=1.0.0",
     "ruff>=0.8.0",
+    "py-spy>=0.3.14",
 ]
 
 [build-system]
@@ -75,14 +83,12 @@ target-version = "py311"
 
 [tool.uv]
 constraint-dependencies = [
-    "onnxruntime>=1.21.0",
+
+    # Intel Mac fallback
+    "onnxruntime>=1.17.0,<1.19.0; sys_platform == 'darwin' and platform_machine == 'x86_64'",
+
+    # Modern platforms
+    "onnxruntime>=1.21.0; sys_platform != 'darwin' or platform_machine != 'x86_64'",
+
     "pyarrow>=18.0.0",
 ]
-
-[tool.uv.sources]
-torch = { index = "pytorch-cpu" }
-
-[[tool.uv.index]]
-name = "pytorch-cpu"
-url = "https://download.pytorch.org/whl/cpu"
-explicit = true

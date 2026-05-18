@@ -45,6 +45,7 @@ venv.bak/
 .env.*.local
 *.env
 !.env.example
+.env.prod
 
 # ───────────────────────────────────────────
 # uv package manager
@@ -208,3 +209,4 @@ temp/
 
 planning/
 redis_data/
+localstack_data/

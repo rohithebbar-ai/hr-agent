@@ -16,10 +16,7 @@ from pathlib import Path
 
 import pymupdf
 from pydantic import BaseModel
-import boto3
-
-BUCKET_NAME = "rohit-hr-documents-2026"
-S3_PREFIX = "raw/"
+from scripts.storage import get_document_path, save_document
 
 
 # ═══════════════════════════════════════════════════════
@@ -430,12 +427,9 @@ def fix_parenthesis_placeholders(text: str) -> str:
     return text
 
 def download_from_s3(s3, key: str) -> Path:
-    local_path = Path(f"/tmp/{key.split('/')[-1]}")
-
     print(f"[S3 DOWNLOAD] {key}")
-    s3.download_file(BUCKET_NAME, key, str(local_path))
+    return get_document_path(key)
 
-    return local_path
 
 def load_supplementary_policies() -> list[PolicyObject]:
     """
@@ -1010,7 +1004,6 @@ def save_remaining_placeholders(pages: list[Page]) -> Path:
 # ═══════════════════════════════════════════════════════
 # MAIN
 # ═══════════════════════════════════════════════════════
-
 def main():
     print("\n" + "=" * 60)
     print("  STEP 1: Document Preprocessing (v2)")
@@ -1018,21 +1011,8 @@ def main():
     print("  PyMuPDF + Policy Object Architecture")
     print("=" * 60 + "\n")
 
-    s3 = boto3.client("s3")
-
-    response = s3.list_objects_v2(
-        Bucket=BUCKET_NAME,
-        Prefix=S3_PREFIX
-    )
-
-    for obj in response.get("Contents", []):
-        key = obj["Key"]
-
-        if not key.endswith(".pdf"):
-            continue
-
-    # 1. Download from S3
-    pdf_path = download_from_s3(s3, key)
+    # 1. Get the PDF — auto-detects local vs S3
+    pdf_path = get_document_path("raw/gallagher_employee_handbook.pdf")
 
     # 2. Extract
     pages = extract_with_pymupdf(pdf_path)
@@ -1048,6 +1028,13 @@ def main():
     policies.extend(supplementary)
 
     # 6. Save
+    import json
+    policies_json = json.dumps(
+        [p.__dict__ if hasattr(p, '__dict__') else p for p in policies],
+        indent=2,
+        ensure_ascii=False,
+    )
+    save_document(policies_json, "processed/policies.json")
     save_policies_json(policies)
     save_section_metadata(policies)
     save_debug_txt(processed_pages)
@@ -1069,7 +1056,6 @@ def main():
     print(f"  Categories:        {', '.join(sorted(categories))}")
     print(f"{'─'*50}")
 
-    # Print category breakdown
     from collections import Counter
     cat_counts = Counter(p.category for p in policies)
     print(f"\n  Category breakdown:")

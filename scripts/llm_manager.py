@@ -69,9 +69,10 @@ class ModelID:
     GPT_4O = "gpt-4o"
 
     # ── Gemini ──
-    GEMINI_2_5_FLASH = "gemini-2.5-flash"            # Best balance of speed + quality
+    GEMINI_FLASH = "gemini-flash-latest"            # Best balance of speed + quality
+    GEMINI_3_PRO = "gemini-3-pro-preview"
     GEMINI_2_5_FLASH_LITE = "gemini-2.5-flash-lite"   # Cheapest, fastest, simple tasks
-    GEMINI_2_5_PRO = "gemini-2.5-pro"                 # Complex reasoning (1M context)
+    GEMINI_4_26B = "gemma-4-26b-a4b-it"                 # Complex reasoning (1M context)
 
     # ── Specialized ──
     WHISPER_LARGE_V3 = "whisper-large-v3"
@@ -109,20 +110,20 @@ class LLMTask(str, Enum):
 TASK_CONFIG = {
     # ── Tasks needing reasoning power → big model ──
     LLMTask.GENERATION: {
-        "provider": Provider.OPENAI,
-        "model": ModelID.GPT_4O_MINI,
+        "provider": Provider.GEMINI,
+        "model": ModelID.GEMINI_FLASH,
         "temperature": 0,
         "max_retries": 3,
     },
     LLMTask.QUERY_DECOMPOSITION: {
-        "provider": Provider.OPENAI,
-        "model": ModelID.GPT_4O_MINI,
+        "provider": Provider.GEMINI,
+        "model": ModelID.GEMINI_2_5_FLASH_LITE,
         "temperature": 0,
         "max_retries": 3,
     },
     LLMTask.CHAT: {
         "provider": Provider.GEMINI,
-        "model": ModelID.GEMINI_2_5_PRO,
+        "model": ModelID.GEMINI_FLASH,
         "temperature": 0.6,  # Slightly creative for chat
         "max_retries": 5,
     },
@@ -130,19 +131,19 @@ TASK_CONFIG = {
     # ── Fast classification tasks → small model ──
     LLMTask.QUERY_ROUTING: {
         "provider": Provider.GROQ,
-        "model": ModelID.LLAMA_4_SCOUT,
+        "model": ModelID.LLAMA_3_1_8B_INSTANT,
         "temperature": 0,
         "max_retries": 3,
     },
     LLMTask.DOCUMENT_GRADING: {
-        "provider": Provider.GEMINI,
-        "model": ModelID.GEMINI_2_5_FLASH,
+        "provider": Provider.GROQ,
+        "model": ModelID.LLAMA_3_1_8B_INSTANT,
         "temperature": 0,
         "max_retries": 3,
     },
     LLMTask.GROUNDING_CHECK: {
         "provider": Provider.GEMINI,
-        "model": ModelID.GEMINI_2_5_FLASH,
+        "model": ModelID.GEMINI_FLASH,
         "temperature": 0,
         "max_retries": 3,
     },
@@ -157,7 +158,7 @@ TASK_CONFIG = {
 
      LLMTask.RAGAS_JUDGE: {
         "provider": Provider.GEMINI,
-        "model": ModelID.GEMINI_2_5_FLASH,
+        "model": ModelID.GEMINI_2_5_FLASH_LITE,
         "temperature": 0,
         "max_retries": 5,
     },
@@ -168,35 +169,51 @@ TASK_CONFIG = {
 # LLM FACTORY
 # ══════════════════════════════════════════════════
 
-def _create_llm(provider: Provider, model: str, temperature:float, max_retries:int):
+def _create_llm(
+    provider: Provider,
+    model: str,
+    temperature: float,
+    max_retries: int,
+):
     """
     Create an LLM instance for given provider.
-    All providers return langchain compatiable chat model.
+    All providers return LangChain-compatible chat models.
     """
+
+    common_kwargs = {
+        "model": model,
+        "temperature": temperature,
+    }
+
     if provider == Provider.GROQ:
-        api_key = GROQ_API_KEY_RUNTIME
         return ChatGroq(
-            api_key=api_key,
-            model=model,
-            temperature=temperature,
+            api_key=GROQ_API_KEY_RUNTIME,
             max_retries=max_retries,
+            **common_kwargs,
         )
+
     elif provider == Provider.OPENAI:
-        api_key = OPENAI_API_KEY
         return ChatOpenAI(
-            api_key=api_key,
-            model=model,
-            temperature=temperature,
+            api_key=OPENAI_API_KEY,
             max_retries=max_retries,
+            **common_kwargs,
         )
+
     elif provider == Provider.GEMINI:
-        api_key = GOOGLE_API_KEY
-        return ChatGoogleGenerativeAI(
-            api_key=api_key,
-            model=model,
-            temperature=temperature,
-            max_retries=max_retries,
-        )
+        try:
+            return ChatGoogleGenerativeAI(
+                api_key=GOOGLE_API_KEY,
+                model=model,
+                temperature=temperature,
+                max_retries=max_retries,
+            )
+        except TypeError:
+            return ChatGoogleGenerativeAI(
+                api_key=GOOGLE_API_KEY,
+                model=model,
+                temperature=temperature,
+            )
+
     else:
         raise ValueError(f"Unknown Provider: {provider}")
 

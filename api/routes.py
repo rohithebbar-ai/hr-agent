@@ -39,11 +39,8 @@ logger = logging.getLogger("vanacihr.api")
 @lru_cache(maxsize=1)
 def get_pipeline() -> PolicyAgentPipeline:
     """Build the agent pipeline once and reuse"""
-    print("[API] Building agent pipeline")
-    pipeline = PolicyAgentPipeline()
-    pipeline.create_agent()
-    print("[API] pipeline ready")
-    return pipeline
+    print("[API] Creating pipeline instance")
+    return PolicyAgentPipeline()
 
 
 # ══════════════════════════════════════════════════
@@ -57,8 +54,7 @@ async def health_check():
     returns whether the pipeline is loaded and ready.
     """
     try:
-        pipeline = get_pipeline()
-        loaded = pipeline._graph is not None
+        loaded = get_pipeline.cache_info().currsize > 0
     except Exception:
         loaded = False
 

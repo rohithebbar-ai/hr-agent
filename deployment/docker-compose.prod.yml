@@ -7,6 +7,7 @@ services:
     ports:
       - "8000:8000"
     environment:
+      - ENVIRONMENT=prod
       - AWS_REGION=ap-south-1
       - AWS_SECRET_NAME=hragent/api-keys
       - QDRANT_URL=http://qdrant:6333

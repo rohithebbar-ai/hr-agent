@@ -3,19 +3,6 @@ Policy Agent Nodes
 ──────────────────
 Each node takes (state, **injected_deps) and returns a dict of state updates.
 Dependencies (LLM, retriever) are injected via functools.partial in the pipeline builder — no globals.
-
-functools.partial is a powerful tool in the Python Standard Library used for partial function application. It allows you to "freeze" a portion of a function's arguments or keywords, creating a new callable object with a simplified signature
-
-Example
-from functools import partial
-
-def multiply(x, y):
-    return x * y
-
-# Create a 'double' function by pre-filling x = 2
-double = partial(multiply, 2)
-
-print(double(4))  # Output: 8 (Equivalent to multiply(2, 4))
 """
 
 from typing import List, Literal
@@ -33,6 +20,19 @@ from agents.schemas import(
     QueryDecomposition,
     RouteQuery,
 )
+
+def _extract_text(content) -> str:
+    """Extract text from LLM response content (handles Gemini's list format)."""
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):
+        for block in content:
+            if isinstance(block, dict) and block.get("type") == "text":
+                return block["text"]
+            if isinstance(block, str):
+                return block
+        return str(content)
+    return str(content)
 
 # ══════════════════════════════════════════════════
 # NODE 1: route_query
@@ -115,7 +115,7 @@ def chat_node(
             "question": state["question"],
             "history": history,
         })
-        answer = response.content
+        answer = _extract_text(response.content)
     except Exception as e:
         print(f"[CHAT] LLM failed: {e}")
         # Fallback response for non-HR questions
@@ -274,7 +274,7 @@ def grade_documents_node(
     relevant documents.
     """
     documents = state["documents"]
-    print(f"\n[GRADE] Batch-grading {len(documents)} documents...")
+    print(f"\n[GRADE] Batch-grading {len(documents)} documents")
 
     # ── Handle empty case ──
     if not documents:
@@ -299,9 +299,16 @@ def grade_documents_node(
         )
 
     # ── Format documents for batch grading ──
+    def _truncate_for_grading(doc, max_chars=300):
+        """Truncate document text for grading — grader only needs enough to judge relevance."""
+        text = doc.page_content
+        if len(text) > max_chars:
+            return text[:max_chars] + "..."
+        return text
+
     doc_text = "\n\n".join([
         f"[Document {i+1}] (Policy: {doc.metadata.get('policy_name', 'Unknown')})\n"
-        f"{doc.page_content[:500]}"
+        f"{_truncate_for_grading(doc)}"
         for i, doc in enumerate(documents)
     ])
 
@@ -417,6 +424,7 @@ GENERATE_PROMPT = ChatPromptTemplate.from_messages([
     ("human", "{question}"),
 ])
 
+
 def _format_context(docs: List[Document]) -> str:
     """Format documents into context string for the LLM."""
     if not docs:
@@ -449,7 +457,7 @@ def generate_node(
         "context": context,
         "history": history,
     })
-    answer = response.content
+    answer = _extract_text(response.content)
     print(f"[GENERATE] → Generated {len(answer)} chars")
     print(f"[GENERATE] → Preview: {answer[:80]}...")
 
@@ -504,15 +512,15 @@ def check_grounding_node(
             goto=END,
         )
 
-    print(f"\n[GROUND] Checking grounding...")
+    print(f"\n[GROUND] Checking grounding.")
 
     context_snippets = []
-    for i, doc in enumerate(state["graded_documents"][:5], 1):  # Max 5 docs
-        snippet = doc.page_content[:300]  # Truncate
+    for i, doc in enumerate(state["graded_documents"][:5], 1):
+        snippet = doc.page_content[:500]
         context_snippets.append(f"[Doc {i}] {snippet}")
-    
-    context = "\n\n".join(context_snippets)
 
+    context = "\n\n".join(context_snippets)
+    
     structured_llm = base_llm.with_structured_output(GroundingCheck)
     chain = GROUNDING_PROMPT | structured_llm
     try:

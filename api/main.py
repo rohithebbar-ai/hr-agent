@@ -11,6 +11,7 @@ Docs:
 """
 
 import os
+from contextlib import asynccontextmanager
 
 from dotenv import load_dotenv
 from fastapi import FastAPI
@@ -20,23 +21,33 @@ from api.routes import router
 
 load_dotenv()
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Startup and shutdown events."""
+    print("[STARTUP] FastAPI starting — pipeline loads on first /chat request")
+    yield
+    print("[SHUTDOWN] FastAPI shutting down")
+
+
 app = FastAPI(
     title="VanaciPrime HR Assistant API",
     description=(
-        f"REST API for the VanaciPrime HR Policy Assistant. "
+        "REST API for the VanaciPrime HR Policy Assistant. "
         "Uses a LangGraph agentic RAG pipeline with query "
         "decomposition, document grading, and grounding checks."
     ),
     version="1.0.0",
+    lifespan=lifespan,
 )
 
-# ── CORS (allow Streamlit and Discord to call the API) ──
+# ── CORS ──
 app.add_middleware(
     CORSMiddleware,
-    allow_origins = [
-        "http://localhost:8501",   # Streamlit
-        "http://localhost:3000",   # Any local frontend
-        "*",                       # Allow all for development
+    allow_origins=[
+        "http://localhost:8501",  # Streamlit
+        "http://localhost:3000",  # Any local frontend
+        "*",                      # Allow all for development
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -46,11 +57,12 @@ app.add_middleware(
 # Register routes
 app.include_router(router, prefix="/api/v1")
 
+
 @app.get("/")
 async def root():
-    """Root endpoint - redirect to docs"""
+    """Root endpoint."""
     return {
         "service": "VanaciPrime HR assistant",
         "docs": "/docs",
-        "health": "/api/v1/health"
+        "health": "/api/v1/health",
     }
