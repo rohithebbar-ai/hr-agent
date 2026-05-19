@@ -137,7 +137,7 @@ jobs:
 
             # Wait for app to start
             echo "=== Waiting for startup ==="
-            sleep 15
+            sleep 60
 
             # Health check
             echo "=== Running health check ==="
