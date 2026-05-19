@@ -1,8 +1,6 @@
 services:
   app:
-    build:
-      context: ..
-      dockerfile: deployment/Dockerfile
+    image: rohithebbar/hr-agent:latest
     container_name: hr-copilot-app
     ports:
       - "8000:8000"
@@ -22,11 +20,9 @@ services:
       - hr-network
 
   discord-bot:
-    build:
-      context: ..
-      dockerfile: deployment/Dockerfile
+    image: rohithebbar/hr-agent:latest
     container_name: hr-copilot-discord
-    command: ["uv", "run", "python", "-m", "integrations.discord_bot"]
+    command: ["sh", "-c", "uv run python scripts/aws_secrets.py && uv run python -m integrations.discord_bot"]
     environment:
       - AWS_REGION=ap-south-1
       - AWS_SECRET_NAME=hragent/api-keys
