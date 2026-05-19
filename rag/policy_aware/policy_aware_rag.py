@@ -14,11 +14,9 @@ from dotenv import load_dotenv
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnablePassthrough
-from langchain_groq import ChatGroq
 
 from rag.retriever import (
     COLLECTION_POLICY_AWARE,
-    get_rerank_retriever,
     get_retriever
 )
 from scripts.llm_manager import LLMTask, get_llm

@@ -14,7 +14,6 @@ Benefits:
 - Cost tracking per task type
 """
 
-import os
 from enum import Enum
 from functools import lru_cache
 from typing import Optional

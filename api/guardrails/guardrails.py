@@ -49,7 +49,7 @@ def check_prompt_injection(text: str) -> tuple[bool, str]:
     """
     for pattern in COMPILED_INJECTION_PATTERNS:
         if pattern.search(text):
-            return False, f"potential prompt injection detected"
+            return False, "potential prompt injection detected"
 
     return True, ""
 

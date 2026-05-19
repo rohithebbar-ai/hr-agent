@@ -17,13 +17,12 @@ from pathlib import Path
 from datasets import Dataset
 from dotenv import load_dotenv
 from ragas import evaluate
-from ragas.llms import LangchainLLMWrapper, llm_factory
+from ragas.llms import LangchainLLMWrapper
 from ragas.metrics import context_recall, faithfulness
 from ragas.run_config import RunConfig
 
 from scripts.llm_manager import LLMTask, get_llm
 from agents.pipeline import PolicyAgentPipeline
-from agents.schemas import PolicyAgentState
 from langchain_core.tracers.context import collect_runs
 from langsmith import Client
 
@@ -76,7 +75,7 @@ def generate_agentic_answers(test_set: list) -> list:
     print("\n[INIT] Building agent pipeline")
     pipeline = PolicyAgentPipeline()
     pipeline.create_agent() # pre-compile the graph
-    print(f"[OK] Pipeline ready\n")
+    print("[OK] Pipeline ready\n")
 
     results = []
     total = len(test_set)

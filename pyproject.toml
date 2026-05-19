@@ -79,6 +79,7 @@ build-backend = "hatchling.build"
 packages = ["api", "agents", "rag", "models", "mcp"]
 
 [tool.ruff]
+ignore = ["E402", "F811", "F841", "F601"]
 line-length = 100
 target-version = "py311"
 

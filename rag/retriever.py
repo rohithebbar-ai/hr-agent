@@ -7,7 +7,6 @@ Used by all RAG components.
 import os
 from dotenv import load_dotenv
 from functools import lru_cache
-from langchain_core.tools import base
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_qdrant import QdrantVectorStore
 

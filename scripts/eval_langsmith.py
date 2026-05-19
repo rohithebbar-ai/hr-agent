@@ -255,7 +255,7 @@ def main():
     push_all_metrics_to_langsmith(results, scores_df)
     
     print("\n[DONE] Check LangSmith UI for per-query metrics:")
-    print(f"  https://smith.langchain.com/projects/hragent")
+    print("  https://smith.langchain.com/projects/hragent")
 
 
 if __name__ == "__main__":

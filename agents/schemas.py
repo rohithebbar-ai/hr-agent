@@ -5,7 +5,7 @@ Schemas for the Policy Agent.
 - Structured output schemas: used for reliable LLM parsing
 """
 
-from typing import Annotated, List, Literal, Optional, Sequence
+from typing import Annotated, List, Literal, Sequence
 
 from langchain_core.documents import Document
 from langchain_core.messages import BaseMessage

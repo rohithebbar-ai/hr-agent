@@ -5,7 +5,6 @@ All FastAPI endpoint definitions.
 The pipeline is injected via FastAPI's dependency system.
 """
 
-import os
 import logging
 from functools import lru_cache
 

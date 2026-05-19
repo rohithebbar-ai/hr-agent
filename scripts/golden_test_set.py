@@ -476,13 +476,13 @@ def print_summary():
     difficulties = Counter(q["difficulty"] for q in GOLDEN_TEST_SET)
 
     print(f"\n{'─'*50}")
-    print(f"Golden Test Set Summary")
+    print("Golden Test Set Summary")
     print(f"{'─'*50}")
     print(f"Total questions: {len(GOLDEN_TEST_SET)}")
-    print(f"\n  By Category:")
+    print("\n  By Category:")
     for cat, count in sorted(categories.items()):
         print(f"{cat:15s} : {count}")
-    print(f"\n By Difficulty:")
+    print("\n By Difficulty:")
     for diff, count in sorted(difficulties.items()):
         print(f"{diff:15s} : {count}")
     print(f"{'─'*50}\n")
