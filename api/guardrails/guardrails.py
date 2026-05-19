@@ -118,7 +118,7 @@ URL_PATTERN = re.compile(
 def sanitize_output(answer: str) -> str:
     """
     Clean the LLM output before sending to the user.
-    Removes hallucinated URLs and enforces length limits.
+    Removes hallucinated URLs and enforces length limits
     """
     # Strip any URLs (LLM might hallucinate links)
     sanitized = URL_PATTERN.sub("[link removed]", answer)
