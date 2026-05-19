@@ -10,7 +10,6 @@ Docs:
     http://localhost:8000/docs
 """
 
-import os
 from contextlib import asynccontextmanager
 
 from dotenv import load_dotenv

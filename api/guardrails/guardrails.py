@@ -49,7 +49,7 @@ def check_prompt_injection(text: str) -> tuple[bool, str]:
     """
     for pattern in COMPILED_INJECTION_PATTERNS:
         if pattern.search(text):
-            return False, f"potential prompt injection detected"
+            return False, "potential prompt injection detected"
 
     return True, ""
 
@@ -118,7 +118,7 @@ URL_PATTERN = re.compile(
 def sanitize_output(answer: str) -> str:
     """
     Clean the LLM output before sending to the user.
-    Removes hallucinated URLs and enforces length limits.
+    Removes hallucinated URLs and enforces length limits
     """
     # Strip any URLs (LLM might hallucinate links)
     sanitized = URL_PATTERN.sub("[link removed]", answer)

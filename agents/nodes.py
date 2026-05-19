@@ -9,7 +9,6 @@ from typing import List, Literal
 
 from langchain_core.documents import Document
 from langchain_core.messages import AIMessage, HumanMessage
-from langchain_core.prompts import ChatPromptTemplate
 from langgraph.graph import END
 from langgraph.types import Command
 from agents.prompt_loader import load_prompt
@@ -83,7 +82,7 @@ def chat_node(
     base_llm,
     ) -> Command[Literal["__end__"]]:
     """Handle conversational questions without retrieval"""
-    print(f"[CHAT] Direct chat response (no retrieval)")
+    print("[CHAT] Direct chat response (no retrieval)")
 
     chain = CHAT_PROMPT | base_llm
     history = state.get("messages", [])[-6:]
@@ -125,7 +124,7 @@ def transform_query(
     base_llm,
 ) -> Command[Literal["retrieve"]]:
     """Decompose multi-hop queries into focused sub-queries """
-    print(f"\n[TRANSFORM] Analyzing query for decomposition")
+    print("\n[TRANSFORM] Analyzing query for decomposition")
 
     structured_llm = base_llm.with_structured_output(QueryDecomposition)
     chain = TRANSFORM_PROMPT | structured_llm
@@ -214,7 +213,7 @@ def grade_documents_node(
 
     # ── Handle empty case ──
     if not documents:
-        print(f"[GRADE] → No documents to grade")
+        print("[GRADE] → No documents to grade")
         retry_count = state.get("retrieval_retry_count", 0)
         if retry_count < 2:
             print(f"[GRADE] → Retrying (attempt {retry_count + 1}/2)")
@@ -306,8 +305,8 @@ def grade_documents_node(
     # ── Safety net: if grader rejected EVERYTHING but we have docs,
     # ── that's almost certainly a grader failure. Keep all docs anyway.
     if kept == 0 and total > 0:
-        print(f"[GRADE] → Grader rejected all docs (suspicious), "
-              f"keeping all as safety net")
+        print("[GRADE] → Grader rejected all docs (suspicious), "
+              "keeping all as safety net")
         return Command(
             update={
                 "graded_documents": documents,  # Keep ALL
@@ -409,7 +408,7 @@ def check_grounding_node(
 
     if (len(answer) < 150 and
             any(phrase in answer.lower() for phrase in refusal_phrases)):
-        print(f"\n[GROUND] Skipped (refusal detected)")
+        print("\n[GROUND] Skipped (refusal detected)")
         return Command(
             update={
                 "is_grounded": True,
@@ -418,7 +417,7 @@ def check_grounding_node(
             goto=END,
         )
 
-    print(f"\n[GROUND] Checking grounding.")
+    print("\n[GROUND] Checking grounding.")
 
     context_snippets = []
     for i, doc in enumerate(state["graded_documents"][:5], 1):

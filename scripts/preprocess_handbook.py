@@ -10,8 +10,7 @@
 
 import json
 import re
-import urllib.request
-from dataclasses import dataclass, field, asdict
+from dataclasses import dataclass, field
 from pathlib import Path
 
 import pymupdf
@@ -438,10 +437,10 @@ def load_supplementary_policies() -> list[PolicyObject]:
     '=== Policy Name ===' headers.
     """
     if not SUPPLEMENTARY_FILE.exists():
-        print(f"[INFO] No supplementary policies file found")
+        print("[INFO] No supplementary policies file found")
         return []
     
-    print(f"[LOAD] Reading supplementary policies...")
+    print("[LOAD] Reading supplementary policies...")
     
     with open(SUPPLEMENTARY_FILE, "r", encoding="utf-8") as f:
         content = f.read()
@@ -1046,7 +1045,7 @@ def main():
     categories = set(p.category for p in policies)
 
     print(f"\n{'─'*50}")
-    print(f"  SUMMARY")
+    print("  SUMMARY")
     print(f"{'─'*50}")
     print(f"  Pages extracted:   {len(pages)}")
     print(f"  Pages after clean: {len(processed_pages)}")
@@ -1058,7 +1057,7 @@ def main():
 
     from collections import Counter
     cat_counts = Counter(p.category for p in policies)
-    print(f"\n  Category breakdown:")
+    print("\n  Category breakdown:")
     for cat, count in sorted(cat_counts.items()):
         print(f"    {cat:20s}: {count}")
 

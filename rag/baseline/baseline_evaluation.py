@@ -8,7 +8,6 @@ Usage:
     uv run python rag/evaluation.py
 """
 import json
-import os
 from pathlib import Path
 #from ragas import embeddings
 from datasets import Dataset
@@ -16,14 +15,12 @@ from ragas import evaluate
 from rag.baseline.baseline_rag import baseline_rag_chain
 from rag.retriever import get_retriever
 from ragas.run_config import RunConfig
-import pandas 
 from ragas.metrics import context_recall, faithfulness
 from ragas.llms import LangchainLLMWrapper
 from langchain_groq import ChatGroq
 from datetime import datetime
 from dotenv import load_dotenv
 import time
-from openai import OpenAI
 
 load_dotenv()
 

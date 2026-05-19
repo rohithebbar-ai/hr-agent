@@ -8,7 +8,6 @@ Usage:
     uv run python scripts/localstack_setup.py
 """
 
-from email import message
 import json
 import os
 from pathlib import Path
@@ -65,7 +64,7 @@ def setup_s3():
             BUCKET_NAME,
             "raw/gallagher_employee_handbook.pdf"
         )
-        print(f"[s3] Uploaded: raw/gallagher_employee_handbook.pdf")
+        print("[s3] Uploaded: raw/gallagher_employee_handbook.pdf")
 
     # Upload processed policies.json
     policies_path = Path("data/hr_documents/processed/policies.json")
@@ -75,11 +74,11 @@ def setup_s3():
             BUCKET_NAME,
             "processed/policies.json",
         )
-        print(f"[s3] Uploaded: processed/policies.json")
+        print("[s3] Uploaded: processed/policies.json")
 
     # List bucket contents
     response = s3.list_objects_v2(Bucket=BUCKET_NAME)
-    print(f"\n[S3] Bucket contents:")
+    print("\n[S3] Bucket contents:")
     for obj in response.get("Contents", []):
         print(f"{obj['Key']} ({obj['Size']} bytes)")
 
@@ -156,7 +155,7 @@ def setup_sqs():
                 "bucket": BUCKET_NAME,
             }),
         )
-        print(f"[SQS] Sent test message to queue")
+        print("[SQS] Sent test message to queue")
 
         # Receive and display the message
         messages = sqs.receive_message(
@@ -174,7 +173,7 @@ def setup_sqs():
                 QueueUrl=queue_url,
                 ReceiptHandle=msg["ReceiptHandle"],
             )
-            print(f"[SQS] Message processed and deleted")
+            print("[SQS] Message processed and deleted")
 
     except Exception as e:
         print(f"[SQS] Error: {e}")

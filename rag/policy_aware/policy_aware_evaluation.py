@@ -9,25 +9,21 @@ Usage:
 """
  
 import json
-import os
 import time
 from datetime import datetime
 from pathlib import Path
 
 from dotenv import load_dotenv
-from rag.config import golden_test_dir, golden_test_path
+from rag.config import golden_test_path
 from rag.policy_aware.policy_aware_rag import build_chain
 from rag.retriever import (
         COLLECTION_POLICY_AWARE,
-        get_rerank_retriever,
         get_retriever
     )
 from scripts.llm_manager import LLMTask, get_llm
-import pandas 
 from ragas.metrics import context_recall, faithfulness
 from ragas.llms import LangchainLLMWrapper
 from ragas.run_config import RunConfig
-from langchain_groq import ChatGroq
 from datasets import Dataset
 from ragas import evaluate
 
