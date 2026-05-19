@@ -54,44 +54,29 @@ def check_prompt_injection(text: str) -> tuple[bool, str]:
     return True, ""
 
 def validate_input(question: str) -> tuple[bool, str]:
-    """
-    Run all input validations on the questions.
-    Returns
-        (is_valid, error_message) - True if valid, false with reason
-    """
-    # Check empty
     if not question or not question.strip():
         return False, "Question cannot be empty"
 
-    # Check length
     if len(question) > 2000:
-        return False, (
-            f"question too long ({len(question)} chars)"
-            f"Max limit is 2000 chars"
-        )
+        return False, f"Question too long ({len(question)} chars). Max is 2000."
 
-    # Check if minimum meaningful length
     if len(question.strip()) < 2:
-        return False, "question too short"
+        return False, "Question too short"
 
-    # Check for prompt injection
     is_safe, reason = check_prompt_injection(question)
     if not is_safe:
         return False, reason
-    
-    return True, ""
 
-    # Check for excessive special characters (possible encoding attack)
-    """
+    # Special character check — must be BEFORE return True
     special_ratio = sum(
         1 for c in question
         if not c.isalnum() and not c.isspace() and c not in ".,?!'-()/"
-    )/ max(len(question))
+    ) / max(len(question), 1)
 
     if special_ratio > 0.3:
-        return False, "question contains too many special characters
-    """
-    
+        return False, "Question contains too many special characters"
+
+    return True, ""  # ← return is at the END
 
 # ══════════════════════════════════════════════════
 # OUTPUT GUARDRAILS

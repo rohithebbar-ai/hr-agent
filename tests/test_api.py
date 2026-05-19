@@ -16,7 +16,7 @@ class TestHealth:
 class TestRoot:
     def test_returns_service_info(self):
         r = client.get("/")
-        assert r.json()["service"] == "HR Assistant"
+        assert r.json()["service"] == "HR assistant"
 
 class TestChatValidation:
     def test_empty_question(self):

@@ -10,7 +10,7 @@ import logging
 from functools import lru_cache
 
 from dotenv import load_dotenv
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Form
 from starlette.requests import Request
 
 from agents.pipeline import PolicyAgentPipeline
@@ -21,7 +21,7 @@ from api.guardrails.guardrails import(
     validate_input,
 )
 from api.guardrails.limiter import limiter
-from api.redis_client import is_redis_available
+from api.redis_client import is_redis_available,get_redis
 from api.schemas import(
     ChatRequest,
     ChatResponse,
@@ -252,3 +252,21 @@ async def clear_session(thread_id: str):
         "thread_id": thread_id,
         "message": "Session cleared. Use a new thread_id for a fresh conversation.",
     }
+
+@router.get("/admin/behavior")
+async def get_behavior_prompt():
+    default = "You are a helpful HR assistant"
+    if is_redis_available():
+        r = get_redis()
+        prompt = r.get("hrassistant:behavior_prompt")
+        return {"prompt": prompt or default}
+    return {"prompt": default}
+
+@router.post("/admin/behavior")
+async def set_behavior_prompt(prompt:str = Form(...)):
+    if is_redis_available():
+        r = get_redis()
+        r.set("hrassistant:behavior_prompt", prompt)
+    return {"status": "saved", "prompt_length": len(prompt)}
+
+    
