@@ -11,14 +11,14 @@ env:
 
 jobs:
 
-  # ---- stage 1: Lint ---------------------
+  # ── Stage 1: Lint ──────────────────────────────────────────
   lint:
     name: Lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.2.2
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5.4.0
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
@@ -27,8 +27,8 @@ jobs:
 
       - name: Run ruff
         run: ruff check .
-  
-  # ---- stage 2: Unit Tests ---------------------
+
+  # ── Stage 2: Unit Tests ────────────────────────────────────
   test:
     name: Unit Tests
     runs-on: ubuntu-latest
@@ -46,9 +46,9 @@ jobs:
           --health-retries 3
 
     steps:
-      - uses: actions/checkout@v4.2.2
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5.4.0
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
@@ -58,7 +58,7 @@ jobs:
       - name: Install dependencies
         run: uv sync --frozen
 
-      - name: Run unit tests 
+      - name: Run unit tests
         run: uv run pytest tests/ -v --tb=short --ignore=tests/test_integration.py
         env:
           REDIS_URL: redis://localhost:6379/0
@@ -67,10 +67,12 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
           QDRANT_URL: http://localhost:6333
-          LANGSMITH_TRACING: "false"
+          LANGSMITH_TRACING: "true"
+          LANGSMITH_API_KEY: ${{ secrets.LANGSMITH_API_KEY }}
+          LANGSMITH_PROJECT: hragent
           EMBEDDING_MODEL: all-MiniLM-L6-v2
 
-  # ---Stage 3: Build + Push Docker ──────────────────────────
+  # ── Stage 3: Build + Push Docker ──────────────────────────
   # Only runs on pushes to main (not PRs, not dev pushes)
   build:
     name: Build and Push Docker Image
@@ -83,7 +85,7 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      
+
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
@@ -135,20 +137,22 @@ jobs:
             echo "=== Restarting containers ==="
             docker compose -f docker-compose.prod.yml up -d app discord-bot
 
-            # Wait for app to start
+            # Wait for app to start (embedding model load takes ~25 seconds)
             echo "=== Waiting for startup ==="
-            sleep 60
+            sleep 40
 
-            # Health check
+            # Health check via Nginx
             echo "=== Running health check ==="
             if curl -sf http://localhost/api/v1/health > /dev/null; then
               echo "=== Deployment successful ==="
+              docker restart hr-copilot-nginx
               docker image prune -f
             else
               echo "=== Health check FAILED — rolling back ==="
               docker tag rohithebbar/hr-agent:rollback rohithebbar/hr-agent:latest
               docker compose -f docker-compose.prod.yml up -d app discord-bot
+              sleep 20
+              docker restart hr-copilot-nginx
               echo "=== Rollback complete ==="
               exit 1
             fi
-
