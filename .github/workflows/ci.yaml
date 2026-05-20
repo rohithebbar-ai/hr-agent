@@ -167,7 +167,7 @@ jobs:
         run: uv sync --frozen
 
       - name: Ingest test documents into Qdrant
-        run: uv run python -m rag.ingest_policy_aware
+        run: uv run python -m rag.policy_aware.ingest_policy_aware
         env:
           QDRANT_URL: http://localhost:6333
           ENVIRONMENT: test
