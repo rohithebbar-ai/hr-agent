@@ -13,12 +13,20 @@ from slowapi.util import get_remote_address
 
 load_dotenv()
 
+import os
+from dotenv import load_dotenv
+from slowapi import Limiter
+from slowapi.util import get_remote_address
+
+load_dotenv()
+
 REDIS_URL = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
 
-# Use Redis as the storage backend so rate limit counters
-# persist across server restarts and work with multiple workers.
+_rate_limit = "1000/minute" if os.environ.get("ENVIRONMENT") == "test" else os.environ.get("RATE_LIMIT", "10/minute")
+print(f"[LIMITER] Rate limit: {_rate_limit} (env: {os.environ.get('ENVIRONMENT', 'not set')})")
+
 limiter = Limiter(
     key_func=get_remote_address,
+    default_limits=[_rate_limit],
     storage_uri=REDIS_URL,
-    default_limits=["60/minute"],  # Global default
 )

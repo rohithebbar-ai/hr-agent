@@ -83,6 +83,12 @@ ignore = ["E402", "F811", "F841", "F601"]
 line-length = 100
 target-version = "py311"
 
+[tool.pytest.ini_options]
+markers = [
+    "regression: marks regression quality gate tests",
+    "integration: marks integration tests requiring real services",
+]
+
 [tool.uv]
 constraint-dependencies = [
 

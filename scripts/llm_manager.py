@@ -109,8 +109,8 @@ class LLMTask(str, Enum):
 TASK_CONFIG = {
     # ── Tasks needing reasoning power → big model ──
     LLMTask.GENERATION: {
-        "provider": Provider.GEMINI,
-        "model": ModelID.GEMINI_FLASH,
+        "provider": Provider.GROQ,
+        "model": ModelID.LLAMA_3_3_70B,
         "temperature": 0,
         "max_retries": 3,
     },
