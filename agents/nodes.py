@@ -155,7 +155,7 @@ def transform_query(
 # NODE 4: retrieve
 # ══════════════════════════════════════════════════
 
-def retrieve_node(state: PolicyAgentState, config: dict) -> Command:
+def retrieve_node(state: PolicyAgentState) -> Command:
     """Retrieve using enterprise hybrid retrieval + reranker."""
 
     sub_queries = state.get("sub_queries", [state["question"]])

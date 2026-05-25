@@ -138,7 +138,7 @@ def retrieve(query: str, tenant_id: str = "vanaciprime", k: int = FINAL_K, debug
                 "is_table": payload.get("is_table", False),
                 "element_type": payload.get("element_type"),
                 "upload_date": payload.get("upload_date"),
-                "rerank_score": result.get("score", 0),
+                "rerank_score": float(result.get("score", 0)),
             }
         ))
 

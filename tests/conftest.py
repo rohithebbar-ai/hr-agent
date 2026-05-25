@@ -11,9 +11,13 @@ from api.main import app
 
 @pytest.fixture(autouse=True)
 def disable_rate_limit():
-    """Disable slowapi rate limiting for all tests."""
-    with patch("api.routes.limiter.limit", lambda *args, **kwargs: lambda f: f):
-        yield
+    """Reset rate limit counters before each test so no test bleeds into the next."""
+    from api.guardrails.limiter import limiter
+    try:
+        limiter._storage.reset()
+    except Exception:
+        pass
+    yield
 
 
 @pytest.fixture(autouse=True)

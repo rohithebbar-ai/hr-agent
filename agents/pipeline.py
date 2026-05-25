@@ -14,6 +14,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 from langgraph.checkpoint.memory import MemorySaver
+from langgraph.checkpoint.serde.jsonplus import JsonPlusSerializer
 from langgraph.graph import START, StateGraph
 
 from agents.nodes import (
@@ -77,7 +78,7 @@ class PolicyAgentPipeline:
 
         workflow.add_edge(START, "route_query")
 
-        memory = MemorySaver()
+        memory = MemorySaver(serde=JsonPlusSerializer())
         graph = workflow.compile(checkpointer=memory)
 
         self._save_graph_image(graph)
