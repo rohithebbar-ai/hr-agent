@@ -4,7 +4,6 @@ import os
 os.environ["ENVIRONMENT"] = "test"
 
 import pytest
-from unittest.mock import patch
 from fastapi.testclient import TestClient
 from api.main import app
 
