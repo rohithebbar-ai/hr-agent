@@ -210,3 +210,29 @@ temp/
 planning/
 redis_data/
 localstack_data/
+
+# ───────────────────────────────────────────
+# macOS metadata / iCloud
+# ───────────────────────────────────────────
+.metadata_never_index
+.AppleDouble
+.LSOverride
+
+# ───────────────────────────────────────────
+# Python version managers
+# ───────────────────────────────────────────
+.python-version
+.tool-versions
+
+# ───────────────────────────────────────────
+# Claude Code / AI tooling
+# ───────────────────────────────────────────
+.claude/
+.cursor/
+.aider*
+.continue/
+
+# ───────────────────────────────────────────
+# Benchmark / eval results
+# ───────────────────────────────────────────
+results/
