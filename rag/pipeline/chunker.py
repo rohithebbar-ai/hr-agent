@@ -61,7 +61,7 @@ def _is_markdown_table(text: str) -> bool:
     Unstructured fast never produces markdown tables, so this only
     triggers on LlamaParse output edge cases.
     """
-    lines = [l.strip() for l in text.strip().split("\n") if l.strip()]
+    lines = [line.strip() for line in text.strip().split("\n") if line.strip()]
     return (
         len(lines) >= 2
         and lines[0].startswith("|")

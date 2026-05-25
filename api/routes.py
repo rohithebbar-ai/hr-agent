@@ -305,7 +305,9 @@ async def upload_document(
     The worker will automatically fall back to Unstructured if LlamaParse
     fails or quota is exceeded, regardless of this setting.
     """
-    import hashlib, uuid, json
+    import hashlib
+    import uuid
+    import json
     job_id = str(uuid.uuid4())[:8]
     safe_filename = f"{job_id}_{file.filename}"
     file_path = UPLOAD_DIR / safe_filename

@@ -11,13 +11,10 @@ Usage:
 """
  
 import argparse
-import json
-import os
 import uuid
 from datetime import datetime, timedelta
  
 from fastapi.testclient import TestClient
-from sqlalchemy import desc
  
 from api.main import app
 from rag.db import SessionLocal, Document, DocumentEvalResult

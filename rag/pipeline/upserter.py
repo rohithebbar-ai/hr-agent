@@ -2,12 +2,11 @@
 
 import os
 from typing import List, Set
-from unittest import TestResult
 from qdrant_client import QdrantClient
 from qdrant_client.models import(
     PointStruct, VectorParams, Distance,
     SparseVectorParams, SparseIndexParams,
-    FilterSelector, Filter, FieldCondition, MatchValue,
+    Filter, FieldCondition, MatchValue,
     SparseVector,
 )
 

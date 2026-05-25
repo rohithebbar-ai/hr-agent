@@ -418,7 +418,6 @@ def _pymupdf_classify_page(page, page_number: int) -> List[DocumentElement]:
     Classify text blocks by font size to detect headings.
     Large font = Title, normal font = NarrativeText.
     """
-    import fitz
 
     blocks = page.get_text("dict")["blocks"]
     elements = []

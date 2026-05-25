@@ -262,7 +262,7 @@ def print_report(models: list[str], results: dict[str, list[dict]]):
     col_w = 22
     header = f"{'Model':<{col_w}} {'Hit@1':>6} {'Hit@3':>6} {'Hit@8':>6} {'MRR@8':>6} {'Lat(s)':>7} {'N':>4}"
 
-    print(f"\nOverall")
+    print("\nOverall")
     print("─" * len(header))
     print(header)
     print("─" * len(header))
@@ -285,7 +285,7 @@ def print_report(models: list[str], results: dict[str, list[dict]]):
 
     if "retrieval_only" in models and len(models) > 1:
         base_agg = aggregate(results["retrieval_only"])
-        print(f"\n  Delta vs retrieval_only (hybrid RRF baseline):")
+        print("\n  Delta vs retrieval_only (hybrid RRF baseline):")
         for m in models:
             if m == "retrieval_only":
                 continue
@@ -371,12 +371,12 @@ def main():
 
     models_to_run = ["retrieval_only"] + args.models
 
-    print(f"\nReranker Benchmark  (answer-based relevance — document agnostic)")
+    print("\nReranker Benchmark  (answer-based relevance — document agnostic)")
     print(f"  Models   : retrieval_only (RRF baseline) + {args.models}")
     print(f"  Questions: {len(questions)} (out_of_scope excluded)")
     print(f"  Tenant   : {args.tenant}")
     if args.diverse:
-        print(f"\n  Diverse sample (2 per category, different sections):")
+        print("\n  Diverse sample (2 per category, different sections):")
         for q in questions:
             print(f"    [{q['category']:12s}] [{q['source_section']:25s}] {q['question'][:55]}")
     print("\nLoading models and running queries...\n")

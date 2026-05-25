@@ -1,6 +1,5 @@
 # rag/pipeline/embedder.py
 
-from tkinter import N
 from typing import List
 from dataclasses import dataclass
 from sentence_transformers import SentenceTransformer

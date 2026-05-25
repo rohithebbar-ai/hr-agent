@@ -22,7 +22,8 @@ def clear_redis_counters():
     try:
         import redis as redis_lib
         r = redis_lib.from_url(
-            os.environ.get("REDIS_URL", "redis://localhost:6379/0")
+            os.environ.get("REDIS_URL", "redis://localhost:6379/0"),
+            socket_connect_timeout=1,
         )
         r.flushdb()
     except Exception:

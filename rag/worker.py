@@ -1,6 +1,8 @@
 # rag/worker.py
 
-import json, os, time
+import json
+import os
+import time
 from pathlib import Path
 import redis
 
@@ -27,7 +29,7 @@ def _ensure_document_record(job:dict):
     """
     db = SessionLocal()
     try:
-        exisiting = db.query(Document).filter(
+        existing = db.query(Document).filter(
             Document.document_id == job.get("document_id", "")
         ).first()
 
@@ -49,7 +51,7 @@ def _ensure_document_record(job:dict):
         db.close()
 
 def run():
-    print(f"[WORKER] starting ingestion worker")
+    print("[WORKER] starting ingestion worker")
     print(f"[WORKER] watching redis queue: {QUEUE_KEY}")
 
     r = get_redis_client()
