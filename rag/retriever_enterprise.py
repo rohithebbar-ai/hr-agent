@@ -34,7 +34,7 @@ def get_dense_model():
 def get_sparse_model():
     global _sparse_model
     if _sparse_model is None:
-        _sparse_model = SparseTextEmbedding(model_name="prithvida/Splade_PP_en_v1")
+        _sparse_model = SparseTextEmbedding(model_name="prithivida/Splade_PP_en_v1")
     return _sparse_model
 
 
