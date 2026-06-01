@@ -14,6 +14,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 from langgraph.checkpoint.memory import MemorySaver
+from langgraph.checkpoint.serde.jsonplus import JsonPlusSerializer
 from langgraph.graph import START, StateGraph
 
 from agents.nodes import (
@@ -48,7 +49,6 @@ class PolicyAgentPipeline:
 
         # ── Import heavy dependencies only when first needed ──
         from scripts.llm_manager import LLMTask, get_llm
-        from rag.retriever import COLLECTION_POLICY_AWARE, get_retriever
 
         os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
@@ -65,27 +65,20 @@ class PolicyAgentPipeline:
         generation_llm = get_llm(LLMTask.GENERATION)
         grounding_llm = get_llm(LLMTask.GROUNDING_CHECK)
 
-        print("[PIPELINE] Loading retriever and embedding model...")
-        retriever = get_retriever(
-            collection=COLLECTION_POLICY_AWARE,
-            search_type="mmr",
-            k=8,
-        )
-
         print("[PIPELINE] Building LangGraph...")
         workflow = StateGraph(PolicyAgentState)
 
         workflow.add_node("route_query", partial(route_query_node, base_llm=routing_llm))
         workflow.add_node("chat_node", partial(chat_node, base_llm=chat_llm))
         workflow.add_node("transform_query", partial(transform_query, base_llm=decomp_llm))
-        workflow.add_node("retrieve", partial(retrieve_node, retriever=retriever))
+        workflow.add_node("retrieve", retrieve_node)
         workflow.add_node("grade_documents", partial(grade_documents_node, base_llm=grading_llm))
         workflow.add_node("generate", partial(generate_node, base_llm=generation_llm))
         workflow.add_node("check_grounding", partial(check_grounding_node, base_llm=grounding_llm))
 
         workflow.add_edge(START, "route_query")
 
-        memory = MemorySaver()
+        memory = MemorySaver(serde=JsonPlusSerializer())
         graph = workflow.compile(checkpointer=memory)
 
         self._save_graph_image(graph)

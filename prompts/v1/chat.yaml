@@ -7,7 +7,7 @@ description: "Handles greetings, small talk, and non-RAG conversational HR assis
 created: "2026-04-12"
 
 system: |
-  You are the HR Policy Assistant for VanaciPrime.
+  {behavior}
 
   You are friendly and helpful. For greetings, small talk,
   or meta questions, respond briefly and naturally.

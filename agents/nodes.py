@@ -21,6 +21,21 @@ from agents.schemas import(
     RouteQuery,
 )
 
+# ── Dynamic behavior prompt (set via Admin panel → Redis) ─────────────────────
+_DEFAULT_BEHAVIOR = "You are a helpful HR assistant for VanaciPrime."
+
+def get_behavior_prompt() -> str:
+    """Read the admin-configurable behavior prompt from Redis. Falls back to default."""
+    try:
+        from api.redis_client import is_redis_available, get_redis
+        if is_redis_available():
+            val = get_redis().get("hrassistant:behavior_prompt")
+            if val:
+                return val if isinstance(val, str) else val.decode()
+    except Exception:
+        pass
+    return _DEFAULT_BEHAVIOR
+
 def _extract_text(content) -> str:
     """Extract text from LLM response content (handles Gemini's list format)."""
     if isinstance(content, str):
@@ -84,7 +99,9 @@ def chat_node(
     """Handle conversational questions without retrieval"""
     print("[CHAT] Direct chat response (no retrieval)")
 
-    chain = CHAT_PROMPT | base_llm
+    behavior = get_behavior_prompt()
+    prompt = CHAT_PROMPT.partial(behavior=behavior)
+    chain = prompt | base_llm
     history = state.get("messages", [])[-6:]
 
     try:
@@ -155,38 +172,34 @@ def transform_query(
 # NODE 4: retrieve
 # ══════════════════════════════════════════════════
 
-def retrieve_node(
-    state: PolicyAgentState,
-    retriever,
-)-> Command[Literal["grade_documents"]]:
-    """
-    Retrieve documents for each sub-query.
-    Dedup by policy_id + chunk_index.
-    """
-    sub_queries = state.get("sub_queries") or [state["question"]]
-    print(f"\n[RETRIEVE] Fetching for {len(sub_queries)} sub-queries")
+def retrieve_node(state: PolicyAgentState) -> Command:
+    """Retrieve using enterprise hybrid retrieval + reranker."""
 
-    all_docs: List[Document] = []
-    seen_keys = set()
+    sub_queries = state.get("sub_queries", [state["question"]])
+    all_docs = []
 
-    for sub_query in sub_queries:
-        docs = retriever.invoke(sub_query)
-        for doc in docs:
-            key = (
-                doc.metadata.get("policy_id", ""),
-                doc.metadata.get("chunk_index", 0),
-            )
-            if key not in seen_keys:
-                seen_keys.add(key)
-                all_docs.append(doc)
+    for query in sub_queries:
+        from rag.retriever_enterprise import retrieve
+        docs = retrieve(
+            query=query,
+            tenant_id="vanaciprime",
+            k=8,
+        )
+        all_docs.extend(docs)
 
-    
-    doc_ids = [d.metadata.get("policy_id", "?") for d in all_docs[:5]]
-    print(f"[RETRIEVE] → {len(all_docs)} unique documents")
-    print(f"[RETRIEVE] → Top policy IDs: {doc_ids}")
+    # Deduplicate by chunk_id
+    seen = set()
+    unique_docs = []
+    for doc in all_docs:
+        cid = doc.metadata.get("chunk_id")
+        if cid not in seen:
+            seen.add(cid)
+            unique_docs.append(doc)
+
+    print(f"[RETRIEVE] {len(unique_docs)} unique docs from hybrid search")
 
     return Command(
-        update={"documents": all_docs},
+        update={"documents": unique_docs},
         goto="grade_documents",
     )
 
@@ -242,7 +255,7 @@ def grade_documents_node(
         return text
 
     doc_text = "\n\n".join([
-        f"[Document {i+1}] (Policy: {doc.metadata.get('policy_name', 'Unknown')})\n"
+        f"[Document {i+1}] (Policy: {doc.metadata.get('document_title', 'Unknown')})\n"
         f"{_truncate_for_grading(doc)}"
         for i, doc in enumerate(documents)
     ])
@@ -274,7 +287,7 @@ def grade_documents_node(
     # ── Filter and log per-document decisions ──
     graded = []
     for i, (doc, grade) in enumerate(zip(documents, grades)):
-        policy = doc.metadata.get("policy_name", "?")[:50]
+        policy = doc.metadata.get("document_title", "?")[:50]
         marker = "correct" if grade == "yes" else "wrong"
         print(f"  {marker} [{grade}] {policy}")
         if grade == "yes":
@@ -369,7 +382,9 @@ def generate_node(
     context = _format_context(state["graded_documents"])
     history = state.get("messages", [])[-6:]
 
-    chain = GENERATE_PROMPT | base_llm
+    behavior = get_behavior_prompt()
+    prompt = GENERATE_PROMPT.partial(behavior=behavior)
+    chain = prompt | base_llm
     response = chain.invoke({
         "question": state["question"],
         "context": context,

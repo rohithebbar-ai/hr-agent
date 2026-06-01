@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>HR Agent · Admin</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --border: #2e3347;
+    --accent: #6366f1;
+    --accent-hover: #818cf8;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --green: #22c55e;
+    --yellow: #eab308;
+    --red: #ef4444;
+    --blue: #3b82f6;
+    --radius: 8px;
+    --font: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 14px; min-height: 100vh; }
+
+  /* Layout */
+  .shell { display: flex; min-height: 100vh; }
+  .sidebar {
+    width: 220px; background: var(--surface); border-right: 1px solid var(--border);
+    display: flex; flex-direction: column; padding: 24px 0; flex-shrink: 0;
+  }
+  .logo { padding: 0 20px 24px; font-size: 16px; font-weight: 700; color: var(--text); border-bottom: 1px solid var(--border); }
+  .logo span { color: var(--accent); }
+  .nav { margin-top: 16px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px; padding: 10px 20px;
+    cursor: pointer; color: var(--muted); transition: all .15s; border-left: 3px solid transparent;
+    font-size: 13px; font-weight: 500;
+  }
+  .nav-item:hover { color: var(--text); background: var(--surface2); }
+  .nav-item.active { color: var(--text); border-left-color: var(--accent); background: var(--surface2); }
+  .nav-icon { font-size: 16px; width: 18px; text-align: center; }
+  .sidebar-footer { margin-top: auto; padding: 16px 20px; border-top: 1px solid var(--border); }
+  .health-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--green); margin-right: 6px; }
+
+  .main { flex: 1; overflow-y: auto; }
+  .topbar {
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    padding: 16px 28px; display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 10;
+  }
+  .topbar h1 { font-size: 18px; font-weight: 600; }
+  .page { padding: 28px; display: none; }
+  .page.active { display: block; }
+
+  /* Cards */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; }
+  .card-title { font-size: 13px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 16px; }
+
+  /* Stats row */
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+  .stat { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
+  .stat-val { font-size: 28px; font-weight: 700; }
+  .stat-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+  /* Upload form */
+  .upload-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group.full { grid-column: 1 / -1; }
+  label { font-size: 12px; font-weight: 500; color: var(--muted); }
+  input[type=text], input[type=file], select, textarea {
+    background: var(--surface2); border: 1px solid var(--border); border-radius: 6px;
+    color: var(--text); padding: 8px 12px; font-size: 13px; font-family: var(--font);
+    outline: none; transition: border-color .15s; width: 100%;
+  }
+  input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+  textarea { resize: vertical; min-height: 72px; }
+  .toggle-row { display: flex; align-items: center; gap: 10px; }
+  .toggle { position: relative; width: 40px; height: 22px; }
+  .toggle input { opacity: 0; width: 0; height: 0; }
+  .toggle-slider {
+    position: absolute; inset: 0; background: var(--border); border-radius: 22px;
+    cursor: pointer; transition: .2s;
+  }
+  .toggle-slider::before {
+    content: ""; position: absolute; width: 16px; height: 16px;
+    background: white; border-radius: 50%; left: 3px; top: 3px; transition: .2s;
+  }
+  .toggle input:checked + .toggle-slider { background: var(--accent); }
+  .toggle input:checked + .toggle-slider::before { transform: translateX(18px); }
+
+  /* Buttons */
+  .btn {
+    padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer;
+    font-size: 13px; font-weight: 500; font-family: var(--font); transition: all .15s;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn-primary { background: var(--accent); color: white; }
+  .btn-primary:hover:not(:disabled) { background: var(--accent-hover); }
+  .btn-primary:disabled { opacity: .5; cursor: not-allowed; }
+  .btn-danger { background: transparent; border: 1px solid var(--red); color: var(--red); }
+  .btn-danger:hover { background: rgba(239,68,68,.1); }
+  .btn-ghost { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-sm { padding: 5px 10px; font-size: 12px; }
+
+  /* Table */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; }
+  thead tr { border-bottom: 1px solid var(--border); }
+  th { text-align: left; padding: 10px 12px; font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; white-space: nowrap; }
+  td { padding: 12px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; font-size: 13px; }
+  tbody tr:hover td { background: rgba(255,255,255,.02); }
+  tbody tr:last-child td { border-bottom: none; }
+
+  /* Badges */
+  .badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 99px; font-size: 11px; font-weight: 600; }
+  .badge-green { background: rgba(34,197,94,.15); color: var(--green); }
+  .badge-yellow { background: rgba(234,179,8,.15); color: var(--yellow); }
+  .badge-red { background: rgba(239,68,68,.15); color: var(--red); }
+  .badge-blue { background: rgba(59,130,246,.15); color: var(--blue); }
+  .badge-gray { background: rgba(100,116,139,.15); color: var(--muted); }
+
+  /* Quality bar */
+  .quality-bar { display: flex; align-items: center; gap: 8px; }
+  .bar-track { flex: 1; height: 4px; background: var(--border); border-radius: 2px; min-width: 60px; }
+  .bar-fill { height: 100%; border-radius: 2px; transition: width .3s; }
+  .bar-fill.green { background: var(--green); }
+  .bar-fill.yellow { background: var(--yellow); }
+  .bar-fill.red { background: var(--red); }
+  .quality-label { font-size: 12px; color: var(--muted); white-space: nowrap; }
+
+  /* Job queue */
+  .job-list { display: flex; flex-direction: column; gap: 10px; }
+  .job-item {
+    background: var(--surface2); border: 1px solid var(--border); border-radius: 6px;
+    padding: 12px 16px; display: flex; align-items: center; justify-content: space-between;
+  }
+  .job-info { display: flex; flex-direction: column; gap: 4px; }
+  .job-name { font-size: 13px; font-weight: 500; }
+  .job-meta { font-size: 12px; color: var(--muted); }
+  .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Toast */
+  #toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 1000; display: flex; flex-direction: column; gap: 8px; }
+  .toast {
+    background: var(--surface2); border: 1px solid var(--border); border-radius: 8px;
+    padding: 12px 16px; font-size: 13px; max-width: 320px; box-shadow: 0 4px 20px rgba(0,0,0,.4);
+    animation: slideIn .2s ease;
+  }
+  .toast.success { border-color: var(--green); }
+  .toast.error { border-color: var(--red); }
+  @keyframes slideIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* Behavior editor */
+  .behavior-textarea { min-height: 140px; font-family: monospace; font-size: 13px; }
+  .llamaparse-usage { display: flex; align-items: center; gap: 12px; }
+
+  /* Empty state */
+  .empty { text-align: center; padding: 48px 0; color: var(--muted); }
+  .empty-icon { font-size: 40px; margin-bottom: 12px; }
+
+  /* Refresh button */
+  .refresh-btn { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 16px; padding: 4px; transition: color .15s; }
+  .refresh-btn:hover { color: var(--text); }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="logo">HR<span>Agent</span> · Admin</div>
+    <nav class="nav">
+      <div class="nav-item active" data-page="documents">
+        <span class="nav-icon">📄</span> Documents
+      </div>
+      <div class="nav-item" data-page="upload">
+        <span class="nav-icon">⬆️</span> Upload
+      </div>
+      <div class="nav-item" data-page="jobs">
+        <span class="nav-icon">⚙️</span> Jobs <span id="active-job-count" style="margin-left:auto;display:none;" class="badge badge-blue">0</span>
+      </div>
+      <div class="nav-item" data-page="settings">
+        <span class="nav-icon">🛠️</span> Settings
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div style="font-size:12px;color:var(--muted);">
+        <span class="health-dot" id="health-dot"></span>
+        <span id="health-status">checking...</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+    <div class="topbar">
+      <h1 id="page-title">Documents</h1>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button class="refresh-btn" id="refresh-btn" title="Refresh">↻</button>
+        <span style="font-size:12px;color:var(--muted);" id="last-updated"></span>
+      </div>
+    </div>
+
+    <!-- Documents page -->
+    <div class="page active" id="page-documents">
+      <div class="stats">
+        <div class="stat"><div class="stat-val" id="stat-total">—</div><div class="stat-label">Total Documents</div></div>
+        <div class="stat"><div class="stat-val" id="stat-chunks">—</div><div class="stat-label">Total Chunks</div></div>
+        <div class="stat"><div class="stat-val" id="stat-pass">—</div><div class="stat-label">Quality Pass</div></div>
+        <div class="stat"><div class="stat-val" id="stat-processing">—</div><div class="stat-label">Processing</div></div>
+      </div>
+      <div class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+          <div class="card-title" style="margin-bottom:0;">Ingested Documents</div>
+          <button class="btn btn-ghost btn-sm" onclick="navigateTo('upload')">+ Upload New</button>
+        </div>
+        <div class="table-wrap">
+          <table id="doc-table">
+            <thead>
+              <tr>
+                <th>Filename</th>
+                <th>Type</th>
+                <th>Uploaded</th>
+                <th>Chunks</th>
+                <th>Loader</th>
+                <th>Status</th>
+                <th>Quality</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="doc-tbody">
+              <tr><td colspan="8"><div class="empty"><div class="spinner"></div></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Upload page -->
+    <div class="page" id="page-upload">
+      <div class="card">
+        <div class="card-title">Upload Document</div>
+        <form id="upload-form">
+          <div class="upload-grid">
+            <div class="form-group full">
+              <label>PDF / DOCX File</label>
+              <input type="file" id="upload-file" accept=".pdf,.docx,.txt" required />
+            </div>
+            <div class="form-group">
+              <label>Document Type</label>
+              <select id="upload-doctype">
+                <option>Employee Handbook</option>
+                <option>Benefits Guide</option>
+                <option>Leave Policy</option>
+                <option>Code of Conduct</option>
+                <option>Onboarding Guide</option>
+                <option>Compensation Policy</option>
+                <option>Performance Review</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Tenant ID</label>
+              <input type="text" id="upload-tenant" value="vanaciprime" />
+            </div>
+            <div class="form-group full">
+              <label>Sample Questions (one per line — used for quality eval)</label>
+              <textarea id="upload-questions" placeholder="How many vacation days do employees get?&#10;What is the FMLA leave policy?"></textarea>
+            </div>
+            <div class="form-group full">
+              <div class="toggle-row">
+                <label class="toggle">
+                  <input type="checkbox" id="upload-llamaparse" checked />
+                  <span class="toggle-slider"></span>
+                </label>
+                <div>
+                  <div style="font-size:13px;font-weight:500;">Use LlamaParse</div>
+                  <div style="font-size:12px;color:var(--muted);">Higher quality parsing (costs credits). Falls back to Unstructured if quota exceeded.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="margin-top:20px;display:flex;gap:10px;align-items:center;">
+            <button type="submit" class="btn btn-primary" id="upload-btn">⬆ Upload &amp; Ingest</button>
+            <span id="upload-status" style="font-size:12px;color:var(--muted);"></span>
+          </div>
+        </form>
+      </div>
+
+      <div class="card" id="llamaparse-usage-card">
+        <div class="card-title">LlamaParse Credits</div>
+        <div id="llamaparse-usage-content">
+          <div class="spinner"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Jobs page -->
+    <div class="page" id="page-jobs">
+      <div class="card">
+        <div class="card-title">Active &amp; Recent Jobs</div>
+        <div id="jobs-container">
+          <div class="empty"><div class="empty-icon">✅</div>No active jobs</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Settings page -->
+    <div class="page" id="page-settings">
+      <div class="card">
+        <div class="card-title">Behavior Prompt</div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">
+          Override the assistant's default system behavior. Stored in Redis — takes effect immediately.
+        </p>
+        <div class="form-group" style="margin-bottom:16px;">
+          <label>Prompt</label>
+          <textarea id="behavior-prompt" class="behavior-textarea" placeholder="You are a helpful HR assistant..."></textarea>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;">
+          <button class="btn btn-primary" id="save-behavior-btn">💾 Save Prompt</button>
+          <button class="btn btn-ghost" id="reset-behavior-btn">Reset to Default</button>
+          <span id="behavior-status" style="font-size:12px;color:var(--muted);"></span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Response Cache</div>
+        <div id="cache-stats" style="margin-bottom:16px;font-size:13px;color:var(--muted);">Loading...</div>
+        <button class="btn btn-danger btn-sm" id="clear-cache-btn">🗑 Clear Cache</button>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /shell -->
+
+<div id="toast-container"></div>
+
+<script>
+const API = '/api/v1';
+const TENANT = 'vanaciprime';
+
+// ─── Navigation ───────────────────────────────
+const pages = { titles: { documents: 'Documents', upload: 'Upload', jobs: 'Jobs', settings: 'Settings' } };
+
+function navigateTo(name) {
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.toggle('active', el.dataset.page === name));
+  document.querySelectorAll('.page').forEach(el => el.classList.toggle('active', el.id === 'page-' + name));
+  document.getElementById('page-title').textContent = pages.titles[name];
+  if (name === 'documents') loadDocuments();
+  if (name === 'upload') loadLlamaParseUsage();
+  if (name === 'settings') { loadBehavior(); loadCacheStats(); }
+}
+
+document.querySelectorAll('.nav-item').forEach(el => {
+  el.addEventListener('click', () => navigateTo(el.dataset.page));
+});
+document.getElementById('refresh-btn').addEventListener('click', () => {
+  const active = document.querySelector('.nav-item.active')?.dataset.page;
+  if (active) navigateTo(active);
+});
+
+// ─── Toast ────────────────────────────────────
+function toast(msg, type = 'info') {
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.textContent = msg;
+  document.getElementById('toast-container').appendChild(el);
+  setTimeout(() => el.remove(), 4000);
+}
+
+// ─── Health check ─────────────────────────────
+async function checkHealth() {
+  try {
+    const r = await fetch(`${API}/health`);
+    const d = await r.json();
+    const dot = document.getElementById('health-dot');
+    const txt = document.getElementById('health-status');
+    if (d.status === 'ok') {
+      dot.style.background = 'var(--green)';
+      txt.textContent = d.pipeline_loaded ? 'Pipeline ready' : 'API up';
+    } else {
+      dot.style.background = 'var(--red)';
+      txt.textContent = 'Unhealthy';
+    }
+  } catch {
+    document.getElementById('health-dot').style.background = 'var(--red)';
+    document.getElementById('health-status').textContent = 'Offline';
+  }
+}
+
+// ─── Documents ────────────────────────────────
+let allDocs = [];
+
+async function loadDocuments() {
+  try {
+    const r = await fetch(`${API}/admin/documents?tenant_id=${TENANT}`);
+    const d = await r.json();
+    allDocs = d.documents || [];
+    renderDocuments(allDocs);
+    updateStats(allDocs);
+    setLastUpdated();
+  } catch (e) {
+    toast('Failed to load documents: ' + e.message, 'error');
+  }
+}
+
+function updateStats(docs) {
+  const total = docs.length;
+  const chunks = docs.reduce((s, d) => s + (d.chunk_count || 0), 0);
+  const passed = docs.filter(d => d.eval?.status === 'pass').length;
+  const processing = docs.filter(d => d.status === 'processing' || d.status === 'pending').length;
+  document.getElementById('stat-total').textContent = total;
+  document.getElementById('stat-chunks').textContent = chunks.toLocaleString();
+  document.getElementById('stat-pass').textContent = passed > 0 ? `${passed}/${total}` : '—';
+  document.getElementById('stat-processing').textContent = processing;
+}
+
+function statusBadge(status) {
+  const map = {
+    completed: ['badge-green', '● Completed'],
+    pending:   ['badge-yellow', '◌ Pending'],
+    processing:['badge-blue', '◎ Processing'],
+    failed:    ['badge-red', '✕ Failed'],
+  };
+  const [cls, label] = map[status] || ['badge-gray', status];
+  return `<span class="badge ${cls}">${label}</span>`;
+}
+
+function loaderBadge(loader) {
+  if (!loader) return '<span class="badge badge-gray">—</span>';
+  const cls = loader.includes('llama') ? 'badge-blue' : 'badge-gray';
+  return `<span class="badge ${cls}">${loader}</span>`;
+}
+
+function qualityCell(evalData) {
+  if (!evalData) return '<span style="color:var(--muted);font-size:12px;">No eval</span>';
+  const pct = Math.round((evalData.pass_rate || 0) * 100);
+  const cls = pct >= 80 ? 'green' : pct >= 50 ? 'yellow' : 'red';
+  const badgeCls = pct >= 80 ? 'badge-green' : pct >= 50 ? 'badge-yellow' : 'badge-red';
+  return `
+    <div class="quality-bar">
+      <div class="bar-track"><div class="bar-fill ${cls}" style="width:${pct}%"></div></div>
+      <span class="badge ${badgeCls}" style="min-width:40px;justify-content:center;">${pct}%</span>
+    </div>
+  `;
+}
+
+function fmtDate(s) {
+  if (!s) return '—';
+  return new Date(s).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function renderDocuments(docs) {
+  const tbody = document.getElementById('doc-tbody');
+  if (!docs.length) {
+    tbody.innerHTML = `<tr><td colspan="8"><div class="empty"><div class="empty-icon">📁</div>No documents yet. <a href="#" onclick="navigateTo('upload');return false;" style="color:var(--accent);">Upload one</a>.</div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = docs.map(doc => `
+    <tr>
+      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${doc.filename}">${doc.filename}</td>
+      <td style="color:var(--muted);">${doc.document_type || '—'}</td>
+      <td style="color:var(--muted);white-space:nowrap;">${fmtDate(doc.upload_date)}</td>
+      <td>${doc.chunk_count != null ? doc.chunk_count.toLocaleString() : '—'}</td>
+      <td>${loaderBadge(doc.loader_used)}</td>
+      <td>${statusBadge(doc.status)}${doc.error_message ? `<div style="font-size:11px;color:var(--red);margin-top:4px;">${doc.error_message.slice(0,60)}</div>` : ''}</td>
+      <td>${qualityCell(doc.eval)}</td>
+      <td>
+        <button class="btn btn-danger btn-sm" onclick="deleteDocument('${doc.document_id}', '${doc.filename.replace(/'/g, "\\'")}')">Delete</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+async function deleteDocument(docId, filename) {
+  if (!confirm(`Delete "${filename}"? This removes all chunks from Qdrant and cannot be undone.`)) return;
+  try {
+    const r = await fetch(`${API}/admin/documents/${docId}`, { method: 'DELETE' });
+    if (!r.ok) throw new Error(await r.text());
+    toast(`Deleted: ${filename}`, 'success');
+    loadDocuments();
+  } catch (e) {
+    toast('Delete failed: ' + e.message, 'error');
+  }
+}
+
+// ─── Upload ───────────────────────────────────
+let activeJobs = {};
+
+document.getElementById('upload-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const fileInput = document.getElementById('upload-file');
+  if (!fileInput.files.length) return;
+
+  const btn = document.getElementById('upload-btn');
+  const statusEl = document.getElementById('upload-status');
+  btn.disabled = true;
+  btn.textContent = '⏳ Uploading...';
+  statusEl.textContent = '';
+
+  const fd = new FormData();
+  fd.append('file', fileInput.files[0]);
+  fd.append('document_type', document.getElementById('upload-doctype').value);
+  fd.append('tenant_id', document.getElementById('upload-tenant').value || TENANT);
+  fd.append('sample_questions', document.getElementById('upload-questions').value);
+  fd.append('use_llamaparse', document.getElementById('upload-llamaparse').checked ? 'true' : 'false');
+
+  try {
+    const r = await fetch(`${API}/admin/upload`, { method: 'POST', body: fd });
+    if (!r.ok) throw new Error(await r.text());
+    const d = await r.json();
+    toast(`Queued: ${d.filename} (job ${d.job_id})`, 'success');
+    statusEl.textContent = `Job ${d.job_id} queued.`;
+    trackJob(d.job_id, d.filename);
+    e.target.reset();
+    document.getElementById('upload-llamaparse').checked = true;
+  } catch (err) {
+    toast('Upload failed: ' + err.message, 'error');
+    statusEl.textContent = 'Upload failed.';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '⬆ Upload & Ingest';
+  }
+});
+
+function trackJob(jobId, filename) {
+  activeJobs[jobId] = { filename, status: 'queued', started: Date.now() };
+  updateJobBadge();
+  renderJobs();
+  const interval = setInterval(async () => {
+    try {
+      const r = await fetch(`${API}/admin/status/${jobId}`);
+      const d = await r.json();
+      activeJobs[jobId].status = d.status;
+      activeJobs[jobId].result = d.result;
+      renderJobs();
+      if (d.status === 'completed' || d.status === 'failed') {
+        clearInterval(interval);
+        updateJobBadge();
+        loadDocuments();
+        if (d.status === 'completed') toast(`✅ ${filename} ingested!`, 'success');
+        else toast(`❌ ${filename} failed.`, 'error');
+        setTimeout(() => { delete activeJobs[jobId]; renderJobs(); updateJobBadge(); }, 8000);
+      }
+    } catch { clearInterval(interval); }
+  }, 5000);
+}
+
+function updateJobBadge() {
+  const n = Object.keys(activeJobs).length;
+  const badge = document.getElementById('active-job-count');
+  badge.textContent = n;
+  badge.style.display = n > 0 ? '' : 'none';
+}
+
+function renderJobs() {
+  const container = document.getElementById('jobs-container');
+  const jobs = Object.entries(activeJobs);
+  if (!jobs.length) {
+    container.innerHTML = `<div class="empty"><div class="empty-icon">✅</div>No active jobs</div>`;
+    return;
+  }
+  container.innerHTML = `<div class="job-list">${jobs.map(([id, job]) => {
+    const elapsed = Math.round((Date.now() - job.started) / 1000);
+    const isRunning = job.status === 'queued' || job.status === 'processing';
+    const statusHtml = isRunning
+      ? `<span class="badge badge-blue"><span class="spinner"></span> ${job.status}</span>`
+      : job.status === 'completed'
+        ? `<span class="badge badge-green">✓ Done</span>`
+        : `<span class="badge badge-red">✕ Failed</span>`;
+    const resultStr = job.result?.chunk_count ? ` · ${job.result.chunk_count} chunks` : '';
+    return `
+      <div class="job-item">
+        <div class="job-info">
+          <div class="job-name">${job.filename}</div>
+          <div class="job-meta">Job ${id} · ${elapsed}s ago${resultStr}</div>
+        </div>
+        ${statusHtml}
+      </div>`;
+  }).join('')}</div>`;
+}
+
+// ─── LlamaParse Usage ─────────────────────────
+async function loadLlamaParseUsage() {
+  const el = document.getElementById('llamaparse-usage-content');
+  try {
+    const r = await fetch(`${API}/admin/llamaparse/usage`);
+    const d = await r.json();
+    if (d.error) {
+      el.innerHTML = `<span style="color:var(--muted);">${d.error}</span>`;
+      return;
+    }
+    const used = d.pages_used ?? d.credits_used ?? '—';
+    const limit = d.pages_limit ?? d.credits_limit ?? '—';
+    const pct = limit !== '—' && used !== '—' ? Math.round((used / limit) * 100) : null;
+    const cls = pct !== null ? (pct < 70 ? 'green' : pct < 90 ? 'yellow' : 'red') : 'green';
+    el.innerHTML = `
+      <div class="quality-bar">
+        <div class="bar-track" style="max-width:200px;">
+          <div class="bar-fill ${cls}" style="width:${pct ?? 0}%"></div>
+        </div>
+        <span class="quality-label">${used} / ${limit} pages used ${pct !== null ? `(${pct}%)` : ''}</span>
+      </div>`;
+  } catch {
+    el.innerHTML = `<span style="color:var(--muted);">Usage unavailable</span>`;
+  }
+}
+
+// ─── Settings: Behavior Prompt ────────────────
+async function loadBehavior() {
+  try {
+    const r = await fetch(`${API}/admin/behavior`);
+    const d = await r.json();
+    document.getElementById('behavior-prompt').value = d.prompt || '';
+  } catch { /* silently fail */ }
+}
+
+document.getElementById('save-behavior-btn').addEventListener('click', async () => {
+  const prompt = document.getElementById('behavior-prompt').value;
+  const statusEl = document.getElementById('behavior-status');
+  try {
+    const fd = new FormData();
+    fd.append('prompt', prompt);
+    const r = await fetch(`${API}/admin/behavior`, { method: 'POST', body: fd });
+    if (!r.ok) throw new Error(await r.text());
+    statusEl.textContent = '✓ Saved';
+    toast('Behavior prompt saved', 'success');
+    setTimeout(() => statusEl.textContent = '', 3000);
+  } catch (e) {
+    toast('Save failed: ' + e.message, 'error');
+  }
+});
+
+document.getElementById('reset-behavior-btn').addEventListener('click', () => {
+  document.getElementById('behavior-prompt').value = 'You are a helpful HR assistant';
+});
+
+// ─── Settings: Cache ──────────────────────────
+async function loadCacheStats() {
+  try {
+    const r = await fetch(`${API}/cache/stats`);
+    const d = await r.json();
+    const el = document.getElementById('cache-stats');
+    el.innerHTML = Object.entries(d).map(([k, v]) =>
+      `<span style="margin-right:16px;"><strong>${v}</strong> ${k.replace(/_/g,' ')}</span>`
+    ).join('') || 'No stats available';
+  } catch {
+    document.getElementById('cache-stats').textContent = 'Stats unavailable';
+  }
+}
+
+document.getElementById('clear-cache-btn').addEventListener('click', async () => {
+  if (!confirm('Clear all cached responses?')) return;
+  try {
+    await fetch(`${API}/cache`, { method: 'DELETE' });
+    toast('Cache cleared', 'success');
+    loadCacheStats();
+  } catch (e) {
+    toast('Clear failed: ' + e.message, 'error');
+  }
+});
+
+// ─── Last Updated ─────────────────────────────
+function setLastUpdated() {
+  const el = document.getElementById('last-updated');
+  el.textContent = 'Updated ' + new Date().toLocaleTimeString();
+}
+
+// ─── Init ─────────────────────────────────────
+checkHealth();
+setInterval(checkHealth, 30000);
+loadDocuments();
+</script>
+</body>
+</html>

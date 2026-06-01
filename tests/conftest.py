@@ -4,16 +4,19 @@ import os
 os.environ["ENVIRONMENT"] = "test"
 
 import pytest
-from unittest.mock import patch
 from fastapi.testclient import TestClient
 from api.main import app
 
 
 @pytest.fixture(autouse=True)
 def disable_rate_limit():
-    """Disable slowapi rate limiting for all tests."""
-    with patch("api.routes.limiter.limit", lambda *args, **kwargs: lambda f: f):
-        yield
+    """Reset rate limit counters before each test so no test bleeds into the next."""
+    from api.guardrails.limiter import limiter
+    try:
+        limiter._storage.reset()
+    except Exception:
+        pass
+    yield
 
 
 @pytest.fixture(autouse=True)
@@ -22,7 +25,8 @@ def clear_redis_counters():
     try:
         import redis as redis_lib
         r = redis_lib.from_url(
-            os.environ.get("REDIS_URL", "redis://localhost:6379/0")
+            os.environ.get("REDIS_URL", "redis://localhost:6379/0"),
+            socket_connect_timeout=1,
         )
         r.flushdb()
     except Exception:
