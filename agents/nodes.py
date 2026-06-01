@@ -21,6 +21,21 @@ from agents.schemas import(
     RouteQuery,
 )
 
+# ── Dynamic behavior prompt (set via Admin panel → Redis) ─────────────────────
+_DEFAULT_BEHAVIOR = "You are a helpful HR assistant for VanaciPrime."
+
+def get_behavior_prompt() -> str:
+    """Read the admin-configurable behavior prompt from Redis. Falls back to default."""
+    try:
+        from api.redis_client import is_redis_available, get_redis
+        if is_redis_available():
+            val = get_redis().get("hrassistant:behavior_prompt")
+            if val:
+                return val if isinstance(val, str) else val.decode()
+    except Exception:
+        pass
+    return _DEFAULT_BEHAVIOR
+
 def _extract_text(content) -> str:
     """Extract text from LLM response content (handles Gemini's list format)."""
     if isinstance(content, str):
@@ -84,7 +99,9 @@ def chat_node(
     """Handle conversational questions without retrieval"""
     print("[CHAT] Direct chat response (no retrieval)")
 
-    chain = CHAT_PROMPT | base_llm
+    behavior = get_behavior_prompt()
+    prompt = CHAT_PROMPT.partial(behavior=behavior)
+    chain = prompt | base_llm
     history = state.get("messages", [])[-6:]
 
     try:
@@ -365,7 +382,9 @@ def generate_node(
     context = _format_context(state["graded_documents"])
     history = state.get("messages", [])[-6:]
 
-    chain = GENERATE_PROMPT | base_llm
+    behavior = get_behavior_prompt()
+    prompt = GENERATE_PROMPT.partial(behavior=behavior)
+    chain = prompt | base_llm
     response = chain.invoke({
         "question": state["question"],
         "context": context,

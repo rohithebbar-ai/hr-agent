@@ -27,7 +27,7 @@ dependencies = [
     "transformers>=4.44.0,<4.50.0",
     "langchain-huggingface>=0.1.0,<2.0.0",
     # Vector Database
-    "qdrant-client>=1.7.0",
+    "qdrant-client>=1.12.0,<2.0.0",
     "langchain-qdrant>=0.2.0,<2.0.0",
     # Structured Database
     "supabase>=2.0.0",
@@ -58,12 +58,8 @@ dependencies = [
     "slowapi>=0.1.9",
     # AWS
     "boto3>=1.42.97",
-    "unstructured[docx,pdf]>=0.17.0",
-    "fastembed>=0.8.0",
-    "openpyxl>=3.1.5",
-    "asyncpg>=0.31.0",
     "psycopg2-binary>=2.9.12",
-    "llama-parse>=0.6.94",
+    "fastembed>=0.8.0",
 ]
 
 [dependency-groups]
@@ -85,7 +81,7 @@ build-backend = "hatchling.build"
 packages = ["api", "agents", "rag", "models", "mcp"]
 
 [tool.ruff]
-ignore = ["E402", "F811", "F841", "F601", "E501"]
+ignore = ["E402", "F811", "F841", "F601"]
 line-length = 100
 target-version = "py311"
 
@@ -97,17 +93,12 @@ markers = [
 
 [tool.uv]
 constraint-dependencies = [
-    # Intel Mac fallback — onnxruntime <1.19 requires numpy <2
+
+    # Intel Mac fallback
     "onnxruntime>=1.17.0,<1.19.0; sys_platform == 'darwin' and platform_machine == 'x86_64'",
+
     # Modern platforms
     "onnxruntime>=1.21.0; sys_platform != 'darwin' or platform_machine != 'x86_64'",
+
     "pyarrow>=18.0.0",
 ]
-
-[[tool.uv.index]]
-name = "pytorch-cpu"
-url = "https://download.pytorch.org/whl/cpu"
-explicit = true
-
-[tool.uv.sources]
-torch = { index = "pytorch-cpu" }

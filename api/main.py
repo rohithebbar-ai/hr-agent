@@ -15,6 +15,7 @@ from contextlib import asynccontextmanager
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 
 from api.routes import router
 
@@ -55,6 +56,12 @@ app.add_middleware(
 
 # Register routes
 app.include_router(router, prefix="/api/v1")
+
+
+@app.get("/admin", include_in_schema=False)
+async def admin_panel():
+    """Serve the admin HTML panel."""
+    return FileResponse("admin.html")
 
 
 @app.get("/")
