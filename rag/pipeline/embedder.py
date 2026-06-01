@@ -6,7 +6,7 @@ from sentence_transformers import SentenceTransformer
 from fastembed import SparseTextEmbedding
 
 DENSE_MODEL = "all-MiniLM-L6-v2"
-SPARSE_MODEL = "prithivida/Splade_PP_en_v1"
+SPARSE_MODEL = "prithvida/Splade_PP_en_v1"
 BATCH_SIZE = 32
 
 _dense_model = None
