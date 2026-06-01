@@ -10,15 +10,12 @@ LLMWithFallback extends LangChain's Runnable so it works
 transparently with the pipe operator (|) and all LangChain chains.
 """
 
-import os
 from enum import Enum
 from functools import lru_cache
-from typing import Any, Iterator, List, Optional, Sequence
+from typing import Any, Iterator, List, Optional
 
 from dotenv import load_dotenv
 from langchain_core.language_models import BaseChatModel
-from langchain_core.messages import BaseMessage
-from langchain_core.outputs import ChatGeneration, ChatResult
 from langchain_core.runnables import Runnable, RunnableConfig
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_groq import ChatGroq
