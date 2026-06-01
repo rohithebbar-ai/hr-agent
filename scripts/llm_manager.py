@@ -1,36 +1,34 @@
 """
 LLM Manager
 ───────────
-Centralized LLM configuration.
+Centralized LLM configuration with automatic Groq fallback.
 
-All LLMs are defined here once. Other modules import named instances
-instead of creating their own ChatGroq objects scattered throughout
-the codebase.
+When Gemini hits rate limits (429) or quota exhaustion,
+the manager automatically retries with Groq Llama 3.3 70B.
 
-Benefits:
-- One place to swap models or change providers
-- One place to tune temperature per task
-- Easy A/B testing (point a node at a different model and re-run eval)
-- Cost tracking per task type
+LLMWithFallback extends LangChain's Runnable so it works
+transparently with the pipe operator (|) and all LangChain chains.
 """
 
+import os
 from enum import Enum
 from functools import lru_cache
-from typing import Optional
+from typing import Any, Iterator, List, Optional, Sequence
 
 from dotenv import load_dotenv
+from langchain_core.language_models import BaseChatModel
+from langchain_core.messages import BaseMessage
+from langchain_core.outputs import ChatGeneration, ChatResult
+from langchain_core.runnables import Runnable, RunnableConfig
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_groq import ChatGroq
 from langchain_openai import ChatOpenAI
-from langchain_google_genai import ChatGoogleGenerativeAI
-
 
 load_dotenv()
 
 # ══════════════════════════════════════════════════
-# API KEY ROUTING
+# API KEYS
 # ══════════════════════════════════════════════════
-# Two keys: one for runtime traffic, one for evaluation.
-# Keeps RAGAS from burning through runtime quota.
 
 from core.secrets import get_secret
 
@@ -40,74 +38,63 @@ OPENAI_API_KEY = get_secret("OPENAI_API_KEY")
 GOOGLE_API_KEY = get_secret("GOOGLE_API_KEY")
 
 
-class Provider(str, Enum):
-    GROQ="groq"
-    OPENAI="openai"
-    GEMINI="gemini"
+# ══════════════════════════════════════════════════
+# ENUMS
+# ══════════════════════════════════════════════════
 
-# ══════════════════════════════════════════════════
-# MODEL REGISTRY
-# ══════════════════════════════════════════════════
-# Single source of truth for all model IDs.
-# When Groq deprecates a model, only update it here.
+class Provider(str, Enum):
+    GROQ = "groq"
+    OPENAI = "openai"
+    GEMINI = "gemini"
+
 
 class ModelID:
-    """Available models across all providers."""
-
-    # ── Production models ──
+    # Groq
     LLAMA_3_3_70B = "llama-3.3-70b-versatile"
     LLAMA_3_1_8B_INSTANT = "llama-3.1-8b-instant"
-    GPT_OSS_120B = "openai/gpt-oss-120b"
-    GPT_OSS_20B = "openai/gpt-oss-20b"
     LLAMA_GUARD_4_12B = "meta-llama/llama-guard-4-12b"
-    LLAMA_4_SCOUT = "meta-llama/llama-4-scout-17b-16e-instruct"
-    QWEN3_32B = "qwen/qwen3-32b"
 
-    # ── OpenAI ──
+    # OpenAI
     GPT_4O_MINI = "gpt-4o-mini"
     GPT_4O = "gpt-4o"
 
-    # ── Gemini ──
-    GEMINI_FLASH = "gemini-flash-latest"            # Best balance of speed + quality
-    GEMINI_3_PRO = "gemini-3-pro-preview"
-    GEMINI_2_5_FLASH_LITE = "gemini-2.5-flash-lite"   # Cheapest, fastest, simple tasks
-    GEMINI_4_26B = "gemma-4-26b-a4b-it"                 # Complex reasoning (1M context)
+    # Gemini
+    GEMINI_FLASH = "gemini-flash-latest"
+    GEMINI_2_5_FLASH_LITE = "gemini-2.5-flash-lite"
 
-    # ── Specialized ──
-    WHISPER_LARGE_V3 = "whisper-large-v3"
-
-# ══════════════════════════════════════════════════
-# TASK TYPES
-# ══════════════════════════════════════════════════
-# Named tasks that map to specific model + config combinations.
-# Each task can have different temperature, max_tokens, etc.
 
 class LLMTask(str, Enum):
-    """Tasks the agent performs. Each task gets its own LLM config."""
-
-    # ── RAG pipeline tasks ──
-    GENERATION = "generation"           # Final answer generation (needs reasoning)
-    QUERY_DECOMPOSITION = "decomp"      # Multi-hop query splitting (needs reasoning)
-    QUERY_ROUTING = "routing"           # CHAT vs RAG (simple classification)
-    DOCUMENT_GRADING = "grading"        # Relevance scoring (simple classification)
-    GROUNDING_CHECK = "grounding"       # Hallucination detection (simple)
-    CHAT = "chat"                       # Direct conversational replies
-
-    # ── Evaluation tasks ──
-    RAGAS_JUDGE = "ragas_judge"         # RAGAS evaluation LLM
-
-    # ── Future tasks ──
-    CONTENT_MODERATION = "moderation"   # Safety check on user input
+    GENERATION = "generation"
+    QUERY_DECOMPOSITION = "decomp"
+    QUERY_ROUTING = "routing"
+    DOCUMENT_GRADING = "grading"
+    GROUNDING_CHECK = "grounding"
+    CHAT = "chat"
+    RAGAS_JUDGE = "ragas_judge"
+    CONTENT_MODERATION = "moderation"
 
 
 # ══════════════════════════════════════════════════
-# CONFIGURATION
+# FALLBACK CONFIG
 # ══════════════════════════════════════════════════
-# Maps each task to its model and parameters.
-# Change models per task without touching node code.
+
+GROQ_FALLBACK_MODEL = ModelID.LLAMA_3_3_70B
+GROQ_FAST_FALLBACK_MODEL = ModelID.LLAMA_3_1_8B_INSTANT
+
+RATE_LIMIT_SIGNATURES = [
+    "429",
+    "resource_exhausted",
+    "quota",
+    "rate limit",
+    "too many requests",
+]
+
+
+# ══════════════════════════════════════════════════
+# TASK CONFIG
+# ══════════════════════════════════════════════════
 
 TASK_CONFIG = {
-    # ── Tasks needing reasoning power → big model ──
     LLMTask.GENERATION: {
         "provider": Provider.GROQ,
         "model": ModelID.LLAMA_3_3_70B,
@@ -119,15 +106,15 @@ TASK_CONFIG = {
         "model": ModelID.GEMINI_2_5_FLASH_LITE,
         "temperature": 0,
         "max_retries": 3,
+        "fallback_model": GROQ_FALLBACK_MODEL,
     },
     LLMTask.CHAT: {
         "provider": Provider.GEMINI,
         "model": ModelID.GEMINI_FLASH,
-        "temperature": 0.6,  # Slightly creative for chat
-        "max_retries": 5,
+        "temperature": 0.6,
+        "max_retries": 3,
+        "fallback_model": GROQ_FALLBACK_MODEL,
     },
-
-    # ── Fast classification tasks → small model ──
     LLMTask.QUERY_ROUTING: {
         "provider": Provider.GROQ,
         "model": ModelID.LLAMA_3_1_8B_INSTANT,
@@ -145,91 +132,161 @@ TASK_CONFIG = {
         "model": ModelID.GEMINI_FLASH,
         "temperature": 0,
         "max_retries": 3,
+        "fallback_model": GROQ_FAST_FALLBACK_MODEL,
     },
-
-    # ── Safety ──
     LLMTask.CONTENT_MODERATION: {
         "provider": Provider.GROQ,
         "model": ModelID.LLAMA_GUARD_4_12B,
         "temperature": 0,
         "max_retries": 3,
     },
-
-     LLMTask.RAGAS_JUDGE: {
+    LLMTask.RAGAS_JUDGE: {
         "provider": Provider.GEMINI,
         "model": ModelID.GEMINI_2_5_FLASH_LITE,
         "temperature": 0,
         "max_retries": 5,
+        "fallback_model": GROQ_FALLBACK_MODEL,
     },
 }
 
 
 # ══════════════════════════════════════════════════
-# LLM FACTORY
+# FACTORY HELPERS
 # ══════════════════════════════════════════════════
+
+def _is_rate_limit_error(error: Exception) -> bool:
+    error_str = str(error).lower()
+    return any(sig in error_str for sig in RATE_LIMIT_SIGNATURES)
+
+
+def _create_groq(
+    model: str,
+    temperature: float,
+    max_retries: int,
+    api_key: str = None,
+) -> ChatGroq:
+    return ChatGroq(
+        api_key=api_key or GROQ_API_KEY_RUNTIME,
+        model=model,
+        temperature=temperature,
+        max_retries=max_retries,
+    )
+
+
+def _create_openai(model: str, temperature: float, max_retries: int) -> ChatOpenAI:
+    return ChatOpenAI(
+        api_key=OPENAI_API_KEY,
+        model=model,
+        temperature=temperature,
+        max_retries=max_retries,
+    )
+
+
+def _create_gemini(model: str, temperature: float, max_retries: int) -> ChatGoogleGenerativeAI:
+    try:
+        return ChatGoogleGenerativeAI(
+            api_key=GOOGLE_API_KEY,
+            model=model,
+            temperature=temperature,
+            max_retries=max_retries,
+        )
+    except TypeError:
+        return ChatGoogleGenerativeAI(
+            api_key=GOOGLE_API_KEY,
+            model=model,
+            temperature=temperature,
+        )
+
 
 def _create_llm(
     provider: Provider,
     model: str,
     temperature: float,
     max_retries: int,
-):
-    """
-    Create an LLM instance for given provider.
-    All providers return LangChain-compatible chat models.
-    """
-
-    common_kwargs = {
-        "model": model,
-        "temperature": temperature,
-    }
-
+) -> BaseChatModel:
     if provider == Provider.GROQ:
-        return ChatGroq(
-            api_key=GROQ_API_KEY_RUNTIME,
-            max_retries=max_retries,
-            **common_kwargs,
-        )
-
+        return _create_groq(model, temperature, max_retries)
     elif provider == Provider.OPENAI:
-        return ChatOpenAI(
-            api_key=OPENAI_API_KEY,
-            max_retries=max_retries,
-            **common_kwargs,
-        )
-
+        return _create_openai(model, temperature, max_retries)
     elif provider == Provider.GEMINI:
+        return _create_gemini(model, temperature, max_retries)
+    raise ValueError(f"Unknown provider: {provider}")
+
+
+# ══════════════════════════════════════════════════
+# FALLBACK WRAPPER — extends Runnable
+# ══════════════════════════════════════════════════
+
+class LLMWithFallback(Runnable):
+    """
+    Wraps a primary LLM with an automatic Groq fallback.
+    Extends LangChain's Runnable so it works with the pipe operator (|)
+    and all LangChain chains — transparent to all callers.
+
+    When Gemini returns 429 or quota exhaustion, automatically retries
+    the same call with Groq. No changes needed in node code.
+    """
+
+    def __init__(
+        self,
+        primary: BaseChatModel,
+        fallback: BaseChatModel,
+        task_name: str,
+    ):
+        self.primary = primary
+        self.fallback = fallback
+        self.task_name = task_name
+
+    def invoke(
+        self,
+        input: Any,
+        config: Optional[RunnableConfig] = None,
+        **kwargs: Any,
+    ) -> Any:
         try:
-            return ChatGoogleGenerativeAI(
-                api_key=GOOGLE_API_KEY,
-                model=model,
-                temperature=temperature,
-                max_retries=max_retries,
-            )
-        except TypeError:
-            return ChatGoogleGenerativeAI(
-                api_key=GOOGLE_API_KEY,
-                model=model,
-                temperature=temperature,
-            )
+            return self.primary.invoke(input, config=config, **kwargs)
+        except Exception as e:
+            if _is_rate_limit_error(e):
+                print(
+                    f"[LLM_MANAGER] {self.task_name}: rate limit — "
+                    f"falling back to Groq ({str(e)[:60]})"
+                )
+                return self.fallback.invoke(input, config=config, **kwargs)
+            raise
 
-    else:
-        raise ValueError(f"Unknown Provider: {provider}")
+    def stream(
+        self,
+        input: Any,
+        config: Optional[RunnableConfig] = None,
+        **kwargs: Any,
+    ) -> Iterator:
+        try:
+            yield from self.primary.stream(input, config=config, **kwargs)
+        except Exception as e:
+            if _is_rate_limit_error(e):
+                print(f"[LLM_MANAGER] {self.task_name}: rate limit on stream — using Groq fallback")
+                yield from self.fallback.stream(input, config=config, **kwargs)
+            else:
+                raise
 
-# ══════════════════════════════════════════════════
-# API KEY ROUTING (for Groq eval isolation)
-# ══════════════════════════════════════════════════
+    def batch(
+        self,
+        inputs: List[Any],
+        config: Optional[RunnableConfig] = None,
+        **kwargs: Any,
+    ) -> List[Any]:
+        try:
+            return self.primary.batch(inputs, config=config, **kwargs)
+        except Exception as e:
+            if _is_rate_limit_error(e):
+                print(f"[LLM_MANAGER] {self.task_name}: rate limit on batch — using Groq fallback")
+                return self.fallback.batch(inputs, config=config, **kwargs)
+            raise
 
-def get_api_key_for_task(task: LLMTask) -> str:
-    """Route Groq tasks to the right API key."""
-    eval_tasks = {LLMTask.RAGAS_JUDGE}
+    # Delegate attribute access to primary for bind(), with_config(), etc.
+    def __getattr__(self, name: str) -> Any:
+        return getattr(self.primary, name)
 
-    if task in eval_tasks:
-        if not GROQ_API_KEY_EVAL:
-            return GROQ_API_KEY_RUNTIME
-        return GROQ_API_KEY_EVAL
-
-    return GROQ_API_KEY_RUNTIME
 
 # ══════════════════════════════════════════════════
 # MANAGER
@@ -238,17 +295,18 @@ def get_api_key_for_task(task: LLMTask) -> str:
 class LLMManager:
     """
     Centralized LLM factory. Get LLM instances by task name.
+    Gemini tasks automatically get a Groq fallback wrapper.
 
     Usage:
         manager = LLMManager()
-        generation_llm = manager.get_llm(LLMTask.GENERATION)
-        grading_llm = manager.get_llm(LLMTask.DOCUMENT_GRADING)
+        llm = manager.get_llm(LLMTask.GENERATION)
+        response = llm.invoke("your prompt")
 
-    LLMs are cached so the same task returns the same instance,
-    avoiding repeated client creation overhead.
+        # Works in LangChain chains too:
+        chain = prompt | llm | StrOutputParser()
     """
+
     def __init__(self):
-        # Validate atleast one provider is configured.
         available = []
         if GROQ_API_KEY_RUNTIME:
             available.append("Groq")
@@ -256,88 +314,95 @@ class LLMManager:
             available.append("OpenAI")
         if GOOGLE_API_KEY:
             available.append("Gemini")
-        
+
         if not available:
             raise ValueError(
-                "No LLM API keys found. Set atleast one of the keys: GROQ_API_KEY, OPENAI_API_KEY, GOOGLE_API_KEY "
+                "No LLM API keys found. Set at least one of: "
+                "GROQ_API_KEY, OPENAI_API_KEY, GOOGLE_API_KEY"
             )
         print(f"[LLM_MANAGER] Available providers: {', '.join(available)}")
 
     @lru_cache(maxsize=None)
-    def get_llm(self, task: LLMTask) -> ChatGroq:
+    def get_llm(self, task: LLMTask) -> Runnable:
         """
-        Get the configured LLM for a specific task.
-
-        Cached so each task creates only one ChatGroq instance per process.
+        Get the LLM for a task.
+        Gemini tasks return LLMWithFallback (Runnable) with Groq fallback.
+        Groq/OpenAI tasks return the model directly.
+        Cached — same task always returns the same instance.
         """
         if task not in TASK_CONFIG:
             raise ValueError(
-                f"Unknown task: {task}."
-                f"Available: {list(TASK_CONFIG.keys())}"
+                f"Unknown task: {task}. Available: {list(TASK_CONFIG.keys())}"
             )
+
         config = TASK_CONFIG[task]
         provider = config["provider"]
-        
-        # For groq eval tasks use eval API key
-        if provider == Provider.GROQ and task in {LLMTask.RAGAS_JUDGE}:
+        model = config["model"]
+        temperature = config["temperature"]
+        max_retries = config["max_retries"]
+
+        # RAGAS eval task uses dedicated eval API key
+        if provider == Provider.GROQ and task == LLMTask.RAGAS_JUDGE:
             api_key = GROQ_API_KEY_EVAL or GROQ_API_KEY_RUNTIME
-            return ChatGroq(
-                api_key=api_key,
-                model=config["model"],
-                temperature=config["temperature"],
-                max_retries=config["max_retries"],
+            return _create_groq(model, temperature, max_retries, api_key=api_key)
+
+        primary = _create_llm(provider, model, temperature, max_retries)
+
+        # Wrap Gemini with Groq fallback
+        if provider == Provider.GEMINI and GROQ_API_KEY_RUNTIME:
+            fallback_model = config.get("fallback_model", GROQ_FALLBACK_MODEL)
+            fallback = _create_groq(fallback_model, temperature, max_retries)
+            return LLMWithFallback(
+                primary=primary,
+                fallback=fallback,
+                task_name=task.value,
             )
-        return _create_llm(
-            provider = provider,
-            model = config["model"],
-            temperature=config["temperature"],
-            max_retries=config["max_retries"],
-        )
+
+        return primary
 
     def get_model_id(self, task: LLMTask) -> str:
-        """Get the model ID for a task (useful for logging)."""
         return TASK_CONFIG[task]["model"]
 
     def list_tasks(self) -> dict:
-        """Return a summary of all task → model mappings (for debugging)."""
         return {
             task.value: {
                 "model": config["model"],
                 "provider": config["provider"].value,
-                }
+                "has_fallback": "fallback_model" in config,
+            }
             for task, config in TASK_CONFIG.items()
         }
 
-# ══════════════════════════════════════════════════
-# MODULE-LEVEL SINGLETON
-# ══════════════════════════════════════════════════
-# Convenience: import this directly instead of creating new managers.
 
+# ══════════════════════════════════════════════════
+# SINGLETON + SHORTCUTS
+# ══════════════════════════════════════════════════
 
 _manager: Optional[LLMManager] = None
 
+
 def get_manager() -> LLMManager:
-    """Get the global LLMManager singleton."""
     global _manager
     if _manager is None:
         _manager = LLMManager()
     return _manager
 
 
-def get_llm(task: LLMTask) -> ChatGroq:
+def get_llm(task: LLMTask) -> Runnable:
     """
-    Shortcut to get an LLM for a task.
+    Shortcut — get an LLM for a task.
 
     Usage:
-        from agents.llm_manager import get_llm, LLMTask
-        llm = get_llm(LLMTask.GENERATION)
+        from scripts.llm_manager import get_llm, LLMTask
+        llm = get_llm(LLMTask.CHAT)
+        chain = prompt | llm | StrOutputParser()
     """
     return get_manager().get_llm(task)
+
 
 # ══════════════════════════════════════════════════
 # CLI HELPER
 # ══════════════════════════════════════════════════
-# Run this file directly to see your current model configuration.
 
 if __name__ == "__main__":
     print("\n" + "=" * 70)
@@ -346,20 +411,22 @@ if __name__ == "__main__":
 
     manager = get_manager()
     config = manager.list_tasks()
- 
-    print(f"  {'Task':<22} {'Provider':<10} {'Model':<40}")
-    print("  " + "─" * 64)
+
+    print(f"  {'Task':<25} {'Provider':<10} {'Model':<38} {'Fallback'}")
+    print("  " + "─" * 75)
 
     for task_name, info in config.items():
+        fallback = "Groq" if info["has_fallback"] else "-"
         print(
-            f"  {task_name:<22} "
+            f"  {task_name:<25} "
             f"{info['provider']:<10} "
-            f"{info['model']:<40}"
+            f"{info['model']:<38} "
+            f"{fallback}"
         )
 
-    print("\n" + "=" * 75)
-    print(f"  Groq Runtime:  {'configured' if GROQ_API_KEY_RUNTIME else 'missing'}")
+    print("\n" + "=" * 70)
+    print(f"  Groq Runtime:  {'configured' if GROQ_API_KEY_RUNTIME else 'MISSING'}")
     print(f"  Groq Eval:     {'configured' if GROQ_API_KEY_EVAL else 'missing'}")
     print(f"  OpenAI:        {'configured' if OPENAI_API_KEY else 'missing'}")
     print(f"  Gemini:        {'configured' if GOOGLE_API_KEY else 'missing'}")
-    print("=" * 75 + "\n")
+    print("=" * 70 + "\n")

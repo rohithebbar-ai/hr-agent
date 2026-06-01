@@ -9,7 +9,7 @@ env:
 
 jobs:
 
-  # ── Stage 1: Lint ──────────────────────────────────────────
+  # ── Stage 1: Lint ──────────────────────────────────────────────────
   lint:
     name: Lint
     runs-on: ubuntu-latest
@@ -26,7 +26,7 @@ jobs:
       - name: Run ruff
         run: ruff check .
 
-  # ── Stage 2: Unit Tests ────────────────────────────────────
+  # ── Stage 2: Unit Tests ────────────────────────────────────────────
   test:
     name: Unit Tests
     runs-on: ubuntu-latest
@@ -57,28 +57,29 @@ jobs:
         run: uv sync --frozen
 
       - name: Run unit tests
-        run: uv run pytest tests/ -v --tb=short
-          --ignore=tests/test_integration.py
-          --ignore=tests/test_regression.py
+        run: |
+          uv run pytest tests/ -v --tb=short \
+            --ignore=tests/test_integration.py \
+            --ignore=tests/test_regression.py
         env:
           REDIS_URL: redis://localhost:6379/0
-          ENVIRONMENT: test
+          QDRANT_URL: ${{ secrets.QDRANT_URL }}
+          QDRANT_API_KEY: ${{ secrets.QDRANT_API_KEY }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
-          QDRANT_URL: http://localhost:6333
           LANGSMITH_TRACING: "false"
           EMBEDDING_MODEL: all-MiniLM-L6-v2
+          ENVIRONMENT: test
 
-  # ── Stage 3: Integration Tests ─────────────────────────────
-  # Only on main push or PR to main (not dev pushes)
+  # ── Stage 3: Integration Tests ─────────────────────────────────────
+  # Uses Qdrant Cloud directly — no local Qdrant container needed
+  # Only runs on pushes to main (not dev)
   integration:
     name: Integration Tests
     runs-on: ubuntu-latest
     needs: test
-    if: >
-      github.ref == 'refs/heads/main' ||
-      github.event_name == 'pull_request'
+    if: github.ref == 'refs/heads/main'
 
     services:
       redis:
@@ -90,11 +91,6 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 3
-
-      qdrant:
-        image: qdrant/qdrant:v1.17.1
-        ports:
-          - 6333:6333
 
     steps:
       - uses: actions/checkout@v4
@@ -108,19 +104,13 @@ jobs:
 
       - name: Install dependencies
         run: uv sync --frozen
-
-      - name: Ingest test documents into Qdrant
-        run: uv run python -m rag.policy_aware.ingest_policy_aware
-        env:
-          QDRANT_URL: http://localhost:6333
-          ENVIRONMENT: test
-          EMBEDDING_MODEL: all-MiniLM-L6-v2
 
       - name: Run integration tests
         run: uv run pytest tests/test_integration.py -v --tb=short
         env:
           REDIS_URL: redis://localhost:6379/0
-          QDRANT_URL: http://localhost:6333
+          QDRANT_URL: ${{ secrets.QDRANT_URL }}
+          QDRANT_API_KEY: ${{ secrets.QDRANT_API_KEY }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
@@ -128,14 +118,14 @@ jobs:
           EMBEDDING_MODEL: all-MiniLM-L6-v2
           ENVIRONMENT: test
 
-  # ── Stage 4: Regression Tests ──────────────────────────────
-  # Quality gate — blocks deploy if answers degrade
-  # Only on main push (not PRs, not dev)
+  # ── Stage 4: Regression Tests ──────────────────────────────────────
+  # Quality gate — blocks deploy if answer quality degrades
+  # Only runs on main after integration tests pass
   regression:
     name: Regression Tests (Quality Gate)
     runs-on: ubuntu-latest
     needs: integration
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: github.ref == 'refs/heads/main'
 
     services:
       redis:
@@ -147,11 +137,6 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 3
-
-      qdrant:
-        image: qdrant/qdrant:v1.17.1
-        ports:
-          - 6333:6333
 
     steps:
       - uses: actions/checkout@v4
@@ -166,18 +151,12 @@ jobs:
       - name: Install dependencies
         run: uv sync --frozen
 
-      - name: Ingest test documents into Qdrant
-        run: uv run python -m rag.policy_aware.ingest_policy_aware
-        env:
-          QDRANT_URL: http://localhost:6333
-          ENVIRONMENT: test
-          EMBEDDING_MODEL: all-MiniLM-L6-v2
-
       - name: Run regression tests
         run: uv run pytest tests/test_regression.py -v --tb=short -m regression
         env:
           REDIS_URL: redis://localhost:6379/0
-          QDRANT_URL: http://localhost:6333
+          QDRANT_URL: ${{ secrets.QDRANT_URL }}
+          QDRANT_API_KEY: ${{ secrets.QDRANT_API_KEY }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
@@ -185,12 +164,13 @@ jobs:
           EMBEDDING_MODEL: all-MiniLM-L6-v2
           ENVIRONMENT: test
 
-  # ── Stage 5: Build + Push Docker ──────────────────────────
+  # ── Stage 5: Build + Push Docker ───────────────────────────────────
+  # Only runs on main after all tests pass
   build:
     name: Build and Push Docker Image
     runs-on: ubuntu-latest
     needs: regression
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: github.ref == 'refs/heads/main'
 
     steps:
       - uses: actions/checkout@v4
@@ -217,12 +197,12 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  # ── Stage 6: Deploy to EC2 ────────────────────────────────
+  # ── Stage 6: Deploy to EC2 ─────────────────────────────────────────
   deploy:
     name: Deploy to Production
     runs-on: ubuntu-latest
     needs: build
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: github.ref == 'refs/heads/main'
 
     steps:
       - name: Deploy to EC2
@@ -248,7 +228,7 @@ jobs:
             echo "=== Restarting containers ==="
             docker compose -f docker-compose.prod.yml up -d app discord-bot
 
-            # Wait for startup (embedding model load takes ~25 seconds)
+            # Wait for startup — embedding model + sparse model load takes time
             echo "=== Waiting for startup ==="
             sleep 40
 
