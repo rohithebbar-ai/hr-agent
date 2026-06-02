@@ -1,11 +1,14 @@
 """
 LLM Manager
 ───────────
-Centralized LLM configuration with strict Groq fallback.
+Centralized LLM configuration.
 
-If Gemini fails for ANY reason (rate limit, quota, 503, timeout, etc.),
-the manager automatically retries with Groq. No hardcoded error signatures —
-any exception from the primary triggers the fallback.
+Production pipeline: All Groq — fast, reliable, no quota issues.
+  - Heavy tasks (generation, decomp, chat) → 70B model, distributed across keys 1-3
+  - Light tasks (routing, grading, grounding, moderation) → 8B model on key 4
+  - Each task gets its own dedicated key to avoid rate limit contention
+
+Evaluation (RAGAS): Gemini with Groq fallback — runs offline, separate key
 
 LLMWithFallback extends LangChain's Runnable so it works transparently
 with the pipe operator (|) and all LangChain chains.
@@ -30,8 +33,10 @@ load_dotenv()
 
 from core.secrets import get_secret
 
-GROQ_API_KEY_RUNTIME = get_secret("GROQ_API_KEY_4")
-GROQ_API_KEY_EVAL = get_secret("GROQ_API_KEY_3")
+GROQ_API_KEY_1 = get_secret("GROQ_API_KEY")     # Generation — heaviest task
+GROQ_API_KEY_2 = get_secret("GROQ_API_KEY_2")   # Decomposition — heavy task
+GROQ_API_KEY_3 = get_secret("GROQ_API_KEY_3")   # Chat + RAGAS eval
+GROQ_API_KEY_4 = get_secret("GROQ_API_KEY_4")   # Routing, grading, grounding, moderation
 OPENAI_API_KEY = get_secret("OPENAI_API_KEY")
 GOOGLE_API_KEY = get_secret("GOOGLE_API_KEY")
 
@@ -75,66 +80,87 @@ class LLMTask(str, Enum):
 # ══════════════════════════════════════════════════
 # TASK CONFIG
 # ══════════════════════════════════════════════════
-# In test environment: all Gemini tasks use Groq directly (no quota issues in CI).
-# In production: Gemini primary with Groq fallback on any failure.
+# Production: all Groq, distributed across 4 keys by task weight.
+# Test (CI): same config — Groq everywhere, no Gemini quota issues.
+# RAGAS: Gemini with Groq fallback — runs offline, isolated key.
 
 GROQ_FALLBACK_MODEL = ModelID.LLAMA_3_3_70B
-GROQ_FAST_FALLBACK_MODEL = ModelID.LLAMA_3_1_8B_INSTANT
-
-_IS_TEST = os.environ.get("ENVIRONMENT") == "test"
 
 TASK_CONFIG = {
+    # ── Heavy tasks: 70B model, one key each ──────────────────────────
+
     LLMTask.GENERATION: {
+        # Generates the final answer — most token-heavy call per request
         "provider": Provider.GROQ,
         "model": ModelID.LLAMA_3_3_70B,
+        "api_key": GROQ_API_KEY_1,
         "temperature": 0,
         "max_retries": 3,
     },
     LLMTask.QUERY_DECOMPOSITION: {
-        "provider": Provider.GROQ if _IS_TEST else Provider.GEMINI,
-        "model": ModelID.LLAMA_3_3_70B if _IS_TEST else ModelID.GEMINI_2_5_FLASH_LITE,
+        # Decomposes multi-hop questions — 70B for reasoning quality
+        "provider": Provider.GROQ,
+        "model": ModelID.LLAMA_3_3_70B,
+        "api_key": GROQ_API_KEY_2,
         "temperature": 0,
         "max_retries": 3,
-        "fallback_model": GROQ_FALLBACK_MODEL,
     },
     LLMTask.CHAT: {
-        "provider": Provider.GROQ if _IS_TEST else Provider.GEMINI,
-        "model": ModelID.LLAMA_3_3_70B if _IS_TEST else ModelID.GEMINI_FLASH,
+        # Direct conversational responses — 70B for natural replies
+        "provider": Provider.GROQ,
+        "model": ModelID.LLAMA_3_3_70B,
+        "api_key": GROQ_API_KEY_3,
         "temperature": 0.6,
         "max_retries": 3,
-        "fallback_model": GROQ_FALLBACK_MODEL,
     },
+
+    # ── Light tasks: 8B model, shared key 4 ──────────────────────────
+    # These are binary classification tasks — 8B is more than sufficient
+
     LLMTask.QUERY_ROUTING: {
+        # CHAT vs RAG classification — binary, fast
         "provider": Provider.GROQ,
         "model": ModelID.LLAMA_3_1_8B_INSTANT,
+        "api_key": GROQ_API_KEY_4,
         "temperature": 0,
         "max_retries": 3,
     },
     LLMTask.DOCUMENT_GRADING: {
+        # Relevance yes/no per document — binary, fast
         "provider": Provider.GROQ,
         "model": ModelID.LLAMA_3_1_8B_INSTANT,
+        "api_key": GROQ_API_KEY_4,
         "temperature": 0,
         "max_retries": 3,
     },
     LLMTask.GROUNDING_CHECK: {
-        "provider": Provider.GROQ if _IS_TEST else Provider.GEMINI,
-        "model": ModelID.LLAMA_3_1_8B_INSTANT if _IS_TEST else ModelID.GEMINI_FLASH,
+        # Grounded/ungrounded check — binary, fast
+        "provider": Provider.GROQ,
+        "model": ModelID.LLAMA_3_1_8B_INSTANT,
+        "api_key": GROQ_API_KEY_4,
         "temperature": 0,
         "max_retries": 3,
-        "fallback_model": GROQ_FAST_FALLBACK_MODEL,
     },
     LLMTask.CONTENT_MODERATION: {
+        # Safety classification — specialized guard model
         "provider": Provider.GROQ,
         "model": ModelID.LLAMA_GUARD_4_12B,
+        "api_key": GROQ_API_KEY_4,
         "temperature": 0,
         "max_retries": 3,
     },
+
+    # ── Evaluation: Gemini with Groq fallback ─────────────────────────
+    # Runs offline during eval pipeline, not in user-facing requests
+
     LLMTask.RAGAS_JUDGE: {
         "provider": Provider.GEMINI,
         "model": ModelID.GEMINI_2_5_FLASH_LITE,
+        "api_key": None,                          # Uses GOOGLE_API_KEY
         "temperature": 0,
         "max_retries": 5,
         "fallback_model": GROQ_FALLBACK_MODEL,
+        "fallback_api_key": GROQ_API_KEY_3,       # Shared with chat key
     },
 }
 
@@ -149,8 +175,9 @@ def _create_groq(
     max_retries: int,
     api_key: str = None,
 ) -> ChatGroq:
+    key = api_key or GROQ_API_KEY_4  # Default to key 4 if none specified
     return ChatGroq(
-        api_key=api_key or GROQ_API_KEY_RUNTIME,
+        api_key=key,
         model=model,
         temperature=temperature,
         max_retries=max_retries,
@@ -182,32 +209,20 @@ def _create_gemini(model: str, temperature: float, max_retries: int) -> ChatGoog
         )
 
 
-def _create_llm(
-    provider: Provider,
-    model: str,
-    temperature: float,
-    max_retries: int,
-) -> BaseChatModel:
-    if provider == Provider.GROQ:
-        return _create_groq(model, temperature, max_retries)
-    elif provider == Provider.OPENAI:
-        return _create_openai(model, temperature, max_retries)
-    elif provider == Provider.GEMINI:
-        return _create_gemini(model, temperature, max_retries)
-    raise ValueError(f"Unknown provider: {provider}")
-
-
 # ══════════════════════════════════════════════════
 # FALLBACK WRAPPER
 # ══════════════════════════════════════════════════
 
 class LLMWithFallback(Runnable):
     """
-    Wraps a primary LLM (Gemini) with a strict Groq fallback.
+    Wraps a primary LLM with a strict fallback.
 
     ANY exception from the primary triggers the fallback — no hardcoded
-    error signatures. If Gemini fails for any reason (429, 503, timeout,
-    network error, etc.), Groq handles it instead.
+    error signatures. If the primary fails for any reason (429, 503,
+    timeout, network error), the fallback handles it.
+
+    Used for RAGAS judge (Gemini → Groq) and any future task
+    that benefits from multi-provider resilience.
 
     Extends LangChain's Runnable so it works with the pipe operator (|)
     and with_structured_output() transparently.
@@ -227,7 +242,7 @@ class LLMWithFallback(Runnable):
         """
         Override to preserve fallback through structured output chains.
         Without this, with_structured_output() delegates to primary via
-        __getattr__, returning a pure Gemini chain that loses the fallback.
+        __getattr__, returning a chain that loses the fallback wrapper.
         """
         primary_structured = self.primary.with_structured_output(schema, **kwargs)
         fallback_structured = self.fallback.with_structured_output(schema, **kwargs)
@@ -248,7 +263,7 @@ class LLMWithFallback(Runnable):
         except Exception as e:
             print(
                 f"[LLM_MANAGER] {self.task_name}: primary failed "
-                f"({type(e).__name__}: {str(e)[:80]}) — using Groq fallback"
+                f"({type(e).__name__}: {str(e)[:80]}) — using fallback"
             )
             return self.fallback.invoke(input, config=config, **kwargs)
 
@@ -263,7 +278,7 @@ class LLMWithFallback(Runnable):
         except Exception as e:
             print(
                 f"[LLM_MANAGER] {self.task_name}: primary stream failed "
-                f"({type(e).__name__}) — using Groq fallback"
+                f"({type(e).__name__}) — using fallback"
             )
             yield from self.fallback.stream(input, config=config, **kwargs)
 
@@ -278,7 +293,7 @@ class LLMWithFallback(Runnable):
         except Exception as e:
             print(
                 f"[LLM_MANAGER] {self.task_name}: primary batch failed "
-                f"({type(e).__name__}) — using Groq fallback"
+                f"({type(e).__name__}) — using fallback"
             )
             return self.fallback.batch(inputs, config=config, **kwargs)
 
@@ -292,13 +307,17 @@ class LLMWithFallback(Runnable):
 
 class LLMManager:
     """
-    Centralized LLM factory. Gemini tasks get strict Groq fallback —
-    any Gemini failure (quota, 503, timeout) automatically uses Groq.
+    Centralized LLM factory.
+
+    Production pipeline: pure Groq — fast, reliable, rate limits spread
+    across 4 keys. Each heavy task gets its own dedicated key.
+
+    RAGAS evaluation: Gemini with Groq fallback — isolated from pipeline keys.
     """
 
     def __init__(self):
         available = []
-        if GROQ_API_KEY_RUNTIME:
+        if any([GROQ_API_KEY_1, GROQ_API_KEY_2, GROQ_API_KEY_3, GROQ_API_KEY_4]):
             available.append("Groq")
         if OPENAI_API_KEY:
             available.append("OpenAI")
@@ -307,17 +326,31 @@ class LLMManager:
 
         if not available:
             raise ValueError(
-                "No LLM API keys found. Set at least one of: "
-                "GROQ_API_KEY_4, OPENAI_API_KEY, GOOGLE_API_KEY"
+                "No LLM API keys found. Set at least one Groq key."
             )
         print(f"[LLM_MANAGER] Available providers: {', '.join(available)}")
+
+        # Log which Groq keys are configured
+        key_status = {
+            "GROQ_API_KEY": bool(GROQ_API_KEY_1),
+            "GROQ_API_KEY_2": bool(GROQ_API_KEY_2),
+            "GROQ_API_KEY_3": bool(GROQ_API_KEY_3),
+            "GROQ_API_KEY_4": bool(GROQ_API_KEY_4),
+        }
+        configured = [k for k, v in key_status.items() if v]
+        missing = [k for k, v in key_status.items() if not v]
+        if configured:
+            print(f"[LLM_MANAGER] Groq keys configured: {', '.join(configured)}")
+        if missing:
+            print(f"[LLM_MANAGER] Groq keys missing: {', '.join(missing)}")
 
     @lru_cache(maxsize=None)
     def get_llm(self, task: LLMTask) -> Runnable:
         """
         Get the LLM for a task.
-        Gemini tasks are wrapped in LLMWithFallback — any failure uses Groq.
-        Groq/OpenAI tasks return the model directly.
+
+        Groq tasks: return model with dedicated API key for rate limit isolation.
+        Gemini tasks (RAGAS): wrapped in LLMWithFallback for resilience.
         Cached per task — same instance reused across all requests.
         """
         if task not in TASK_CONFIG:
@@ -330,25 +363,27 @@ class LLMManager:
         model = config["model"]
         temperature = config["temperature"]
         max_retries = config["max_retries"]
+        api_key = config.get("api_key")
 
-        # RAGAS eval uses dedicated eval API key
-        if provider == Provider.GROQ and task == LLMTask.RAGAS_JUDGE:
-            api_key = GROQ_API_KEY_EVAL or GROQ_API_KEY_RUNTIME
+        if provider == Provider.GROQ:
             return _create_groq(model, temperature, max_retries, api_key=api_key)
 
-        primary = _create_llm(provider, model, temperature, max_retries)
+        elif provider == Provider.OPENAI:
+            return _create_openai(model, temperature, max_retries)
 
-        # Wrap Gemini tasks with strict Groq fallback
-        if provider == Provider.GEMINI and GROQ_API_KEY_RUNTIME:
+        elif provider == Provider.GEMINI:
+            primary = _create_gemini(model, temperature, max_retries)
+            # Wrap with Groq fallback
             fallback_model = config.get("fallback_model", GROQ_FALLBACK_MODEL)
-            fallback = _create_groq(fallback_model, temperature, max_retries)
+            fallback_key = config.get("fallback_api_key", GROQ_API_KEY_4)
+            fallback = _create_groq(fallback_model, temperature, max_retries, api_key=fallback_key)
             return LLMWithFallback(
                 primary=primary,
                 fallback=fallback,
                 task_name=task.value,
             )
 
-        return primary
+        raise ValueError(f"Unknown provider: {provider}")
 
     def get_model_id(self, task: LLMTask) -> str:
         return TASK_CONFIG[task]["model"]
@@ -358,6 +393,7 @@ class LLMManager:
             task.value: {
                 "model": config["model"],
                 "provider": config["provider"].value,
+                "api_key": "key_" + config.get("api_key", "")[-4:] if config.get("api_key") else "default",
                 "has_fallback": "fallback_model" in config,
             }
             for task, config in TASK_CONFIG.items()
@@ -384,8 +420,8 @@ def get_llm(task: LLMTask) -> Runnable:
 
     Usage:
         from scripts.llm_manager import get_llm, LLMTask
-        llm = get_llm(LLMTask.CHAT)
-        chain = prompt | llm | StrOutputParser()
+        llm = get_llm(LLMTask.GENERATION)
+        response = llm.invoke("your prompt")
     """
     return get_manager().get_llm(task)
 
@@ -402,8 +438,8 @@ if __name__ == "__main__":
     manager = get_manager()
     config = manager.list_tasks()
 
-    print(f"  {'Task':<25} {'Provider':<10} {'Model':<38} {'Fallback'}")
-    print("  " + "─" * 75)
+    print(f"  {'Task':<25} {'Provider':<10} {'Model':<38} {'Key':<12} {'Fallback'}")
+    print("  " + "─" * 85)
 
     for task_name, info in config.items():
         fallback = "Groq" if info["has_fallback"] else "-"
@@ -411,13 +447,16 @@ if __name__ == "__main__":
             f"  {task_name:<25} "
             f"{info['provider']:<10} "
             f"{info['model']:<38} "
+            f"{info['api_key']:<12} "
             f"{fallback}"
         )
 
     print("\n" + "=" * 70)
-    print(f"  Groq Runtime:  {'configured' if GROQ_API_KEY_RUNTIME else 'MISSING'}")
-    print(f"  Groq Eval:     {'configured' if GROQ_API_KEY_EVAL else 'missing'}")
-    print(f"  OpenAI:        {'configured' if OPENAI_API_KEY else 'missing'}")
-    print(f"  Gemini:        {'configured' if GOOGLE_API_KEY else 'missing'}")
-    print(f"  Environment:   {os.environ.get('ENVIRONMENT', 'prod')}")
+    print(f"  GROQ_API_KEY:    {'configured' if GROQ_API_KEY_1 else 'MISSING'}")
+    print(f"  GROQ_API_KEY_2:  {'configured' if GROQ_API_KEY_2 else 'MISSING'}")
+    print(f"  GROQ_API_KEY_3:  {'configured' if GROQ_API_KEY_3 else 'MISSING'}")
+    print(f"  GROQ_API_KEY_4:  {'configured' if GROQ_API_KEY_4 else 'MISSING'}")
+    print(f"  OpenAI:          {'configured' if OPENAI_API_KEY else 'missing'}")
+    print(f"  Gemini:          {'configured' if GOOGLE_API_KEY else 'missing'}")
+    print(f"  Environment:     {os.environ.get('ENVIRONMENT', 'prod')}")
     print("=" * 70 + "\n")
