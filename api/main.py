@@ -10,7 +10,6 @@ Docs:
     http://localhost:8000/docs
 """
 import os
-import sys
 
 # Load AWS Secrets Manager into os.environ BEFORE any other imports
 # This must run in the same process as uvicorn
