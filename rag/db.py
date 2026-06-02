@@ -52,18 +52,30 @@ class DocumentEvalResult(Base):
     document = relationship("Document", back_populates="eval_results")
 
 
-# Lazy engine / session — created on first use, not at import time.
 _engine = None
-_SessionLocal = None
+_session_factory = None
+
+
+def _ensure_secrets_loaded():
+    """Try to load secrets from AWS Secrets Manager if DATABASE_URL is missing."""
+    if os.environ.get("DATABASE_URL"):
+        return
+    try:
+        from scripts.aws_secrets import load_secrets_to_env
+        load_secrets_to_env()
+    except Exception:
+        pass
 
 
 def _get_engine():
     global _engine
     if _engine is None:
-        url = os.environ.get("DATABASE_URL", "")
+        _ensure_secrets_loaded()
+        url = os.environ.get("DATABASE_URL")
         if not url:
             raise RuntimeError(
-                "DATABASE_URL not set. Add it to your .env file."
+                "DATABASE_URL not set. "
+                "Add it to AWS Secrets Manager or .env file."
             )
         _engine = create_engine(
             url,
@@ -75,16 +87,22 @@ def _get_engine():
 
 
 def SessionLocal():
-    global _SessionLocal
-    if _SessionLocal is None:
-        _SessionLocal = sessionmaker(
-            bind=_get_engine(), autocommit=False, autoflush=False
+    """
+    Get a new database session.
+    Engine is created lazily on first call — after secrets are loaded.
+    """
+    global _session_factory
+    if _session_factory is None:
+        _session_factory = sessionmaker(
+            bind=_get_engine(),
+            autocommit=False,
+            autoflush=False,
         )
-    return _SessionLocal()
+    return _session_factory()
 
 
 def get_session():
-    """Get a database session. Use as a context manager."""
+    """Get a database session as a context manager."""
     session = SessionLocal()
     try:
         yield session
