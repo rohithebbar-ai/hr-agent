@@ -47,10 +47,20 @@ def get_ranker():
 
 def get_client():
     global _client
+    # Reset client if QDRANT_URL changed (e.g. secrets loaded after first call)
+    current_url = os.environ.get("QDRANT_URL", "")
     if _client is None:
-        url = os.environ.get("QDRANT_URL")
+        url = current_url
         api_key = os.environ.get("QDRANT_API_KEY")
-        _client = QdrantClient(url=url, api_key=api_key, timeout=30) if api_key else QdrantClient(url=url, timeout=30)
+        if not url:
+            print("[RETRIEVE] QDRANT_URL not set, using http://localhost:6333")
+            url = "http://localhost:6333"
+        print(f"[RETRIEVE] Connecting to Qdrant: {url[:50]}")
+        _client = (
+            QdrantClient(url=url, api_key=api_key, timeout=30)
+            if api_key
+            else QdrantClient(url=url, timeout=30)
+        )
     return _client
 
 

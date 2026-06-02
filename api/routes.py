@@ -152,11 +152,12 @@ async def chat(request: Request, body: ChatRequest):
             graded_docs = final_state.get("graded_documents", [])
             seen_titles = set()
             for doc in graded_docs:
-                doc_title = doc.metadata.get("document_title", "")
-                section = doc.metadata.get("section_title", "")
-                if doc_title and doc_title not in seen_titles:
-                    seen_titles.add(doc_title)
-                    sources.append(f"{doc_title} ({section})" if section else doc_title)
+                section_path = doc.metadata.get(
+                    "section_path",
+                    doc.metadata.get("section_title", "")
+                )
+                if section_path and section_path not in sources:
+                    sources.append(section_path)
 
     except Exception as e:
         logger.error(
