@@ -2,8 +2,9 @@ services:
   app:
     image: rohithebbar/hr-agent:latest
     container_name: hr-copilot-app
-    ports:
-      - "8000:8000"
+    command: >
+      sh -c "uv run python scripts/aws_secrets.py &&
+             uv run uvicorn api.main:app --host 0.0.0.0 --port 8000 --workers 1"
     environment:
       - ENVIRONMENT=prod
       - AWS_REGION=ap-south-1

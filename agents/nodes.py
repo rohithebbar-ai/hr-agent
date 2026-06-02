@@ -2,7 +2,10 @@
 Policy Agent Nodes
 ──────────────────
 Each node takes (state, **injected_deps) and returns a dict of state updates.
-Dependencies (LLM, retriever) are injected via functools.partial in the pipeline builder — no globals.
+Dependencies (LLM, retriever) are injected via functools.partial in the pipeline builder.
+
+Key change: try/except blocks removed from transform_query and check_grounding_node
+so LLMWithFallback can catch rate limit errors and automatically retry with Groq.
 """
 
 from typing import List, Literal
@@ -13,7 +16,7 @@ from langgraph.graph import END
 from langgraph.types import Command
 from agents.prompt_loader import load_prompt
 
-from agents.schemas import(
+from agents.schemas import (
     BatchDocumentGrades,
     GroundingCheck,
     PolicyAgentState,
@@ -23,6 +26,7 @@ from agents.schemas import(
 
 # ── Dynamic behavior prompt (set via Admin panel → Redis) ─────────────────────
 _DEFAULT_BEHAVIOR = "You are a helpful HR assistant for VanaciPrime."
+
 
 def get_behavior_prompt() -> str:
     """Read the admin-configurable behavior prompt from Redis. Falls back to default."""
@@ -35,6 +39,7 @@ def get_behavior_prompt() -> str:
     except Exception:
         pass
     return _DEFAULT_BEHAVIOR
+
 
 def _extract_text(content) -> str:
     """Extract text from LLM response content (handles Gemini's list format)."""
@@ -49,13 +54,13 @@ def _extract_text(content) -> str:
         return str(content)
     return str(content)
 
+
 # ══════════════════════════════════════════════════
 # NODE 1: route_query
 # ══════════════════════════════════════════════════
-# Classifies query as CHAT (small talk) or RAG (needs retrieval).
-
 
 ROUTER_PROMPT = load_prompt("router", version="v1")
+
 
 def route_query_node(
     state: PolicyAgentState,
@@ -84,19 +89,19 @@ def route_query_node(
         goto=goto,
     )
 
+
 # ══════════════════════════════════════════════════
 # NODE 2: chat_node
 # ══════════════════════════════════════════════════
-# Handles non-RAG questions directly without retrieval.
 
-CHAT_PROMPT = CHAT_PROMPT = load_prompt("chat", version="v1")
+CHAT_PROMPT = load_prompt("chat", version="v1")
 
 
 def chat_node(
     state: PolicyAgentState,
     base_llm,
-    ) -> Command[Literal["__end__"]]:
-    """Handle conversational questions without retrieval"""
+) -> Command[Literal["__end__"]]:
+    """Handle conversational questions without retrieval."""
     print("[CHAT] Direct chat response (no retrieval)")
 
     behavior = get_behavior_prompt()
@@ -112,7 +117,6 @@ def chat_node(
         answer = _extract_text(response.content)
     except Exception as e:
         print(f"[CHAT] LLM failed: {e}")
-        # Fallback response for non-HR questions
         answer = (
             "I'm sorry, but I can only help with HR-related "
             "questions. If you have any questions about company "
@@ -129,33 +133,42 @@ def chat_node(
         goto=END,
     )
 
+
 # ══════════════════════════════════════════════════
 # NODE 3: transform_query
 # ══════════════════════════════════════════════════
-# Decomposes multi-hop queries into sub-queries.
 
 TRANSFORM_PROMPT = load_prompt("transform", version="v1")
+
 
 def transform_query(
     state: PolicyAgentState,
     base_llm,
 ) -> Command[Literal["retrieve"]]:
-    """Decompose multi-hop queries into focused sub-queries """
+    """
+    Decompose multi-hop queries into focused sub-queries.
+
+    No try/except here — LLMWithFallback handles rate limit errors
+    by automatically retrying with Groq when Gemini quota is exhausted.
+    If the LLM fails for any other reason, the exception propagates
+    and FastAPI returns a 500 (correct behavior for unexpected failures).
+    """
     print("\n[TRANSFORM] Analyzing query for decomposition")
 
     structured_llm = base_llm.with_structured_output(QueryDecomposition)
     chain = TRANSFORM_PROMPT | structured_llm
-
     history = state.get("messages", [])[-6:]
 
-    try:
-        result = chain.invoke({
-            "question": state["question"],
-            "history": history,
-        })
-        sub_queries = result.sub_queries
-    except Exception as e:
-        print(f"[TRANSFORM] Decomposition failed: {e}")
+    # LLMWithFallback will catch 429/quota errors and retry with Groq.
+    # No manual fallback needed here.
+    result = chain.invoke({
+        "question": state["question"],
+        "history": history,
+    })
+    sub_queries = result.sub_queries
+
+    # Defensive: ensure we always have at least the original question
+    if not sub_queries:
         sub_queries = [state["question"]]
 
     print(f"[TRANSFORM] → {len(sub_queries)} sub-queries:")
@@ -174,7 +187,6 @@ def transform_query(
 
 def retrieve_node(state: PolicyAgentState) -> Command:
     """Retrieve using enterprise hybrid retrieval + reranker."""
-
     sub_queries = state.get("sub_queries", [state["question"]])
     all_docs = []
 
@@ -210,21 +222,19 @@ def retrieve_node(state: PolicyAgentState) -> Command:
 
 BATCH_GRADER_PROMPT = load_prompt("grader", version="v1")
 
+
 def grade_documents_node(
     state: PolicyAgentState,
     base_llm,
 ) -> Command[Literal["generate", "transform_query"]]:
     """
     Grade all documents in ONE batched LLM call.
-
-    Routes to retry or generate based on grading result.
-    Uses a generous grading prompt to avoid filtering out
-    relevant documents.
+    Uses section_path for display (matches enterprise retriever metadata).
     """
     documents = state["documents"]
     print(f"\n[GRADE] Batch-grading {len(documents)} documents")
 
-    # ── Handle empty case ──
+    # Handle empty case
     if not documents:
         print("[GRADE] → No documents to grade")
         retry_count = state.get("retrieval_retry_count", 0)
@@ -246,21 +256,18 @@ def grade_documents_node(
             goto="generate",
         )
 
-    # ── Format documents for batch grading ──
     def _truncate_for_grading(doc, max_chars=300):
-        """Truncate document text for grading — grader only needs enough to judge relevance."""
         text = doc.page_content
-        if len(text) > max_chars:
-            return text[:max_chars] + "..."
-        return text
+        return text[:max_chars] + "..." if len(text) > max_chars else text
 
+    # Use section_path for grading context (enterprise retriever metadata)
     doc_text = "\n\n".join([
-        f"[Document {i+1}] (Policy: {doc.metadata.get('document_title', 'Unknown')})\n"
+        f"[Document {i+1}] "
+        f"(Section: {doc.metadata.get('section_path', doc.metadata.get('section_title', 'Unknown'))[:60]})\n"
         f"{_truncate_for_grading(doc)}"
         for i, doc in enumerate(documents)
     ])
 
-    # ── Run batched grader ──
     structured_llm = base_llm.with_structured_output(BatchDocumentGrades)
     chain = BATCH_GRADER_PROMPT | structured_llm
 
@@ -271,12 +278,11 @@ def grade_documents_node(
         })
         grades = result.grades
 
-        # Defensive: handle mismatched grade count
         if len(grades) != len(documents):
             print(
                 f"[GRADE] Grade count mismatch "
                 f"({len(grades)} grades for {len(documents)} docs), "
-                f"keeping all documents"
+                f"keeping all"
             )
             grades = ["yes"] * len(documents)
 
@@ -284,16 +290,18 @@ def grade_documents_node(
         print(f"[GRADE] Batch grading failed: {e}, keeping all docs")
         grades = ["yes"] * len(documents)
 
-    # ── Filter and log per-document decisions ──
+    # Log per-document decisions with section_path
     graded = []
     for i, (doc, grade) in enumerate(zip(documents, grades)):
-        policy = doc.metadata.get("document_title", "?")[:50]
+        label = doc.metadata.get(
+            "section_path",
+            doc.metadata.get("section_title", "Unknown")
+        )[:50]
         marker = "correct" if grade == "yes" else "wrong"
-        print(f"  {marker} [{grade}] {policy}")
+        print(f"  {marker} [{grade}] {label}")
         if grade == "yes":
             graded.append(doc)
 
-    # ── Calculate summary ──
     total = len(documents)
     kept = len(graded)
 
@@ -305,6 +313,8 @@ def grade_documents_node(
         summary = "some_relevant"
 
     print(f"[GRADE] → {kept}/{total} relevant ({summary})")
+
+    # Safety net: if grader too aggressive, keep all
     if total >= 4 and kept / total < 0.25:
         print(
             f"[GRADE] → Grader too aggressive "
@@ -315,20 +325,17 @@ def grade_documents_node(
         summary = "all_relevant"
         kept = total
 
-    # ── Safety net: if grader rejected EVERYTHING but we have docs,
-    # ── that's almost certainly a grader failure. Keep all docs anyway.
+    # If grader rejected everything (suspicious), keep all
     if kept == 0 and total > 0:
-        print("[GRADE] → Grader rejected all docs (suspicious), "
-              "keeping all as safety net")
+        print("[GRADE] → Grader rejected all docs, keeping all as safety net")
         return Command(
             update={
-                "graded_documents": documents,  # Keep ALL
+                "graded_documents": documents,
                 "grade_summary": "all_relevant",
             },
             goto="generate",
         )
 
-    # ── Decide routing ──
     retry_count = state.get("retrieval_retry_count", 0)
 
     if summary == "none_relevant" and retry_count < 2:
@@ -349,24 +356,33 @@ def grade_documents_node(
         },
         goto="generate",
     )
+
+
 # ══════════════════════════════════════════════════
 # NODE 6: generate
 # ══════════════════════════════════════════════════
 
-
 GENERATE_PROMPT = load_prompt("generate", version="v1")
 
+
 def _format_context(docs: List[Document]) -> str:
-    """Format documents into context string for the LLM."""
+    """
+    Format documents into context string for the LLM.
+    Uses section_path from enterprise retriever metadata.
+    """
     if not docs:
         return "(no documents retrieved)"
 
     formatted = []
     for i, doc in enumerate(docs, 1):
-        policy = doc.metadata.get("policy_name", "Unknown")
-        section = doc.metadata.get("section", "Unknown")
+        # Enterprise retriever stores section_path, not policy_name/section
+        section = doc.metadata.get(
+            "section_path",
+            doc.metadata.get("section_title",
+            doc.metadata.get("section", "Unknown"))
+        )
         formatted.append(
-            f"[Source {i} | Policy: {policy} | Section: {section}]\n"
+            f"[Source {i} | Section: {section}]\n"
             f"{doc.page_content}"
         )
     return "\n\n".join(formatted)
@@ -385,6 +401,7 @@ def generate_node(
     behavior = get_behavior_prompt()
     prompt = GENERATE_PROMPT.partial(behavior=behavior)
     chain = prompt | base_llm
+
     response = chain.invoke({
         "question": state["question"],
         "context": context,
@@ -399,21 +416,28 @@ def generate_node(
         goto="check_grounding",
     )
 
+
 # ══════════════════════════════════════════════════
 # NODE 7: check_grounding
 # ══════════════════════════════════════════════════
 
-
 GROUNDING_PROMPT = load_prompt("grounding", version="v1")
+
 
 def check_grounding_node(
     state: PolicyAgentState,
     base_llm,
 ) -> Command[Literal["generate", "__end__"]]:
-    """Check if the answer is grounded. Retry generation if not."""
+    """
+    Check if the answer is grounded in retrieved context.
+
+    No try/except here — LLMWithFallback handles rate limit errors
+    by automatically retrying with Groq when Gemini quota is exhausted.
+    Short refusal answers are skipped to avoid unnecessary LLM calls.
+    """
     answer = state["answer"]
 
-    # OPTIMIZATION: skip grounding for refusal answers
+    # Skip grounding check for clear refusal answers — saves LLM call
     refusal_phrases = [
         "don't have enough",
         "i don't have",
@@ -421,8 +445,9 @@ def check_grounding_node(
         "not enough information",
     ]
 
-    if (len(answer) < 150 and
-            any(phrase in answer.lower() for phrase in refusal_phrases)):
+    if len(answer) < 150 and any(
+        phrase in answer.lower() for phrase in refusal_phrases
+    ):
         print("\n[GROUND] Skipped (refusal detected)")
         return Command(
             update={
@@ -434,28 +459,26 @@ def check_grounding_node(
 
     print("\n[GROUND] Checking grounding.")
 
+    # Use top 5 documents, truncated for speed
     context_snippets = []
     for i, doc in enumerate(state["graded_documents"][:5], 1):
         snippet = doc.page_content[:500]
         context_snippets.append(f"[Doc {i}] {snippet}")
-
     context = "\n\n".join(context_snippets)
-    
+
     structured_llm = base_llm.with_structured_output(GroundingCheck)
     chain = GROUNDING_PROMPT | structured_llm
-    try:
-        result = chain.invoke({
-            "context": context,
-            "answer": answer,
-        })
-        is_grounded = result.is_grounded == "grounded"
-    except Exception as e:
-        print(f"[GROUND] Check failed: {e}, assuming grounded")
-        is_grounded = True
+
+    # LLMWithFallback will catch 429/quota errors and retry with Groq.
+    # No manual fallback needed here.
+    result = chain.invoke({
+        "context": context,
+        "answer": answer,
+    })
+    is_grounded = result.is_grounded == "grounded"
 
     print(f"[GROUND] → {'grounded' if is_grounded else 'NOT grounded'}")
 
-    # Decide routing inline
     retry_count = state.get("generation_retry_count", 0)
 
     if not is_grounded and retry_count < 1:
@@ -475,10 +498,3 @@ def check_grounding_node(
         },
         goto=END,
     )
-
-
-
-
-
-
-

@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from typing import List
 
 load_dotenv()
+
 from langchain_core.documents import Document
 from qdrant_client import QdrantClient
 from qdrant_client.models import (
@@ -22,6 +23,17 @@ CANDIDATES = 40
 FINAL_K = 8
 
 _dense_model = _sparse_model = _ranker = _client = None
+
+
+def _ensure_secrets_loaded():
+    """Try to load secrets from AWS Secrets Manager if QDRANT_URL is missing."""
+    if os.environ.get("QDRANT_URL"):
+        return
+    try:
+        from scripts.aws_secrets import load_secrets_to_env
+        load_secrets_to_env()
+    except Exception:
+        pass
 
 
 def get_dense_model():
@@ -48,15 +60,32 @@ def get_ranker():
 def get_client():
     global _client
     if _client is None:
-        url = os.environ.get("QDRANT_URL")
+        _ensure_secrets_loaded()
+        url = os.environ.get("QDRANT_URL", "")
         api_key = os.environ.get("QDRANT_API_KEY")
-        _client = QdrantClient(url=url, api_key=api_key, timeout=30) if api_key else QdrantClient(url=url, timeout=30)
+
+        if not url:
+            print("[RETRIEVE] QDRANT_URL not set, falling back to http://localhost:6333")
+            url = "http://localhost:6333"
+
+        print(f"[RETRIEVE] Connecting to Qdrant: {url[:60]}")
+        _client = (
+            QdrantClient(url=url, api_key=api_key, timeout=30)
+            if api_key
+            else QdrantClient(url=url, timeout=30)
+        )
     return _client
 
 
-def retrieve(query: str, tenant_id: str = "vanaciprime", k: int = FINAL_K, debug: bool = False) -> List[Document]:
+def retrieve(
+    query: str,
+    tenant_id: str = "vanaciprime",
+    k: int = FINAL_K,
+    debug: bool = False,
+) -> List[Document]:
     """
     Hybrid retrieval: dense + sparse → Qdrant RRF → rerank → top-k.
+    Secrets are loaded on demand if QDRANT_URL is not in environment.
     """
     dense_vec = get_dense_model().encode(query, normalize_embeddings=True).tolist()
 
@@ -75,22 +104,36 @@ def retrieve(query: str, tenant_id: str = "vanaciprime", k: int = FINAL_K, debug
     if debug:
         dense_only = client.query_points(
             collection_name=COLLECTION_NAME,
-            prefetch=[Prefetch(query=dense_vec, using=DENSE_VECTOR_NAME, filter=tenant_filter, limit=CANDIDATES)],
+            prefetch=[
+                Prefetch(
+                    query=dense_vec,
+                    using=DENSE_VECTOR_NAME,
+                    filter=tenant_filter,
+                    limit=CANDIDATES,
+                )
+            ],
             query=FusionQuery(fusion=Fusion.RRF),
             limit=CANDIDATES,
             with_payload=True,
         )
         sparse_only = client.query_points(
             collection_name=COLLECTION_NAME,
-            prefetch=[Prefetch(query=sparse_vec, using=SPARSE_VECTOR_NAME, filter=tenant_filter, limit=CANDIDATES)],
+            prefetch=[
+                Prefetch(
+                    query=sparse_vec,
+                    using=SPARSE_VECTOR_NAME,
+                    filter=tenant_filter,
+                    limit=CANDIDATES,
+                )
+            ],
             query=FusionQuery(fusion=Fusion.RRF),
             limit=CANDIDATES,
             with_payload=True,
         )
         dense_ids = {p.id for p in dense_only.points}
         sparse_ids = {p.id for p in sparse_only.points}
-        print(f"[DEBUG] dense-only candidates: {len(dense_ids)}")
-        print(f"[DEBUG] sparse-only candidates: {len(sparse_ids)}")
+        print(f"[DEBUG] dense-only: {len(dense_ids)}")
+        print(f"[DEBUG] sparse-only: {len(sparse_ids)}")
         print(f"[DEBUG] sparse-unique (not in dense): {len(sparse_ids - dense_ids)}")
         for p in sparse_only.points:
             if p.id not in dense_ids:
@@ -99,8 +142,18 @@ def retrieve(query: str, tenant_id: str = "vanaciprime", k: int = FINAL_K, debug
     results = client.query_points(
         collection_name=COLLECTION_NAME,
         prefetch=[
-            Prefetch(query=dense_vec, using=DENSE_VECTOR_NAME, filter=tenant_filter, limit=CANDIDATES),
-            Prefetch(query=sparse_vec, using=SPARSE_VECTOR_NAME, filter=tenant_filter, limit=CANDIDATES),
+            Prefetch(
+                query=dense_vec,
+                using=DENSE_VECTOR_NAME,
+                filter=tenant_filter,
+                limit=CANDIDATES,
+            ),
+            Prefetch(
+                query=sparse_vec,
+                using=SPARSE_VECTOR_NAME,
+                filter=tenant_filter,
+                limit=CANDIDATES,
+            ),
         ],
         query=FusionQuery(fusion=Fusion.RRF),
         limit=CANDIDATES,
@@ -114,14 +167,12 @@ def retrieve(query: str, tenant_id: str = "vanaciprime", k: int = FINAL_K, debug
 
     print(f"[RETRIEVE] {len(candidates)} candidates from hybrid search")
 
-    # Rerank with cross-encoder
     passages = [
         {"id": i, "text": c.payload.get("text", "")}
         for i, c in enumerate(candidates)
     ]
     reranked = get_ranker().rerank(RerankRequest(query=query, passages=passages))
 
-    # Convert to LangChain Documents
     documents = []
     for result in reranked[:k]:
         payload = candidates[result["id"]].payload
