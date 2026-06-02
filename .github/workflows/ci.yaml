@@ -65,8 +65,10 @@ jobs:
           REDIS_URL: redis://localhost:6379/0
           QDRANT_URL: ${{ secrets.QDRANT_URL }}
           QDRANT_API_KEY: ${{ secrets.QDRANT_API_KEY }}
-          GROQ_API_KEY_4: ${{ secrets.GROQ_API_KEY_4 }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GROQ_API_KEY_2: ${{ secrets.GROQ_API_KEY_2 }}
           GROQ_API_KEY_3: ${{ secrets.GROQ_API_KEY_3 }}
+          GROQ_API_KEY_4: ${{ secrets.GROQ_API_KEY_4 }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
           LANGSMITH_TRACING: "false"
@@ -112,6 +114,8 @@ jobs:
           REDIS_URL: redis://localhost:6379/0
           QDRANT_URL: ${{ secrets.QDRANT_URL }}
           QDRANT_API_KEY: ${{ secrets.QDRANT_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GROQ_API_KEY_2: ${{ secrets.GROQ_API_KEY_2 }}
           GROQ_API_KEY_4: ${{ secrets.GROQ_API_KEY_4 }}
           GROQ_API_KEY_3: ${{ secrets.GROQ_API_KEY_3 }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
@@ -159,6 +163,8 @@ jobs:
           REDIS_URL: redis://localhost:6379/0
           QDRANT_URL: ${{ secrets.QDRANT_URL }}
           QDRANT_API_KEY: ${{ secrets.QDRANT_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GROQ_API_KEY_2: ${{ secrets.GROQ_API_KEY_2 }}
           GROQ_API_KEY_4: ${{ secrets.GROQ_API_KEY_4 }}
           GROQ_API_KEY_3: ${{ secrets.GROQ_API_KEY_3 }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
