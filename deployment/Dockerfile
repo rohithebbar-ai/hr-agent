@@ -15,7 +15,30 @@ RUN uv sync --frozen --no-dev
 
 COPY . .
 
-RUN uv run python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('all-MiniLM-L6-v2')"
+ENV FASTD_CACHE_PATH=/app/.fastembed_cache
+ENV SENTENCE_TRANSFORMERS_HOME=/app/.sentence_transformers
+
+RUN uv run python -c "
+from sentence_transformers import SentenceTransformer
+print('Downloading all-MiniLM-L6-v2...')
+SentenceTransformer('all-MiniLM-L6-v2')
+print('Done')
+"
+
+RUN uv run python -c "
+from fastembed import SparseTextEmbedding
+print('Downloading SPLADE...')
+model = SparseTextEmbedding(model_name='prithivida/Splade_PP_en_v1')
+list(model.embed(['warmup']))
+print('Done')
+"
+
+RUN uv run python -c "
+from flashrank import Ranker
+print('Downloading flashrank reranker...')
+Ranker(model_name='ms-marco-MiniLM-L-12-v2')
+print('Done')
+"
 
 EXPOSE 8000
 
