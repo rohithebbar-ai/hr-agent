@@ -106,11 +106,11 @@ TASK_CONFIG = {
         "fallback_model": GROQ_FALLBACK_MODEL,
     },
     LLMTask.CHAT: {
-        "provider": Provider.GEMINI,
-        "model": ModelID.GEMINI_FLASH,
-        "temperature": 0.6,
-        "max_retries": 3,
-        "fallback_model": GROQ_FALLBACK_MODEL,
+    "provider": Provider.GROQ if os.environ.get("ENVIRONMENT") == "test" else Provider.GEMINI,
+    "model": ModelID.LLAMA_3_3_70B if os.environ.get("ENVIRONMENT") == "test" else ModelID.GEMINI_FLASH,
+    "temperature": 0.6,
+    "max_retries": 3,
+    "fallback_model": GROQ_FALLBACK_MODEL,
     },
     LLMTask.QUERY_ROUTING: {
         "provider": Provider.GROQ,
@@ -125,8 +125,8 @@ TASK_CONFIG = {
         "max_retries": 3,
     },
     LLMTask.GROUNDING_CHECK: {
-        "provider": Provider.GEMINI,
-        "model": ModelID.GEMINI_FLASH,
+        "provider": Provider.GROQ if os.environ.get("ENVIRONMENT") == "test" else Provider.GEMINI,
+        "model": ModelID.LLAMA_3_1_8B_INSTANT if os.environ.get("ENVIRONMENT") == "test" else ModelID.GEMINI_FLASH,
         "temperature": 0,
         "max_retries": 3,
         "fallback_model": GROQ_FAST_FALLBACK_MODEL,
@@ -233,6 +233,20 @@ class LLMWithFallback(Runnable):
         self.primary = primary
         self.fallback = fallback
         self.task_name = task_name
+
+    def with_structured_output(self, schema, **kwargs):
+        """
+        Override to preserve fallback when nodes call base_llm.with_structured_output().
+        Without this, with_structured_output() delegates to primary via __getattr__,
+        returning a pure Gemini chain that loses the Groq fallback wrapper.
+        """
+        primary_structured = self.primary.with_structured_output(schema, **kwargs)
+        fallback_structured = self.fallback.with_structured_output(schema, **kwargs)
+        return LLMWithFallback(
+            primary=primary_structured,
+            fallback=fallback_structured,
+            task_name=f"{self.task_name}:structured",
+        )
 
     def invoke(
         self,
