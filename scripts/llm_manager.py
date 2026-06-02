@@ -9,7 +9,7 @@ the manager automatically retries with Groq Llama 3.3 70B.
 LLMWithFallback extends LangChain's Runnable so it works
 transparently with the pipe operator (|) and all LangChain chains.
 """
-
+import os
 from enum import Enum
 from functools import lru_cache
 from typing import Any, Iterator, List, Optional
@@ -99,8 +99,8 @@ TASK_CONFIG = {
         "max_retries": 3,
     },
     LLMTask.QUERY_DECOMPOSITION: {
-        "provider": Provider.GEMINI,
-        "model": ModelID.GEMINI_2_5_FLASH_LITE,
+        "provider": Provider.GROQ if os.environ.get("ENVIRONMENT") == "test" else Provider.GEMINI,
+        "model": ModelID.LLAMA_3_3_70B if os.environ.get("ENVIRONMENT") == "test" else ModelID.GEMINI_2_5_FLASH_LITE,
         "temperature": 0,
         "max_retries": 3,
         "fallback_model": GROQ_FALLBACK_MODEL,
