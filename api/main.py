@@ -9,6 +9,27 @@ Usage:
 Docs:
     http://localhost:8000/docs
 """
+import os
+import sys
+
+# Load AWS Secrets Manager into os.environ BEFORE any other imports
+# This must run in the same process as uvicorn
+_secret_name = os.environ.get("AWS_SECRET_NAME", "hragent/api-keys")
+_aws_region = os.environ.get("AWS_REGION", "ap-south-1")
+
+if _secret_name and os.environ.get("ENVIRONMENT") == "prod":
+    try:
+        import json
+        import boto3
+        client = boto3.client("secretsmanager", region_name=_aws_region)
+        response = client.get_secret_value(SecretId=_secret_name)
+        secrets = json.loads(response["SecretString"])
+        for key, value in secrets.items():
+            if value and key not in os.environ:
+                os.environ[key] = value
+        print(f"[SECRETS] Loaded {len(secrets)} keys from Secrets Manager")
+    except Exception as e:
+        print(f"[SECRETS] Failed: {e}")
 
 from contextlib import asynccontextmanager
 

@@ -214,6 +214,11 @@ jobs:
           script: |
             set -e
 
+            echo "=== Syncing code from GitHub ==="
+            cd ~/hr-agent
+            git fetch origin main
+            git reset --hard origin/main
+
             echo "=== Starting deployment ==="
             cd ~/hr-agent/deployment
 
@@ -228,15 +233,19 @@ jobs:
             echo "=== Restarting containers ==="
             docker compose -f docker-compose.prod.yml up -d app discord-bot
 
-            # Wait for startup — embedding model + sparse model load takes time
+            # Wait for app startup
             echo "=== Waiting for startup ==="
-            sleep 40
+            sleep 60
+
+            # Restart Nginx so it reconnects to new app container
+            echo "=== Restarting Nginx ==="
+            docker restart hr-copilot-nginx
+            sleep 10
 
             # Health check via Nginx
             echo "=== Running health check ==="
             if curl -sf http://localhost/api/v1/health > /dev/null; then
               echo "=== Deployment successful ==="
-              docker restart hr-copilot-nginx
               docker image prune -f
               docker images rohithebbar/hr-agent --format "{{.Tag}}" | \
                 grep -v "latest" | grep -v "rollback" | \
