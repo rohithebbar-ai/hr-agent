@@ -68,7 +68,7 @@ intents = discord.Intents.default()
 intents.message_content = True
 
 client = discord.Client(intents=intents)
-http_client = httpx.AsyncClient(timeout=30.0)
+http_client = httpx.AsyncClient(timeout=120.0)
 
 
 @client.event
@@ -94,12 +94,19 @@ async def on_message(message: discord.Message):
     question = message.content.replace(f"<@{client.user.id}>", "").strip()
 
     if not question:
-        await message.reply("Please include a question!")
+        if is_dm:
+            await message.channel.send("Please include a question!")
+        else:
+            await message.reply("Please ask me a question in your message!")
         return
 
     print(f"[DISCORD] {message.author}: {question[:80]}")
 
     thread_id = f"discord_{message.author.id}"
+
+    # If mentioned in a channel, acknowledge and respond via DM
+    if not is_dm:
+        await message.add_reaction("👍")  # Quick acknowledgment in channel
 
     async with message.channel.typing():
         try:
@@ -115,16 +122,46 @@ async def on_message(message: discord.Message):
                 if len(reply) > 2000:
                     reply = reply[:1997] + "..."
 
-                await message.reply(reply)
-
+                if is_dm:
+                    # In DM — send directly, no quote chain
+                    await message.channel.send(reply)
+                else:
+                    # Mentioned in server — send to user's DM for privacy
+                    try:
+                        dm_channel = await message.author.create_dm()
+                        await dm_channel.send(
+                            f"**Your question:** {question}\n\n{reply}"
+                        )
+                        # Optional: confirm in channel that DM was sent
+                        await message.reply(
+                            "I've sent the answer to your DMs!",
+                            mention_author=False,
+                        )
+                    except discord.Forbidden:
+                        # User has DMs disabled — fall back to channel reply
+                        await message.reply(reply, mention_author=False)
             else:
-                await message.reply("Error processing request")
+                await message.channel.send("Error processing your request.")
 
+        except httpx.TimeoutException:
+            err = "The request took too long. Please try again."
+            if is_dm:
+                await message.channel.send(err)
+            else:
+                await message.reply(err, mention_author=False)
         except httpx.ConnectError:
-            await message.reply("Cannot reach backend service")
+            err = "Cannot reach the backend service."
+            if is_dm:
+                await message.channel.send(err)
+            else:
+                await message.reply(err, mention_author=False)
         except Exception as e:
             print(f"[ERROR] {e}")
-            await message.reply("Something went wrong")
+            err = "Something went wrong. Please try again."
+            if is_dm:
+                await message.channel.send(err)
+            else:
+                await message.reply(err, mention_author=False)
 
 
 # ─────────────────────────────────────────────
