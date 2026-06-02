@@ -65,7 +65,8 @@ jobs:
           REDIS_URL: redis://localhost:6379/0
           QDRANT_URL: ${{ secrets.QDRANT_URL }}
           QDRANT_API_KEY: ${{ secrets.QDRANT_API_KEY }}
-          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GROQ_API_KEY_4: ${{ secrets.GROQ_API_KEY_4 }}
+          GROQ_API_KEY_3: ${{ secrets.GROQ_API_KEY_3 }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
           LANGSMITH_TRACING: "false"
@@ -111,7 +112,8 @@ jobs:
           REDIS_URL: redis://localhost:6379/0
           QDRANT_URL: ${{ secrets.QDRANT_URL }}
           QDRANT_API_KEY: ${{ secrets.QDRANT_API_KEY }}
-          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GROQ_API_KEY_4: ${{ secrets.GROQ_API_KEY_4 }}
+          GROQ_API_KEY_3: ${{ secrets.GROQ_API_KEY_3 }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
           LANGSMITH_TRACING: "false"
@@ -157,7 +159,8 @@ jobs:
           REDIS_URL: redis://localhost:6379/0
           QDRANT_URL: ${{ secrets.QDRANT_URL }}
           QDRANT_API_KEY: ${{ secrets.QDRANT_API_KEY }}
-          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GROQ_API_KEY_4: ${{ secrets.GROQ_API_KEY_4 }}
+          GROQ_API_KEY_3: ${{ secrets.GROQ_API_KEY_3 }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
           LANGSMITH_TRACING: "false"
@@ -233,11 +236,11 @@ jobs:
             echo "=== Restarting containers ==="
             docker compose -f docker-compose.prod.yml up -d app discord-bot
 
-            # Wait for app startup
+            # Wait for app startup — models load on first request, not startup
             echo "=== Waiting for startup ==="
             sleep 60
 
-            # Restart Nginx so it reconnects to new app container
+            # Restart Nginx so it reconnects to the new app container
             echo "=== Restarting Nginx ==="
             docker restart hr-copilot-nginx
             sleep 10
