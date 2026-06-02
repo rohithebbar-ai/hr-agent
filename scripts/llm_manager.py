@@ -1,13 +1,14 @@
 """
 LLM Manager
 ───────────
-Centralized LLM configuration with automatic Groq fallback.
+Centralized LLM configuration with strict Groq fallback.
 
-When Gemini hits rate limits (429) or quota exhaustion,
-the manager automatically retries with Groq Llama 3.3 70B.
+If Gemini fails for ANY reason (rate limit, quota, 503, timeout, etc.),
+the manager automatically retries with Groq. No hardcoded error signatures —
+any exception from the primary triggers the fallback.
 
-LLMWithFallback extends LangChain's Runnable so it works
-transparently with the pipe operator (|) and all LangChain chains.
+LLMWithFallback extends LangChain's Runnable so it works transparently
+with the pipe operator (|) and all LangChain chains.
 """
 import os
 from enum import Enum
@@ -72,24 +73,15 @@ class LLMTask(str, Enum):
 
 
 # ══════════════════════════════════════════════════
-# FALLBACK CONFIG
+# TASK CONFIG
 # ══════════════════════════════════════════════════
+# In test environment: all Gemini tasks use Groq directly (no quota issues in CI).
+# In production: Gemini primary with Groq fallback on any failure.
 
 GROQ_FALLBACK_MODEL = ModelID.LLAMA_3_3_70B
 GROQ_FAST_FALLBACK_MODEL = ModelID.LLAMA_3_1_8B_INSTANT
 
-RATE_LIMIT_SIGNATURES = [
-    "429",
-    "resource_exhausted",
-    "quota",
-    "rate limit",
-    "too many requests",
-]
-
-
-# ══════════════════════════════════════════════════
-# TASK CONFIG
-# ══════════════════════════════════════════════════
+_IS_TEST = os.environ.get("ENVIRONMENT") == "test"
 
 TASK_CONFIG = {
     LLMTask.GENERATION: {
@@ -99,18 +91,18 @@ TASK_CONFIG = {
         "max_retries": 3,
     },
     LLMTask.QUERY_DECOMPOSITION: {
-        "provider": Provider.GROQ if os.environ.get("ENVIRONMENT") == "test" else Provider.GEMINI,
-        "model": ModelID.LLAMA_3_3_70B if os.environ.get("ENVIRONMENT") == "test" else ModelID.GEMINI_2_5_FLASH_LITE,
+        "provider": Provider.GROQ if _IS_TEST else Provider.GEMINI,
+        "model": ModelID.LLAMA_3_3_70B if _IS_TEST else ModelID.GEMINI_2_5_FLASH_LITE,
         "temperature": 0,
         "max_retries": 3,
         "fallback_model": GROQ_FALLBACK_MODEL,
     },
     LLMTask.CHAT: {
-    "provider": Provider.GROQ if os.environ.get("ENVIRONMENT") == "test" else Provider.GEMINI,
-    "model": ModelID.LLAMA_3_3_70B if os.environ.get("ENVIRONMENT") == "test" else ModelID.GEMINI_FLASH,
-    "temperature": 0.6,
-    "max_retries": 3,
-    "fallback_model": GROQ_FALLBACK_MODEL,
+        "provider": Provider.GROQ if _IS_TEST else Provider.GEMINI,
+        "model": ModelID.LLAMA_3_3_70B if _IS_TEST else ModelID.GEMINI_FLASH,
+        "temperature": 0.6,
+        "max_retries": 3,
+        "fallback_model": GROQ_FALLBACK_MODEL,
     },
     LLMTask.QUERY_ROUTING: {
         "provider": Provider.GROQ,
@@ -125,8 +117,8 @@ TASK_CONFIG = {
         "max_retries": 3,
     },
     LLMTask.GROUNDING_CHECK: {
-        "provider": Provider.GROQ if os.environ.get("ENVIRONMENT") == "test" else Provider.GEMINI,
-        "model": ModelID.LLAMA_3_1_8B_INSTANT if os.environ.get("ENVIRONMENT") == "test" else ModelID.GEMINI_FLASH,
+        "provider": Provider.GROQ if _IS_TEST else Provider.GEMINI,
+        "model": ModelID.LLAMA_3_1_8B_INSTANT if _IS_TEST else ModelID.GEMINI_FLASH,
         "temperature": 0,
         "max_retries": 3,
         "fallback_model": GROQ_FAST_FALLBACK_MODEL,
@@ -150,11 +142,6 @@ TASK_CONFIG = {
 # ══════════════════════════════════════════════════
 # FACTORY HELPERS
 # ══════════════════════════════════════════════════
-
-def _is_rate_limit_error(error: Exception) -> bool:
-    error_str = str(error).lower()
-    return any(sig in error_str for sig in RATE_LIMIT_SIGNATURES)
-
 
 def _create_groq(
     model: str,
@@ -211,17 +198,19 @@ def _create_llm(
 
 
 # ══════════════════════════════════════════════════
-# FALLBACK WRAPPER — extends Runnable
+# FALLBACK WRAPPER
 # ══════════════════════════════════════════════════
 
 class LLMWithFallback(Runnable):
     """
-    Wraps a primary LLM with an automatic Groq fallback.
-    Extends LangChain's Runnable so it works with the pipe operator (|)
-    and all LangChain chains — transparent to all callers.
+    Wraps a primary LLM (Gemini) with a strict Groq fallback.
 
-    When Gemini returns 429 or quota exhaustion, automatically retries
-    the same call with Groq. No changes needed in node code.
+    ANY exception from the primary triggers the fallback — no hardcoded
+    error signatures. If Gemini fails for any reason (429, 503, timeout,
+    network error, etc.), Groq handles it instead.
+
+    Extends LangChain's Runnable so it works with the pipe operator (|)
+    and with_structured_output() transparently.
     """
 
     def __init__(
@@ -236,9 +225,9 @@ class LLMWithFallback(Runnable):
 
     def with_structured_output(self, schema, **kwargs):
         """
-        Override to preserve fallback when nodes call base_llm.with_structured_output().
-        Without this, with_structured_output() delegates to primary via __getattr__,
-        returning a pure Gemini chain that loses the Groq fallback wrapper.
+        Override to preserve fallback through structured output chains.
+        Without this, with_structured_output() delegates to primary via
+        __getattr__, returning a pure Gemini chain that loses the fallback.
         """
         primary_structured = self.primary.with_structured_output(schema, **kwargs)
         fallback_structured = self.fallback.with_structured_output(schema, **kwargs)
@@ -257,13 +246,11 @@ class LLMWithFallback(Runnable):
         try:
             return self.primary.invoke(input, config=config, **kwargs)
         except Exception as e:
-            if _is_rate_limit_error(e):
-                print(
-                    f"[LLM_MANAGER] {self.task_name}: rate limit — "
-                    f"falling back to Groq ({str(e)[:60]})"
-                )
-                return self.fallback.invoke(input, config=config, **kwargs)
-            raise
+            print(
+                f"[LLM_MANAGER] {self.task_name}: primary failed "
+                f"({type(e).__name__}: {str(e)[:80]}) — using Groq fallback"
+            )
+            return self.fallback.invoke(input, config=config, **kwargs)
 
     def stream(
         self,
@@ -274,11 +261,11 @@ class LLMWithFallback(Runnable):
         try:
             yield from self.primary.stream(input, config=config, **kwargs)
         except Exception as e:
-            if _is_rate_limit_error(e):
-                print(f"[LLM_MANAGER] {self.task_name}: rate limit on stream — using Groq fallback")
-                yield from self.fallback.stream(input, config=config, **kwargs)
-            else:
-                raise
+            print(
+                f"[LLM_MANAGER] {self.task_name}: primary stream failed "
+                f"({type(e).__name__}) — using Groq fallback"
+            )
+            yield from self.fallback.stream(input, config=config, **kwargs)
 
     def batch(
         self,
@@ -289,12 +276,12 @@ class LLMWithFallback(Runnable):
         try:
             return self.primary.batch(inputs, config=config, **kwargs)
         except Exception as e:
-            if _is_rate_limit_error(e):
-                print(f"[LLM_MANAGER] {self.task_name}: rate limit on batch — using Groq fallback")
-                return self.fallback.batch(inputs, config=config, **kwargs)
-            raise
+            print(
+                f"[LLM_MANAGER] {self.task_name}: primary batch failed "
+                f"({type(e).__name__}) — using Groq fallback"
+            )
+            return self.fallback.batch(inputs, config=config, **kwargs)
 
-    # Delegate attribute access to primary for bind(), with_config(), etc.
     def __getattr__(self, name: str) -> Any:
         return getattr(self.primary, name)
 
@@ -305,16 +292,8 @@ class LLMWithFallback(Runnable):
 
 class LLMManager:
     """
-    Centralized LLM factory. Get LLM instances by task name.
-    Gemini tasks automatically get a Groq fallback wrapper.
-
-    Usage:
-        manager = LLMManager()
-        llm = manager.get_llm(LLMTask.GENERATION)
-        response = llm.invoke("your prompt")
-
-        # Works in LangChain chains too:
-        chain = prompt | llm | StrOutputParser()
+    Centralized LLM factory. Gemini tasks get strict Groq fallback —
+    any Gemini failure (quota, 503, timeout) automatically uses Groq.
     """
 
     def __init__(self):
@@ -329,7 +308,7 @@ class LLMManager:
         if not available:
             raise ValueError(
                 "No LLM API keys found. Set at least one of: "
-                "GROQ_API_KEY, OPENAI_API_KEY, GOOGLE_API_KEY"
+                "GROQ_API_KEY_4, OPENAI_API_KEY, GOOGLE_API_KEY"
             )
         print(f"[LLM_MANAGER] Available providers: {', '.join(available)}")
 
@@ -337,9 +316,9 @@ class LLMManager:
     def get_llm(self, task: LLMTask) -> Runnable:
         """
         Get the LLM for a task.
-        Gemini tasks return LLMWithFallback (Runnable) with Groq fallback.
+        Gemini tasks are wrapped in LLMWithFallback — any failure uses Groq.
         Groq/OpenAI tasks return the model directly.
-        Cached — same task always returns the same instance.
+        Cached per task — same instance reused across all requests.
         """
         if task not in TASK_CONFIG:
             raise ValueError(
@@ -352,14 +331,14 @@ class LLMManager:
         temperature = config["temperature"]
         max_retries = config["max_retries"]
 
-        # RAGAS eval task uses dedicated eval API key
+        # RAGAS eval uses dedicated eval API key
         if provider == Provider.GROQ and task == LLMTask.RAGAS_JUDGE:
             api_key = GROQ_API_KEY_EVAL or GROQ_API_KEY_RUNTIME
             return _create_groq(model, temperature, max_retries, api_key=api_key)
 
         primary = _create_llm(provider, model, temperature, max_retries)
 
-        # Wrap Gemini with Groq fallback
+        # Wrap Gemini tasks with strict Groq fallback
         if provider == Provider.GEMINI and GROQ_API_KEY_RUNTIME:
             fallback_model = config.get("fallback_model", GROQ_FALLBACK_MODEL)
             fallback = _create_groq(fallback_model, temperature, max_retries)
@@ -440,4 +419,5 @@ if __name__ == "__main__":
     print(f"  Groq Eval:     {'configured' if GROQ_API_KEY_EVAL else 'missing'}")
     print(f"  OpenAI:        {'configured' if OPENAI_API_KEY else 'missing'}")
     print(f"  Gemini:        {'configured' if GOOGLE_API_KEY else 'missing'}")
+    print(f"  Environment:   {os.environ.get('ENVIRONMENT', 'prod')}")
     print("=" * 70 + "\n")

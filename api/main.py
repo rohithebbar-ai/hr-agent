@@ -44,8 +44,15 @@ load_dotenv()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Startup and shutdown events."""
-    print("[STARTUP] FastAPI starting — pipeline loads on first /chat request")
+    print("[STARTUP] Warming up retrieval models...")
+    try:
+        from rag.retriever_enterprise import get_dense_model, get_sparse_model, get_ranker
+        get_dense_model()
+        get_sparse_model()
+        get_ranker()
+        print("[STARTUP] Models ready — first request will be fast")
+    except Exception as e:
+        print(f"[STARTUP] Warmup failed (non-fatal): {e}")
     yield
     print("[SHUTDOWN] FastAPI shutting down")
 
